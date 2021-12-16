@@ -61,6 +61,12 @@ public class ServerMain {
             }
         }
         WinsomeSocial socialNetwork = new WinsomeSocial(socialUserStatus); //creo il social vero e proprio
+        System.out.println(socialNetwork.userRegister("jacopo", "password", "ciao ciao ciao ciaoc caio"));
+        System.out.println(socialNetwork.userRegister("jacopo", "password", "ciao ciao ciao ciaoc caio"));
+        System.out.println(socialNetwork.userRegister("jacfdopo", "password", "ciao ciao ciao ciaoc caio"));
+        System.out.println(socialNetwork.userRegister("jacfdopo", "password", "ciao ciao ciao ciaoc caio"));
+        System.out.println(socialNetwork.userRegister("fdfdfdf", "password", "ciao ciao ciao ciaoc caio"));
+
 
         //creo e avvio il thread che si occuperà del backup
         Thread autoSaving = new Thread(new AutomaticSaving(socialNetwork, socialUserStatus, postStatus, TIMELAPSEBACKUP));

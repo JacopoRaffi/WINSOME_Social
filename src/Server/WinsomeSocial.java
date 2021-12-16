@@ -23,7 +23,7 @@ public class WinsomeSocial implements ServerFunctions {
     public boolean userRegister(String username, String password, String tags){
         try{
             User newUser = new User(username, password, tags);
-            if(socialUsers.putIfAbsent(username, newUser) != null){ //aggiungo l'utente registrato
+            if(socialUsers.putIfAbsent(username, newUser) == null){ //aggiungo l'utente registrato
                 return true;
             }else{
                 return false;
