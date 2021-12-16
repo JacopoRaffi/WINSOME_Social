@@ -1,6 +1,4 @@
 import java.io.*;
-import Utilities.*;
-import Exceptions.*;
 
 public class ServerMain {
     //principali variabili
@@ -37,7 +35,31 @@ public class ServerMain {
         System.out.println("AUTHOR PERCENTAGE REWARD = " + AUTHOR_RATE*100 + "%");
         System.out.println("TIMELAPSE BETWEEN REWARDS = " + TIMELAPSE);
 
+        //in un file salvo gli utenti registrati(non fatti ad hashtable) ongi volta che si registra qualcuno
+        File socialUserStatus = new File(".\\StatusServer\\usersStatus.json");
+
+        //in un file salvo lo stato del social(periodicamente)
+        File winsomeStatus = new File(".\\StatusServer\\socialStatus.json");
+        if(!winsomeStatus.exists()){
+            try{
+                winsomeStatus.createNewFile();
+            }catch(IOException e){
+                System.err.println("ERRORE: errore durante la creazione dei file di backup del social");
+                System.exit(-1);
+            }
+        }
+        if(!socialUserStatus.exists()){
+            try{
+                socialUserStatus.createNewFile();
+            }catch(IOException e){
+                System.err.println("ERRORE: errore durante la creazione dei file di backup degli utenti");
+                System.exit(-1);
+            }
+        }
+
     }
+
+    private void closeServer(){}
 
     private static void restoreValues() {
         TCP_PORT = 6666;
