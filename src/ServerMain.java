@@ -35,6 +35,7 @@ public class ServerMain {
         System.out.println("TIMEOUT_SOCKET = " + TIMEOUT);
         System.out.println("AUTHOR PERCENTAGE REWARD = " + AUTHOR_RATE*100 + "%");
         System.out.println("TIMELAPSE BETWEEN REWARDS = " + TIMELAPSE);
+        System.out.println("TIMELAPSE BETWEEN BACKUPS = " + TIMELAPSEBACKUP);
 
         //in questi due file mi salvo il backup dei post del social e degli utenti registrati(periodicamente)
         File socialUserStatus = new File(".\\StatusServer\\usersStatus.json");
