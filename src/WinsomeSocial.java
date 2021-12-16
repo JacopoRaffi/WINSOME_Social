@@ -33,7 +33,7 @@ public class WinsomeSocial implements ServerFunctions{
 
     public boolean login(String username, String password){
         try {
-            return socialUsers.get(username).login(username, password);
+            return (socialUsers.containsKey(username) && socialUsers.get(username).login(username, password));
         }catch(NoSuchAlgorithmException e){
             return false;
         }

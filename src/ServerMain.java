@@ -63,8 +63,6 @@ public class ServerMain {
 
     }
 
-    private void closeServer(){}
-
     private static void restoreValues() {
         TCP_PORT = 6666;
         UDP_PORT = 33333;
