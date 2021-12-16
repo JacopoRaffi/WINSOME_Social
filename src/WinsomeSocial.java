@@ -18,12 +18,9 @@ public class WinsomeSocial implements ServerFunctions{
     }
 
     public boolean userRegister(String username, String password, String tags){
-        if(socialUsers.containsKey(username)){
-            return false; //utente già registrato
-        }
         try{
             User newUser = new User(username, password, tags);
-            socialUsers.put(username, newUser); //aggiungo l'utente registrato
+            socialUsers.putIfAbsent(username, newUser); //aggiungo l'utente registrato
             return true;
         }catch(NoSuchAlgorithmException e){
             return false;
