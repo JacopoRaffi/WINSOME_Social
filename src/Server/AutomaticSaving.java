@@ -45,7 +45,7 @@ public class AutomaticSaving implements Runnable{
     }
 
     private void backupUsers() throws IOException {
-        FileWriter jsonWriter = new FileWriter(usersStatus, true);
+        FileWriter jsonWriter = new FileWriter(usersStatus);
         ConcurrentHashMap<String, User> post= social.getSocialUsers();
         Gson gsonBuilder = new GsonBuilder().setPrettyPrinting().create();
         String jsonString = gsonBuilder.toJson(post);
