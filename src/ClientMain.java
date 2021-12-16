@@ -73,5 +73,6 @@ public class ClientMain {
             }
             line = configReader.readLine();
         }
+        configReader.close();
     }
 }
