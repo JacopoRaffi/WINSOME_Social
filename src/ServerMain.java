@@ -1,7 +1,7 @@
 import java.io.*;
 
 public class ServerMain {
-    //principali variabili
+    //principali variabili(con relativi valori di default)
     private static int TCP_PORT = 6666;
     private static int UDP_PORT = 33333;
     private static int MULTICAST_PORT = 44444;
@@ -11,6 +11,7 @@ public class ServerMain {
     private static String REG_ADDRESS = "localhost";
     private static long TIMEOUT = 100000;
     private static long TIMELAPSE = 100000;
+    private static long TIMELAPSEBACKUP = 1000;
     private static double AUTHOR_RATE = 0.8;
 
     public static void main(String[] Args) {
@@ -35,14 +36,12 @@ public class ServerMain {
         System.out.println("AUTHOR PERCENTAGE REWARD = " + AUTHOR_RATE*100 + "%");
         System.out.println("TIMELAPSE BETWEEN REWARDS = " + TIMELAPSE);
 
-        //in un file salvo gli utenti registrati(non fatti ad hashtable) ongi volta che si registra qualcuno
+        //in questi due file mi salvo il backup dei post del social e degli utenti registrati(periodicamente)
         File socialUserStatus = new File(".\\StatusServer\\usersStatus.json");
-
-        //in un file salvo lo stato del social(periodicamente)
-        File winsomeStatus = new File(".\\StatusServer\\socialStatus.json");
-        if(!winsomeStatus.exists()){
+        File postStatus = new File(".\\StatusServer\\postStatus.json");
+        if(!postStatus.exists()){
             try{
-                winsomeStatus.createNewFile();
+                postStatus.createNewFile();
             }catch(IOException e){
                 System.err.println("ERRORE: errore durante la creazione dei file di backup del social");
                 System.exit(-1);
@@ -56,6 +55,11 @@ public class ServerMain {
                 System.exit(-1);
             }
         }
+        WinsomeSocial socialNetwork = new WinsomeSocial(socialUserStatus); //creo il social vero e proprio
+
+        //creo e avvio il thread che si occuperà del backup
+        Thread autoSaving = new Thread(new AutomaticSaving(socialNetwork, socialUserStatus, postStatus, TIMELAPSEBACKUP));
+        autoSaving.start();
 
     }
 
@@ -105,6 +109,15 @@ public class ServerMain {
                 }
                 else if (tokens[0].compareTo("TIMELAPSE") == 0) {
                     TIMELAPSE = Long.parseLong(tokens[1]);
+                    if(TIMELAPSE < 0){
+                        throw new IllegalArgumentException();
+                    }
+                }
+                else if (tokens[0].compareTo("TIMELAPSEBACKUP") == 0) {
+                    TIMELAPSEBACKUP = Long.parseLong(tokens[1]);
+                    if(TIMELAPSEBACKUP <= 0){
+                        throw new IllegalArgumentException();
+                    }
                 }
             }
             line = configReader.readLine();

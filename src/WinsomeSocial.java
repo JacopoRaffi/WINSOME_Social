@@ -1,15 +1,20 @@
-import java.io.File;
+import java.io.*;
 import java.security.NoSuchAlgorithmException;
-import java.util.Hashtable;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
+
 import com.google.gson.*;
+import com.google.gson.stream.JsonWriter;
 
 public class WinsomeSocial implements ServerFunctions{
-    private Hashtable<Integer, Post> socialPost;
-    private Hashtable<String, User> socialUsers;
+    private ConcurrentHashMap<Integer, Post> socialPost;
+    private ConcurrentHashMap<String, User> socialUsers;
+    private volatile AtomicLong postID;
 
-    public WinsomeSocial(File socialUserStatus, File winsomeStatus){
-        socialPost = new Hashtable<>();
-        socialUsers = new Hashtable<>();
+    public WinsomeSocial(File usersStatus){
+        socialPost = new ConcurrentHashMap<>();
+        socialUsers = new ConcurrentHashMap<>();
+        postID = new AtomicLong(0);
     }
 
     public boolean userRegister(String username, String password, String tags){
@@ -17,7 +22,8 @@ public class WinsomeSocial implements ServerFunctions{
             return false; //utente già registrato
         }
         try{
-            socialUsers.put(username, new User(username, password, tags)); //aggiungo l'utente registrato
+            User newUser = new User(username, password, tags);
+            socialUsers.put(username, newUser); //aggiungo l'utente registrato
             return true;
         }catch(NoSuchAlgorithmException e){
             return false;
@@ -43,6 +49,15 @@ public class WinsomeSocial implements ServerFunctions{
 
     public String showBlog(String username){
         return  socialUsers.get(username).getBlog().toString();
+    }
+
+    //questi due metodi get sono utili per il backup su file json
+    public ConcurrentHashMap<Integer, Post> getSocialPost(){
+        return new ConcurrentHashMap<>(socialPost);
+    }
+
+    public ConcurrentHashMap<String, User> getSocialUsers(){
+        return new ConcurrentHashMap<>(socialUsers);
     }
 
 }
