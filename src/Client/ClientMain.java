@@ -1,9 +1,15 @@
 package Client;
 
+import Server.ServerRegistry;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 
 public class ClientMain {
     //principali variabili
@@ -13,7 +19,7 @@ public class ClientMain {
     private static int REG_PORT = 7777;
     private static String SERVER_ADDRESS = "192.168.1.2";
     private static String MULTICAST_ADDRESS = "239.255.32.32";
-    private static String REG_ADDRESS = "localhost";
+    private static String REG_SERVICENAME = "serverRegistry";
     private static long TIMEOUT = 100000;
 
     public static void main(String[] Args) {
@@ -29,12 +35,23 @@ public class ClientMain {
         System.out.println("VALORI DEL CLIENT:");
         System.out.println("SERVER_ADDRESS = " + SERVER_ADDRESS);
         System.out.println("MULTICAST_ADDRESS = " + MULTICAST_ADDRESS);
-        System.out.println("REG_ADDRESS = " + REG_ADDRESS);
+        System.out.println("REG_SERVICENAME = " + REG_SERVICENAME);
         System.out.println("TCP_PORT = " + TCP_PORT);
         System.out.println("UDP_PORT = " + UDP_PORT);
         System.out.println("REG_PORT = " + REG_PORT);
         System.out.println("MULTICAST_PORT = " + MULTICAST_PORT);
         System.out.println("TIMEOUT_SOCKET = " + TIMEOUT);
+
+        //registrazione al server tramite RMI
+        try{
+            Registry registry = LocateRegistry.getRegistry(REG_PORT);
+            ServerRegistry regFun = (ServerRegistry) registry.lookup(REG_SERVICENAME);
+            regFun.userRegister("ciccio", "password", "ciao ciao ciao ciao caio");
+            System.out.println("BENVENUTO IN WINSOME SOCIAL");
+        }catch(RemoteException | NotBoundException e){
+            System.err.println("ERRORE: registrazione fallita");
+            System.exit(-1);
+        }
 
     }
 
@@ -45,7 +62,7 @@ public class ClientMain {
         REG_PORT = 7777;
         String SERVER_ADDRESS = "192.168.1.2";
         String MULTICAST_ADDRESS = "239.255.32.32";
-        String REG_ADDRESS = "localhost";
+        String REG_SERVICENAME = "localhost";
         TIMEOUT = 100000;
     }
 
@@ -59,8 +76,8 @@ public class ClientMain {
                     SERVER_ADDRESS = tokens[1];
                 } else if (tokens[0].compareTo("MULTICAST_ADDRESS") == 0) {
                     MULTICAST_ADDRESS = tokens[1];
-                } else if (tokens[0].compareTo("REG_ADDRESS") == 0) {
-                    REG_ADDRESS = tokens[1];
+                } else if (tokens[0].compareTo("REG_SERVICENAME") == 0) {
+                    REG_SERVICENAME = tokens[1];
                 } else if (tokens[0].compareTo("TCP_PORT") == 0) {
                     TCP_PORT = Integer.parseInt(tokens[1]);
                 } else if (tokens[0].compareTo("UDP_PORT") == 0) {

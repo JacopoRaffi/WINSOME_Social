@@ -2,8 +2,11 @@ package Server;
 
 import java.io.*;
 import java.lang.reflect.Type;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.security.NoSuchAlgorithmException;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.gson.*;
@@ -18,7 +21,7 @@ public class ServerMain {
     private static int REG_PORT = 7777;
     private static String SERVER_ADDRESS = "192.168.1.2";
     private static String MULTICAST_ADDRESS = "239.255.32.32";
-    private static String REG_ADDRESS = "localhost";
+    private static String REG_SERVICENAME = "serverRegistry";
     private static long TIMEOUT = 100000;
     private static long TIMELAPSE = 100000;
     private static long TIMELAPSEBACKUP = 1000;
@@ -37,7 +40,7 @@ public class ServerMain {
         System.out.println("VALORI DEL SERVER:");
         System.out.println("SERVER_ADDRESS = " + SERVER_ADDRESS);
         System.out.println("MULTICAST_ADDRESS = " + MULTICAST_ADDRESS);
-        System.out.println("REG_ADDRESS = " + REG_ADDRESS);
+        System.out.println("REG_SERVICENAME = " + REG_SERVICENAME);
         System.out.println("TCP_PORT = " + TCP_PORT);
         System.out.println("UDP_PORT = " + UDP_PORT);
         System.out.println("REG_PORT = " + REG_PORT);
@@ -74,16 +77,20 @@ public class ServerMain {
             System.exit(-1);
         }
 
-        System.out.println(socialNetwork.userRegister("jacopo", "password", "ciao ciao ciao ciaoc caio"));
-        System.out.println(socialNetwork.userRegister("jacopo", "password", "ciao ciao ciao ciaoc caio"));
-        System.out.println(socialNetwork.userRegister("jacfdopo", "password", "ciao ciao ciao ciaoc caio"));
-        System.out.println(socialNetwork.userRegister("jacfdopo", "password", "ciao ciao ciao ciaoc caio"));
-        System.out.println(socialNetwork.userRegister("fdfdfdf", "password", "ciao ciao ciao ciaoc caio"));
-
-
         //creo e avvio il thread che si occuperà del backup
         Thread autoSaving = new Thread(new AutomaticSaving(socialNetwork, socialUserStatus, postStatus, TIMELAPSEBACKUP));
         autoSaving.start();
+
+        try{
+            ServerRegistry stub = (ServerRegistry) UnicastRemoteObject.exportObject(socialNetwork, 0);
+            LocateRegistry.createRegistry(REG_PORT);
+            Registry registry = LocateRegistry.getRegistry(REG_PORT);
+            registry.rebind(REG_SERVICENAME, stub);
+        }catch(RemoteException e){
+            e.printStackTrace();
+            System.err.println("ERRORE: errore con RMI");
+            System.exit(-1);
+        }
     }
 
     private static void restoreValues() {
@@ -93,7 +100,7 @@ public class ServerMain {
         REG_PORT = 7777;
         String SERVER_ADDRESS = "192.168.1.2";
         String MULTICAST_ADDRESS = "239.255.32.32";
-        String REG_ADDRESS = "localhost";
+        String REG_SERVICENAME = "localhost";
         TIMEOUT = 100000;
         TIMELAPSE = 100000;
         AUTHOR_RATE = 0.8;
@@ -109,8 +116,8 @@ public class ServerMain {
                     SERVER_ADDRESS = tokens[1];
                 } else if (tokens[0].compareTo("MULTICAST_ADDRESS") == 0) {
                     MULTICAST_ADDRESS = tokens[1];
-                } else if (tokens[0].compareTo("REG_ADDRESS") == 0) {
-                    REG_ADDRESS = tokens[1];
+                } else if (tokens[0].compareTo("REG_SERVICENAME") == 0) {
+                    REG_SERVICENAME = tokens[1];
                 } else if (tokens[0].compareTo("TCP_PORT") == 0) {
                     TCP_PORT = Integer.parseInt(tokens[1]);
                 } else if (tokens[0].compareTo("UDP_PORT") == 0) {
@@ -149,10 +156,16 @@ public class ServerMain {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonReader reader = new JsonReader(new FileReader(socialUserStatus));
         Type typeOfMap = new TypeToken<ConcurrentHashMap<String, User>>() {}.getType();
-        social.setSocialUsers(gson.fromJson(reader, typeOfMap));
+        ConcurrentHashMap<String, User> mapUser = gson.fromJson(reader, typeOfMap);
+        if(mapUser == null)
+            mapUser = new ConcurrentHashMap<>();
+        social.setSocialUsers(mapUser);
 
         JsonReader readerPost = new JsonReader(new FileReader(postStatus));
         Type typeOfMapPost = new TypeToken<ConcurrentHashMap<Integer, Post>>() {}.getType();
-        social.setSocialPost(gson.fromJson(readerPost, typeOfMapPost));
+        ConcurrentHashMap<Integer, Post> mapPost = gson.fromJson(readerPost, typeOfMapPost);
+        if(mapPost == null)
+            mapPost = new ConcurrentHashMap<>();
+        social.setSocialPost(mapPost);
     }
 }

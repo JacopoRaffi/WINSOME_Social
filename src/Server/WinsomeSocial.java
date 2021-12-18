@@ -1,15 +1,11 @@
 package Server;
 
-import java.io.*;
+import java.rmi.RemoteException;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
-import Server.Post;
-import Server.ServerFunctions;
-import Server.User;
-
-public class WinsomeSocial implements ServerFunctions {
+public class WinsomeSocial implements ServerRegistry {
     private ConcurrentHashMap<Integer, Post> socialPost;
     private ConcurrentHashMap<String, User> socialUsers;
     private volatile AtomicLong postID;
@@ -20,10 +16,11 @@ public class WinsomeSocial implements ServerFunctions {
         postID = new AtomicLong(0);
     }
 
-    public boolean userRegister(String username, String password, String tags){
+    public boolean userRegister(String username, String password, String tags) throws RemoteException {
         try{
             User newUser = new User(username, password, tags);
             if(socialUsers.putIfAbsent(username, newUser) == null){ //aggiungo l'utente registrato
+                System.out.println("NUOVO UTENTE REGISTRATO: " + username);
                 return true;
             }else{
                 return false;
