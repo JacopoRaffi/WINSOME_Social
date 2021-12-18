@@ -10,6 +10,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.Scanner;
 
 public class ClientMain {
     //principali variabili
@@ -42,17 +43,21 @@ public class ClientMain {
         System.out.println("MULTICAST_PORT = " + MULTICAST_PORT);
         System.out.println("TIMEOUT_SOCKET = " + TIMEOUT);
 
-        //registrazione al server tramite RMI
+        socialActivity(); //inizio dell'utilizzo del social da parte del client
+
+    }
+
+    private static void register(String username, String password, String tags){
         try{
             Registry registry = LocateRegistry.getRegistry(REG_PORT);
             ServerRegistry regFun = (ServerRegistry) registry.lookup(REG_SERVICENAME);
-            regFun.userRegister("ciccio", "password", "ciao ciao ciao ciao caio");
-            System.out.println("BENVENUTO IN WINSOME SOCIAL");
+            regFun.userRegister(username, password, tags);
+            System.out.println("REGISTRAZIONE EFFETTUATA CON SUCCESSO");
+            System.out.println("--------BENVENUTO IN WINSOME SOCIAL--------");
         }catch(RemoteException | NotBoundException e){
             System.err.println("ERRORE: registrazione fallita");
             System.exit(-1);
         }
-
     }
 
     private static void restoreValues() {
@@ -93,5 +98,25 @@ public class ClientMain {
             line = configReader.readLine();
         }
         configReader.close();
+    }
+
+    //funzione che legge i comandi da tastiera
+    private static void socialActivity(){
+        String[] commandLine;
+        Scanner scanner = new Scanner(System.in);
+
+        while(true){
+            System.out.println(">");
+            commandLine = scanner.nextLine().split(" ");
+            String request = commandLine[0];
+
+            if(request.compareTo("register") == 0){
+                if(commandLine.length < 3){
+                    System.err.println("ERRORE: devi inserire username password tags");
+                    continue;
+                }
+                register(commandLine[0], commandLine[1], commandLine[2]);
+            }
+        }
     }
 }
