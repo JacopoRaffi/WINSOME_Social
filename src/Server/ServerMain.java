@@ -8,13 +8,14 @@ import java.net.ServerSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.CharBuffer;
-import java.nio.charset.StandardCharsets;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
@@ -95,18 +96,18 @@ public class ServerMain {
             System.exit(-1);
         }
 
+        ExecutorService threadPool = Executors.newCachedThreadPool(); //pool di worker(uno per client)
         //il server main si occupa delle connessioni TCP
         while (true) {
             try {
-                ServerSocket welcomeSocket = new ServerSocket(TCP_PORT);
+                ServerSocket welcomeSocket = new ServerSocket(8080);
                 welcomeSocket.setSoTimeout((int) TIMEOUT);
 
                 Socket clientSocket = welcomeSocket.accept();
-                try (BufferedReader inReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                try (DataInputStream inReader = new DataInputStream(clientSocket.getInputStream());
                      BufferedOutputStream outWriter = new BufferedOutputStream(clientSocket.getOutputStream())) {
-
-                    System.out.println("Sto per leggere");
-                    String line = inReader.readLine();
+                    System.out.println(clientSocket);
+                    String line = inReader.readUTF();
                     System.out.println("ho letto: " + line);
                 } catch (IOException e) {
                     System.err.println("ERRORE: problemi durante la lettura dal clientSocket");

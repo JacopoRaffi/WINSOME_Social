@@ -6,7 +6,6 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -24,6 +23,7 @@ public class ClientMain {
     private static String MULTICAST_ADDRESS = "239.255.32.32";
     private static String REG_SERVICENAME = "serverRegistry";
     private static long TIMEOUT = 100000;
+    private static boolean logged = false;
 
     public static void main(String[] Args) {
         File clientConfigFile;
@@ -46,10 +46,7 @@ public class ClientMain {
         System.out.println("TIMEOUT_SOCKET = " + TIMEOUT);
 
         try{
-            Socket socket = new Socket("localhost", TCP_PORT);
-            BufferedOutputStream outWriter = new BufferedOutputStream(socket.getOutputStream());
-            InputStreamReader inReader = new InputStreamReader(socket.getInputStream());
-            outWriter.write("ciaogfafsigfjgndfjgnfdjgunsdfjgndjhndsjhnsngjsshnsgjhngsjhnsghg".getBytes(StandardCharsets.UTF_8));
+            Socket socket = new Socket("localhost", 8080);
             socialActivity(socket); //inizio dell'utilizzo del social da parte del client
         }catch(IOException e){
             System.err.println("ERRORE: connessione col server interrotta");
@@ -114,11 +111,16 @@ public class ClientMain {
     //funzione che legge i comandi da tastiera
     private static void socialActivity(Socket socket) throws IOException{
         String[] commandLine;
+        String sendRequest = "";
         Scanner scanner = new Scanner(System.in);
+        DataOutputStream outWriter = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+        DataInputStream inReader = new DataInputStream(socket.getInputStream());
+        System.out.println(socket);
 
         while(true){
             System.out.printf("> ");
-            commandLine = scanner.nextLine().split(" ");
+            String line = scanner.nextLine();
+            commandLine = line.split(" ");
             String request = commandLine[0];
 
             if(request.compareTo("register") == 0){
@@ -128,6 +130,22 @@ public class ClientMain {
                 }
                 register(commandLine[0], commandLine[1], commandLine[2]);
             }
+            else if(request.compareTo("login") == 0){
+                if(commandLine.length < 2){
+                    System.err.println("ERRORE: il comando è: login <username> <password>");
+                    continue;
+                }
+                sendRequest = line;
+            }
+            else if(request.compareTo("logout") == 0){
+                outWriter.close();
+                inReader.close();
+                socket.close();
+                System.out.println("< Chiusura da WINSOME");
+            }
+            outWriter.writeUTF(sendRequest); //invio la richiesta al server con i relativi parametri
+            outWriter.flush();
         }
+
     }
 }
