@@ -12,14 +12,16 @@ public class User {
     final private String[] tags;
     final private String username;
     final private String hashedPassword;
+    final private String userAddress;
     private Hashtable<String, User> followers; //la key è il nome dell'utente(username unico nel social)
     private Hashtable<String, User> followed;
     private Hashtable<Integer, Post> feed; //la key è l'idPost
     private Hashtable<Integer, Post> blog;
 
-    public User(String username, String password, String tags) throws NoSuchAlgorithmException {
+    public User(String username, String password, String tags, String userAddress) throws NoSuchAlgorithmException {
         byte[] arr = new byte[32];
         ThreadLocalRandom.current().nextBytes(arr);
+        this.userAddress = userAddress;
         this.seed = new String(arr, StandardCharsets.UTF_8);
         this.username = username;
         this.tags = tags.split(" ");
@@ -30,8 +32,14 @@ public class User {
         blog = new Hashtable<>();
     }
 
-    public boolean login(String username, String password) throws NoSuchAlgorithmException{
-        return (hashedPassword.compareTo(HashFunction.bytesToHex(HashFunction.sha256(password))) == 0 && (username.compareTo(this.username) == 0));
+    public boolean login(String username, String password, String userAddress) throws NoSuchAlgorithmException{
+        return (hashedPassword.compareTo(HashFunction.bytesToHex(HashFunction.sha256(password))) == 0 &&
+                (username.compareTo(this.username) == 0) && (
+                userAddress.compareTo(this.userAddress) == 0));
+    }
+
+    public boolean authentication(String userAddress){
+        return (userAddress.compareTo(this.userAddress) == 0);
     }
 
     public Hashtable<String, User> getFollower(){

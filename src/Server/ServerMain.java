@@ -2,6 +2,13 @@ package Server;
 
 import java.io.*;
 import java.lang.reflect.Type;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.nio.CharBuffer;
+import java.nio.charset.StandardCharsets;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -15,7 +22,7 @@ import com.google.gson.stream.JsonReader;
 
 public class ServerMain {
     //principali variabili(con relativi valori di default)
-    private static int TCP_PORT = 6666;
+    private static int TCP_PORT = 6789;
     private static int UDP_PORT = 33333;
     private static int MULTICAST_PORT = 44444;
     private static int REG_PORT = 7777;
@@ -27,7 +34,7 @@ public class ServerMain {
     private static long TIMELAPSEBACKUP = 1000;
     private static double AUTHOR_RATE = 0.8;
 
-    public static void main(String[] Args) throws IOException, NoSuchAlgorithmException {
+    public static void main(String[] Args){
         File serverConfigFile;
         try {
             serverConfigFile = new File(Args[0]);
@@ -53,21 +60,17 @@ public class ServerMain {
         //in questi due file mi salvo il backup dei post del social e degli utenti registrati(periodicamente)
         File socialUserStatus = new File(".\\StatusServer\\usersStatus.json");
         File postStatus = new File(".\\StatusServer\\postStatus.json");
-        if(!postStatus.exists()){
-            try{
-                postStatus.createNewFile();
-            }catch(IOException e){
-                System.err.println("ERRORE: errore durante la creazione dei file di backup del social");
-                System.exit(-1);
-            }
+        try{
+            postStatus.createNewFile();
+        }catch(IOException e){
+            System.err.println("ERRORE: errore durante la creazione dei file di backup del social");
+            System.exit(-1);
         }
-        if(!socialUserStatus.exists()){
-            try{
-                socialUserStatus.createNewFile();
-            }catch(IOException e){
-                System.err.println("ERRORE: errore durante la creazione dei file di backup degli utenti");
-                System.exit(-1);
-            }
+        try{
+            socialUserStatus.createNewFile();
+        }catch(IOException e){
+            System.err.println("ERRORE: errore durante la creazione dei file di backup degli utenti");
+            System.exit(-1);
         }
         WinsomeSocial socialNetwork = new WinsomeSocial(); //creo il social vero e proprio
         try{
@@ -91,6 +94,39 @@ public class ServerMain {
             System.err.println("ERRORE: errore con RMI");
             System.exit(-1);
         }
+
+        //il server main si occupa delle connessioni TCP
+        while (true) {
+            try {
+                ServerSocket welcomeSocket = new ServerSocket(TCP_PORT);
+                welcomeSocket.setSoTimeout((int) TIMEOUT);
+
+                Socket clientSocket = welcomeSocket.accept();
+                try (BufferedReader inReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                     BufferedOutputStream outWriter = new BufferedOutputStream(clientSocket.getOutputStream())) {
+
+                    System.out.println("Sto per leggere");
+                    String line = inReader.readLine();
+                    System.out.println("ho letto: " + line);
+                } catch (IOException e) {
+                    System.err.println("ERRORE: problemi durante la lettura dal clientSocket");
+                } catch (NullPointerException ne) {
+                    System.err.println("ERRORE: problemi con la richiesta");
+                } finally {
+                    try {
+                        clientSocket.close();
+                        welcomeSocket.close();
+                    } catch (IOException e) { //
+                        System.err.println("ERRORE: errore con la chiusura dei socket");
+                        System.exit(-1);
+                    }
+                }
+            } catch (IOException ex) {
+                System.err.println("ERRORE: errore con il socket");
+                System.exit(-1);
+            }
+        }
+
     }
 
     private static void restoreValues() {

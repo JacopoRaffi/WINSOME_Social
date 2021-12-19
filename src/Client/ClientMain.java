@@ -2,10 +2,12 @@ package Client;
 
 import Server.ServerRegistry;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.nio.CharBuffer;
+import java.nio.charset.StandardCharsets;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -14,7 +16,7 @@ import java.util.Scanner;
 
 public class ClientMain {
     //principali variabili
-    private static int TCP_PORT = 6666;
+    private static int TCP_PORT = 6789;
     private static int UDP_PORT = 33333;
     private static int MULTICAST_PORT = 44444;
     private static int REG_PORT = 7777;
@@ -43,7 +45,16 @@ public class ClientMain {
         System.out.println("MULTICAST_PORT = " + MULTICAST_PORT);
         System.out.println("TIMEOUT_SOCKET = " + TIMEOUT);
 
-        socialActivity(); //inizio dell'utilizzo del social da parte del client
+        try{
+            Socket socket = new Socket("localhost", TCP_PORT);
+            BufferedOutputStream outWriter = new BufferedOutputStream(socket.getOutputStream());
+            InputStreamReader inReader = new InputStreamReader(socket.getInputStream());
+            outWriter.write("ciaogfafsigfjgndfjgnfdjgunsdfjgndjhndsjhnsngjsshnsgjhngsjhnsghg".getBytes(StandardCharsets.UTF_8));
+            socialActivity(socket); //inizio dell'utilizzo del social da parte del client
+        }catch(IOException e){
+            System.err.println("ERRORE: connessione col server interrotta");
+            System.exit(-1);
+        }
 
     }
 
@@ -51,10 +62,10 @@ public class ClientMain {
         try{
             Registry registry = LocateRegistry.getRegistry(REG_PORT);
             ServerRegistry regFun = (ServerRegistry) registry.lookup(REG_SERVICENAME);
-            regFun.userRegister(username, password, tags);
+            regFun.userRegister(username, password, tags, InetAddress.getLocalHost().toString());
             System.out.println("REGISTRAZIONE EFFETTUATA CON SUCCESSO");
             System.out.println("--------BENVENUTO IN WINSOME SOCIAL--------");
-        }catch(RemoteException | NotBoundException e){
+        }catch(RemoteException | NotBoundException | UnknownHostException e){
             System.err.println("ERRORE: registrazione fallita");
             System.exit(-1);
         }
@@ -101,18 +112,18 @@ public class ClientMain {
     }
 
     //funzione che legge i comandi da tastiera
-    private static void socialActivity(){
+    private static void socialActivity(Socket socket) throws IOException{
         String[] commandLine;
         Scanner scanner = new Scanner(System.in);
 
         while(true){
-            System.out.println(">");
+            System.out.printf("> ");
             commandLine = scanner.nextLine().split(" ");
             String request = commandLine[0];
 
             if(request.compareTo("register") == 0){
                 if(commandLine.length < 3){
-                    System.err.println("ERRORE: devi inserire username password tags");
+                    System.err.println("ERRORE: il comando è: register <username> <password> <tags>");
                     continue;
                 }
                 register(commandLine[0], commandLine[1], commandLine[2]);

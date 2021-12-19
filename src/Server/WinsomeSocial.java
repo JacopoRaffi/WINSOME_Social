@@ -16,9 +16,9 @@ public class WinsomeSocial implements ServerRegistry {
         postID = new AtomicLong(0);
     }
 
-    public boolean userRegister(String username, String password, String tags) throws RemoteException {
+    public boolean userRegister(String username, String password, String tags, String userAddress) throws RemoteException {
         try{
-            User newUser = new User(username, password, tags);
+            User newUser = new User(username, password, tags, userAddress);
             if(socialUsers.putIfAbsent(username, newUser) == null){ //aggiungo l'utente registrato
                 System.out.println("NUOVO UTENTE REGISTRATO: " + username);
                 return true;
@@ -31,9 +31,9 @@ public class WinsomeSocial implements ServerRegistry {
 
     }
 
-    public boolean login(String username, String password){
+    public boolean login(String username, String password, String userAddress){
         try {
-            return (socialUsers.containsKey(username) && socialUsers.get(username).login(username, password));
+            return (socialUsers.containsKey(username) && socialUsers.get(username).login(username, password, userAddress));
         }catch(NoSuchAlgorithmException e){
             return false;
         }
