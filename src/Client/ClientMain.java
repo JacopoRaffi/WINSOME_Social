@@ -55,17 +55,19 @@ public class ClientMain {
 
     }
 
-    private static void register(String username, String password, String tags){
+    private static boolean register(String username, String password, String tags){
         try{
             Registry registry = LocateRegistry.getRegistry(REG_PORT);
             ServerRegistry regFun = (ServerRegistry) registry.lookup(REG_SERVICENAME);
             regFun.userRegister(username, password, tags, InetAddress.getLocalHost().toString());
             System.out.println("REGISTRAZIONE EFFETTUATA CON SUCCESSO");
             System.out.println("--------BENVENUTO IN WINSOME SOCIAL--------");
+            return true;
         }catch(RemoteException | NotBoundException | UnknownHostException e){
             System.err.println("ERRORE: registrazione fallita");
             System.exit(-1);
         }
+        return false;
     }
 
     private static void restoreValues() {
@@ -128,7 +130,8 @@ public class ClientMain {
                     System.err.println("ERRORE: il comando è: register <username> <password> <tags>");
                     continue;
                 }
-                register(commandLine[0], commandLine[1], commandLine[2]);
+                if(register(commandLine[0], commandLine[1], commandLine[2]))
+                    logged = true;
             }
             else if(request.compareTo("login") == 0){
                 if(commandLine.length < 2){
@@ -138,10 +141,16 @@ public class ClientMain {
                 sendRequest = line;
             }
             else if(request.compareTo("logout") == 0){
-                outWriter.close();
-                inReader.close();
-                socket.close();
-                System.out.println("< Chiusura da WINSOME");
+                if(logged) {
+                    outWriter.close();
+                    inReader.close();
+                    socket.close();
+                    System.out.println("< Chiusura da WINSOME");
+                    break;
+                }
+                else{
+                    System.err.println("ERRORE: non hai fatto il login in WINSOME");
+                }
             }
             outWriter.writeUTF(sendRequest); //invio la richiesta al server con i relativi parametri
             outWriter.flush();
