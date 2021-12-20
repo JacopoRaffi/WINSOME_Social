@@ -27,7 +27,7 @@ public class RewardThread extends Thread {
             try{
                 Thread.sleep(timeout);
                 calcoloRicompense();
-                byte[] buffer = "RICOMPENSA AGGIORNATA\n".getBytes(StandardCharsets.UTF_8);
+                byte[] buffer = "RICOMPENSA AGGIORNATA".getBytes(StandardCharsets.UTF_8);
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length, address, port);
                 try{
                     socketUDP.send(packet);

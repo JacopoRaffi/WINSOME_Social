@@ -29,7 +29,7 @@ public class ServerMain {
     private static String MULTICAST_ADDRESS = "239.255.32.32";
     private static String REG_SERVICENAME = "serverRegistry";
     private static long TIMEOUT = 10000000;
-    private static long TIMELAPSE = 100000;
+    private static long TIMELAPSE = 10000;
     private static long TIMELAPSEBACKUP = 1000;
     private static double AUTHOR_RATE = 0.8;
 

@@ -1,10 +1,12 @@
 package Client;
 
 import Exceptions.IllegalRegisterException;
+import Server.RewardThread;
 import Server.ServerRegistry;
 
 import java.io.*;
 import java.net.InetAddress;
+import java.net.MulticastSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.rmi.NotBoundException;
@@ -47,12 +49,18 @@ public class ClientMain {
         System.out.println("TIMEOUT_SOCKET = " + TIMEOUT);
         try{
             Socket socket = new Socket("localhost", TCP_PORT);
+            MulticastSocket msocket = new MulticastSocket(UDP_PORT);
+            InetAddress address = InetAddress.getByName(MULTICAST_ADDRESS);
+            msocket.setReuseAddress(true);
+            msocket.joinGroup(address);
+            Thread waitingThread = new Thread(new WaitingThread(msocket, address, UDP_PORT));
+            waitingThread.setDaemon(true);
+            waitingThread.start();
             socialActivity(socket); //inizio dell'utilizzo del social da parte del client
         }catch(IOException e){
             System.err.println("ERRORE: connessione col server interrotta");
             System.exit(-1);
         }
-
     }
 
     private static void register(String username, String password, String tags){
