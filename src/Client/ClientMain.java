@@ -14,7 +14,7 @@ import java.util.Scanner;
 
 public class ClientMain {
     //principali variabili
-    private static int TCP_PORT = 6789;
+    private static int TCP_PORT = 9011;
     private static int UDP_PORT = 33333;
     private static int MULTICAST_PORT = 44444;
     private static int REG_PORT = 7777;
@@ -43,9 +43,8 @@ public class ClientMain {
         System.out.println("REG_PORT = " + REG_PORT);
         System.out.println("MULTICAST_PORT = " + MULTICAST_PORT);
         System.out.println("TIMEOUT_SOCKET = " + TIMEOUT);
-
         try{
-            Socket socket = new Socket("localhost", 8080);
+            Socket socket = new Socket("localhost", TCP_PORT);
             socialActivity(socket); //inizio dell'utilizzo del social da parte del client
         }catch(IOException e){
             System.err.println("ERRORE: connessione col server interrotta");
@@ -54,21 +53,19 @@ public class ClientMain {
 
     }
 
-    private static boolean register(String username, String password, String tags){
+    private static void register(String username, String password, String tags){
         try{
             Registry registry = LocateRegistry.getRegistry(REG_PORT);
             ServerRegistry regFun = (ServerRegistry) registry.lookup(REG_SERVICENAME);
             if(regFun.userRegister(username, password, tags, InetAddress.getLocalHost().toString())) {
                 System.out.println("REGISTRAZIONE EFFETTUATA CON SUCCESSO");
                 System.out.println("-------- BENVENUTO SU WINSOME --------");
-                return true;
             }
         }catch(RemoteException | NotBoundException | UnknownHostException e){
             System.err.println("ERRORE: registrazione fallita");
             System.exit(-1);
         }
         System.err.println("ERRORE: username già registrato nel social");
-        return false;
     }
 
     private static void restoreValues() {
@@ -76,9 +73,9 @@ public class ClientMain {
         UDP_PORT = 33333;
         MULTICAST_PORT = 44444;
         REG_PORT = 7777;
-        String SERVER_ADDRESS = "192.168.1.2";
-        String MULTICAST_ADDRESS = "239.255.32.32";
-        String REG_SERVICENAME = "localhost";
+        SERVER_ADDRESS = "192.168.1.2";
+        MULTICAST_ADDRESS = "239.255.32.32";
+        REG_SERVICENAME = "localhost";
         TIMEOUT = 100000;
     }
 
@@ -119,7 +116,6 @@ public class ClientMain {
         Scanner scanner = new Scanner(System.in);
         DataOutputStream outWriter = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
         DataInputStream inReader = new DataInputStream(socket.getInputStream());
-        System.out.println(socket);
 
         while(true){
             System.out.printf("> ");
@@ -130,7 +126,7 @@ public class ClientMain {
             if(request.compareTo("register") == 0){
                 if(commandLine.length < 4 || commandLine.length > 8){
                     System.err.println("ERRORE: il comando è: register <username> <password> <tags>");
-                    System.err.println("Numero di tags tra 1 e 5(compresi)");
+                    System.err.println("Numero di tags tra uno e cinque(compresi)");
                     continue;
                 }
                 String tags = ""; //in questa stringa mi salvo i tags del client
@@ -140,8 +136,7 @@ public class ClientMain {
                     i++;
                 }
                 System.out.println(tags);
-                if(register(commandLine[1], commandLine[2], tags))
-                    logged = true;
+                register(commandLine[1], commandLine[2], tags);
             }
             else if(request.compareTo("login") == 0){
                 if(commandLine.length < 2){
@@ -152,6 +147,11 @@ public class ClientMain {
                 outWriter.writeUTF(sendRequest); //invio la richiesta al server con i relativi parametri
                 outWriter.flush();
                 serverResponse = inReader.readUTF(); //leggo la risposta del server
+                System.out.println("DIO CANE");
+                if(serverResponse.startsWith("SUCCESSO")){
+                    logged = true;
+                }
+                System.out.println(serverResponse);
             }
             else if(request.compareTo("logout") == 0){
                 if(logged) {

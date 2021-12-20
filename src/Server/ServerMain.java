@@ -2,6 +2,7 @@ package Server;
 
 import java.io.*;
 import java.lang.reflect.Type;
+import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.rmi.RemoteException;
@@ -18,7 +19,7 @@ import com.google.gson.stream.JsonReader;
 
 public class ServerMain {
     //principali variabili(con relativi valori di default)
-    private static int TCP_PORT = 6789;
+    private static int TCP_PORT = 9011;
     private static int UDP_PORT = 33333;
     private static int MULTICAST_PORT = 44444;
     private static int REG_PORT = 7777;
@@ -93,14 +94,21 @@ public class ServerMain {
 
         ExecutorService threadPool = Executors.newCachedThreadPool(); //pool di worker(uno per client)
         //il server main si occupa delle connessioni TCP
+        ServerSocket welcomeSocket = null;
+        try{
+            welcomeSocket = new ServerSocket(TCP_PORT);
+        }catch(IOException e){
+            System.err.println("ERRORE: problemi con la creazione del welcome socket...chiusura server");
+            System.exit(-1);
+        }
         while (true) {
             try {
-                ServerSocket welcomeSocket = new ServerSocket(8080);
                 welcomeSocket.setSoTimeout((int) TIMEOUT);
 
                 Socket clientSocket = welcomeSocket.accept();
                 threadPool.execute(new ThreadWorker(clientSocket, socialNetwork)); //genero un thread worker legato a quel client
             } catch (IOException ex) {
+                ex.printStackTrace();
                 System.err.println("ERRORE: errore con il socket");
                 System.exit(-1);
             }
