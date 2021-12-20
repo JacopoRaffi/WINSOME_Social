@@ -2,6 +2,8 @@ package Server;
 
 import java.io.*;
 import java.lang.reflect.Type;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.rmi.RemoteException;
@@ -11,6 +13,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
@@ -77,7 +80,7 @@ public class ServerMain {
         }
 
         //creo e avvio il thread che si occuperà del backup
-        Thread autoSaving = new Thread(new AutomaticSaving(socialNetwork, socialUserStatus, postStatus, TIMELAPSEBACKUP));
+        AutomaticSaving autoSaving = new AutomaticSaving(socialNetwork, socialUserStatus, postStatus, TIMELAPSEBACKUP);
         autoSaving.start();
 
         try{
@@ -91,6 +94,19 @@ public class ServerMain {
             System.exit(-1);
         }
 
+        DatagramSocket socketUDP = null;
+        InetAddress multiCastAddress = null;
+        try {
+            //creazione del socket usato per il multicast
+            multiCastAddress = InetAddress.getByName(MULTICAST_ADDRESS);
+            socketUDP = new DatagramSocket();
+        }catch(IOException e){
+            System.err.println("ERRORE: problemi con multicast socket" + e.getMessage());
+            System.exit(-1);
+        }
+        RewardThread threadUDP = new RewardThread(socialNetwork, TIMELAPSE, socketUDP, multiCastAddress, UDP_PORT);
+        threadUDP.start();
+
         ExecutorService threadPool = Executors.newCachedThreadPool(); //pool di worker(uno per client)
         //il server main si occupa delle connessioni TCP
         ServerSocket welcomeSocket = null;
@@ -102,10 +118,10 @@ public class ServerMain {
             System.err.println("ERRORE: problemi con la creazione del welcome socket...chiusura server");
             System.exit(-1);
         }
+        closeServer(welcomeSocket, socketUDP, threadPool, threadUDP, autoSaving);
         while (true) {
             try {
                 welcomeSocket.setSoTimeout((int) TIMEOUT);
-
                 Socket clientSocket = welcomeSocket.accept();
                 threadPool.execute(new ThreadWorker(clientSocket, socialNetwork)); //genero un thread worker legato a quel client
             } catch (IOException ex) {
@@ -191,5 +207,26 @@ public class ServerMain {
         if(mapPost == null)
             mapPost = new ConcurrentHashMap<>();
         social.setSocialPost(mapPost);
+    }
+
+    private static void closeServer(ServerSocket socketTCP, DatagramSocket socketUDP, ExecutorService pool, RewardThread reward, AutomaticSaving autoSaving){
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            public void run() {
+                System.out.println("CHIUSURA DEL SERVER...");
+                try{
+                    reward.interrupt();
+                    autoSaving.backupPost();
+                    autoSaving.backupUsers();
+                    autoSaving.interrupt();
+                    pool.shutdown();
+                    socketTCP.close();
+                    socketUDP.close();
+                    System.out.println("SERVER TERMINATO");
+                }catch(IOException e){
+                    System.err.println("ERRORE: problemi con la chiusura dei socket" + e.getMessage());
+                    System.exit(-1);
+                }
+            }
+        });
     }
 }

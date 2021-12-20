@@ -5,7 +5,7 @@ import java.io.*;
 import com.google.gson.*;
 
 //questo thread salva lo stato del social periodicamente
-public class AutomaticSaving implements Runnable{
+public class AutomaticSaving extends Thread {
     private File postStatus;
     private File usersStatus;
     private WinsomeSocial social;
@@ -32,14 +32,14 @@ public class AutomaticSaving implements Runnable{
         }
     }
 
-    private void backupPost() throws IOException {
+    protected void backupPost() throws IOException {
         FileWriter writer = new FileWriter(postStatus);
         Gson builder = new GsonBuilder().setPrettyPrinting().create();
         writer.write(builder.toJson(social.getSocialPost()));
         writer.close();
     }
 
-    private void backupUsers() throws IOException {
+    protected void backupUsers() throws IOException {
         FileWriter writer = new FileWriter(usersStatus);
         Gson builder = new GsonBuilder().setPrettyPrinting().create();
         writer.write(builder.toJson(social.getSocialUsers()));
