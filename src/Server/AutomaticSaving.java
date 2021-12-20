@@ -1,14 +1,8 @@
 package Server;
 
 import java.io.*;
-import java.lang.reflect.Type;
-import java.nio.charset.StandardCharsets;
-import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.gson.*;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonWriter;
 
 //questo thread salva lo stato del social periodicamente
 public class AutomaticSaving implements Runnable{
