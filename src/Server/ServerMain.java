@@ -99,24 +99,7 @@ public class ServerMain {
                 welcomeSocket.setSoTimeout((int) TIMEOUT);
 
                 Socket clientSocket = welcomeSocket.accept();
-                try (DataInputStream inReader = new DataInputStream(clientSocket.getInputStream());
-                     BufferedOutputStream outWriter = new BufferedOutputStream(clientSocket.getOutputStream())) {
-                    System.out.println(clientSocket);
-                    String line = inReader.readUTF();
-                    System.out.println("ho letto: " + line);
-                } catch (IOException e) {
-                    System.err.println("ERRORE: problemi durante la lettura dal clientSocket");
-                } catch (NullPointerException ne) {
-                    System.err.println("ERRORE: problemi con la richiesta");
-                } finally {
-                    try {
-                        clientSocket.close();
-                        welcomeSocket.close();
-                    } catch (IOException e) { //
-                        System.err.println("ERRORE: errore con la chiusura dei socket");
-                        System.exit(-1);
-                    }
-                }
+                threadPool.execute(new ThreadWorker(clientSocket, socialNetwork)); //genero un thread worker legato a quel client
             } catch (IOException ex) {
                 System.err.println("ERRORE: errore con il socket");
                 System.exit(-1);

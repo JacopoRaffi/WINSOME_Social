@@ -58,14 +58,16 @@ public class ClientMain {
         try{
             Registry registry = LocateRegistry.getRegistry(REG_PORT);
             ServerRegistry regFun = (ServerRegistry) registry.lookup(REG_SERVICENAME);
-            regFun.userRegister(username, password, tags, InetAddress.getLocalHost().toString());
-            System.out.println("REGISTRAZIONE EFFETTUATA CON SUCCESSO");
-            System.out.println("-------- BENVENUTO SU WINSOME --------");
-            return true;
+            if(regFun.userRegister(username, password, tags, InetAddress.getLocalHost().toString())) {
+                System.out.println("REGISTRAZIONE EFFETTUATA CON SUCCESSO");
+                System.out.println("-------- BENVENUTO SU WINSOME --------");
+                return true;
+            }
         }catch(RemoteException | NotBoundException | UnknownHostException e){
             System.err.println("ERRORE: registrazione fallita");
             System.exit(-1);
         }
+        System.err.println("ERRORE: username già registrato nel social");
         return false;
     }
 
@@ -113,6 +115,7 @@ public class ClientMain {
     private static void socialActivity(Socket socket) throws IOException{
         String[] commandLine;
         String sendRequest = "";
+        String serverResponse = "";
         Scanner scanner = new Scanner(System.in);
         DataOutputStream outWriter = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
         DataInputStream inReader = new DataInputStream(socket.getInputStream());
@@ -125,11 +128,19 @@ public class ClientMain {
             String request = commandLine[0];
 
             if(request.compareTo("register") == 0){
-                if(commandLine.length < 3){
+                if(commandLine.length < 4 || commandLine.length > 8){
                     System.err.println("ERRORE: il comando è: register <username> <password> <tags>");
+                    System.err.println("Numero di tags tra 1 e 5(compresi)");
                     continue;
                 }
-                if(register(commandLine[0], commandLine[1], commandLine[2]))
+                String tags = ""; //in questa stringa mi salvo i tags del client
+                int i = 3;
+                while(i < commandLine.length){
+                    tags += commandLine[i] + " ";
+                    i++;
+                }
+                System.out.println(tags);
+                if(register(commandLine[1], commandLine[2], tags))
                     logged = true;
             }
             else if(request.compareTo("login") == 0){
@@ -138,6 +149,9 @@ public class ClientMain {
                     continue;
                 }
                 sendRequest = line;
+                outWriter.writeUTF(sendRequest); //invio la richiesta al server con i relativi parametri
+                outWriter.flush();
+                serverResponse = inReader.readUTF(); //leggo la risposta del server
             }
             else if(request.compareTo("logout") == 0){
                 if(logged) {
@@ -151,8 +165,6 @@ public class ClientMain {
                     System.err.println("ERRORE: non hai fatto il login in WINSOME");
                 }
             }
-            outWriter.writeUTF(sendRequest); //invio la richiesta al server con i relativi parametri
-            outWriter.flush();
         }
 
     }
