@@ -46,7 +46,7 @@ public class AutomaticSaving implements Runnable{
     }
 
     private void backupUsers() throws IOException {
-        FileWriter writer = new FileWriter(usersStatus);
+        BufferedWriter writer = new BufferedWriter(new FileWriter(usersStatus));
         Gson builder = new GsonBuilder().setPrettyPrinting().create();
         writer.write(builder.toJson(social.getSocialUsers()));
         writer.close();

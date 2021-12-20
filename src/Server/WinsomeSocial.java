@@ -31,9 +31,9 @@ public class WinsomeSocial implements ServerRegistry {
 
     }
 
-    public boolean login(String username, String password, String userAddress){
+    public boolean login(String username, String password){
         try {
-            return (socialUsers.containsKey(username) && socialUsers.get(username).login(username, password, userAddress));
+            return (socialUsers.containsKey(username) && socialUsers.get(username).login(username, password));
         }catch(NoSuchAlgorithmException e){
             return false;
         }

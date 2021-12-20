@@ -61,7 +61,7 @@ public class ClientMain {
             ServerRegistry regFun = (ServerRegistry) registry.lookup(REG_SERVICENAME);
             regFun.userRegister(username, password, tags, InetAddress.getLocalHost().toString());
             System.out.println("REGISTRAZIONE EFFETTUATA CON SUCCESSO");
-            System.out.println("--------BENVENUTO IN WINSOME SOCIAL--------");
+            System.out.println("-------- BENVENUTO SU WINSOME --------");
             return true;
         }catch(RemoteException | NotBoundException | UnknownHostException e){
             System.err.println("ERRORE: registrazione fallita");
