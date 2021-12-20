@@ -5,7 +5,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Locale;
 
 public class ThreadWorker implements Runnable{
     WinsomeSocial social;
@@ -38,7 +37,7 @@ public class ThreadWorker implements Runnable{
 
     private void executeRequest(String request, DataOutputStream writer) throws IOException{
         String response = "";
-        if(request.toLowerCase(Locale.ROOT).startsWith("login")){
+        if(request.startsWith("login")){
             String[] param = request.split(" ");
             if(social.login(param[1], param[2])) { //username e password
                 response = "SUCCESSO: Login effettuato con successo";

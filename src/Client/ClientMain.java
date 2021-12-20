@@ -1,5 +1,6 @@
 package Client;
 
+import Exceptions.IllegalRegisterException;
 import Server.ServerRegistry;
 
 import java.io.*;
@@ -10,6 +11,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.Locale;
 import java.util.Scanner;
 
 public class ClientMain {
@@ -61,11 +63,15 @@ public class ClientMain {
                 System.out.println("REGISTRAZIONE EFFETTUATA CON SUCCESSO");
                 System.out.println("-------- BENVENUTO SU WINSOME --------");
             }
+            else
+                System.err.println("ERRORE: username già registrato nel social");
         }catch(RemoteException | NotBoundException | UnknownHostException e){
             System.err.println("ERRORE: registrazione fallita");
             System.exit(-1);
+        }catch(IllegalRegisterException ex){
+            System.err.println("ERRORE: la password deve essere compresa tra 8 e 16 caratteri");
+
         }
-        System.err.println("ERRORE: username già registrato nel social");
     }
 
     private static void restoreValues() {
@@ -110,6 +116,7 @@ public class ClientMain {
 
     //funzione che legge i comandi da tastiera
     private static void socialActivity(Socket socket) throws IOException{
+        String NOT_LOGGED_MESSAGE = "< ERRORE: non hai fatto il login in WINSOME";
         String[] commandLine;
         String sendRequest = "";
         String serverResponse = "";
@@ -121,12 +128,12 @@ public class ClientMain {
             System.out.printf("> ");
             String line = scanner.nextLine();
             commandLine = line.split(" ");
-            String request = commandLine[0];
+            String request = commandLine[0].toLowerCase(Locale.ROOT);
 
             if(request.compareTo("register") == 0){
                 if(commandLine.length < 4 || commandLine.length > 8){
-                    System.err.println("ERRORE: il comando è: register <username> <password> <tags>");
-                    System.err.println("Numero di tags tra uno e cinque(compresi)");
+                    System.err.println("< ERRORE: il comando è: register <username> <password> <tags>");
+                    System.err.println("Numero di tags tra 1 e 5");
                     continue;
                 }
                 String tags = ""; //in questa stringa mi salvo i tags del client
@@ -138,20 +145,23 @@ public class ClientMain {
                 System.out.println(tags);
                 register(commandLine[1], commandLine[2], tags);
             }
-            else if(request.compareTo("login") == 0){
-                if(commandLine.length < 2){
-                    System.err.println("ERRORE: il comando è: login <username> <password>");
-                    continue;
+            else if(request.compareTo("login") == 0) {
+                if (!logged) {
+                    if (commandLine.length < 2) {
+                        System.err.println("< ERRORE: il comando è: login <username> <password>");
+                        continue;
+                    }
+                    sendRequest = line;
+                    outWriter.writeUTF(sendRequest); //invio la richiesta al server con i relativi parametri
+                    outWriter.flush();
+                    serverResponse = inReader.readUTF(); //leggo la risposta del server
+                    if (serverResponse.startsWith("SUCCESSO")) {
+                        logged = true;
+                    }
+                    System.out.println("< " + serverResponse);
                 }
-                sendRequest = line;
-                outWriter.writeUTF(sendRequest); //invio la richiesta al server con i relativi parametri
-                outWriter.flush();
-                serverResponse = inReader.readUTF(); //leggo la risposta del server
-                System.out.println("DIO CANE");
-                if(serverResponse.startsWith("SUCCESSO")){
-                    logged = true;
-                }
-                System.out.println(serverResponse);
+                else
+                    System.out.println("< Hai già fatto il login");
             }
             else if(request.compareTo("logout") == 0){
                 if(logged) {
@@ -162,10 +172,47 @@ public class ClientMain {
                     break;
                 }
                 else{
-                    System.err.println("ERRORE: non hai fatto il login in WINSOME");
+                    System.err.println(NOT_LOGGED_MESSAGE);
                 }
             }
-        }
+            else if(request.compareTo("help") == 0){
+                help();
+            }
+            else if(request.compareTo("listusers") == 0){
+                if(logged){
+                    sendRequest = line;
+                    outWriter.writeUTF(sendRequest);
+                    outWriter.flush();
+                    serverResponse = inReader.readUTF();
 
+                    System.out.println(serverResponse);
+
+                }else
+                    System.out.println(NOT_LOGGED_MESSAGE);
+            }
+        }
+    }
+
+    private static void help(){
+        System.out.println("LISTA DEI POSSIBILI COMANDI");
+        System.out.println(
+                "register <username> <password> <tags>\n" +
+                        "login <username> <password>\n" +
+                        "logout <username>\n" +
+                        "listUsers\n" +
+                        "listFollowers\n" +
+                        "listFollowing\n" +
+                        "followUser <username>\n" +
+                        "unfollowUser <username>\n" +
+                        "viewBlog\n" +
+                        "showFeed\n" +
+                        "createPost <titolo> <contenuto>\n" +
+                        "showPost <idpost>\n" +
+                        "deletePost <idpost>\n" +
+                        "rewinPost <idpost>\n" +
+                        "ratePost <idpost> <voto>\n" +
+                        "addComment <idpost> <commento>\n" +
+                        "getWallet\n" +
+                        "getWalletInBitcoin\n");
     }
 }

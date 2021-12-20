@@ -1,5 +1,7 @@
 package Server;
 
+import Exceptions.IllegalRegisterException;
+
 import java.rmi.RemoteException;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,8 +20,7 @@ public class WinsomeSocial implements ServerRegistry {
 
     public boolean userRegister(String username, String password, String tags, String userAddress) throws RemoteException {
         if(password.length() > 16 || password.length() < 8){
-            System.err.println("ERRORE: la lunghezza della password deve essere compresa tra 8 e 16(compresi)");
-            return false;
+            throw new IllegalRegisterException();
         }
         try{
             User newUser = new User(username, password, tags, userAddress);
