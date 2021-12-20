@@ -28,7 +28,7 @@ public class ClientMain {
         File clientConfigFile;
         try {
             clientConfigFile = new File(Args[0]);
-            configServer(clientConfigFile);
+            configClient(clientConfigFile);
             System.out.println("--------CONFIGURAZIONE TERMINATA CON SUCCESSO--------");
         } catch (NullPointerException | IOException | IllegalArgumentException e) {
             restoreValues(); //durante la configurazione ci potrebbero essere degli errori a metà lavoro e quindi ripristino i valori di default
@@ -79,7 +79,7 @@ public class ClientMain {
         TIMEOUT = 100000;
     }
 
-    private static void configServer(File config) throws IOException, NumberFormatException {
+    private static void configClient(File config) throws IOException, NumberFormatException {
         BufferedReader configReader = new BufferedReader(new FileReader(config));
         String line = configReader.readLine();
         while (line != null) {

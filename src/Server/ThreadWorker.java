@@ -42,6 +42,7 @@ public class ThreadWorker implements Runnable{
             String[] param = request.split(" ");
             if(social.login(param[1], param[2])) { //username e password
                 response = "SUCCESSO: Login effettuato con successo";
+                clientUserName = param[1];
                 writer.writeUTF(response);
                 writer.flush();
             }

@@ -2,7 +2,6 @@ package Server;
 
 import java.io.*;
 import java.lang.reflect.Type;
-import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.rmi.RemoteException;
@@ -97,7 +96,9 @@ public class ServerMain {
         ServerSocket welcomeSocket = null;
         try{
             welcomeSocket = new ServerSocket(TCP_PORT);
+            System.out.printf("Server pronto su porta %d\n", TCP_PORT);
         }catch(IOException e){
+            e.printStackTrace();
             System.err.println("ERRORE: problemi con la creazione del welcome socket...chiusura server");
             System.exit(-1);
         }
