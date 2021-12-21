@@ -1,5 +1,3 @@
-package Server;
-
 import Utilities.*;
 
 import java.nio.charset.StandardCharsets;

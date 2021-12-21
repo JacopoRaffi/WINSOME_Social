@@ -63,7 +63,7 @@ public class ClientClass implements Runnable{
     private  void register(String username, String password, String tags){
         try{
             Registry registry = LocateRegistry.getRegistry(REG_PORT);
-            Server.ServerRegistry regFun = (Server.ServerRegistry) registry.lookup(REG_SERVICENAME);
+            ServerRegistry regFun = (ServerRegistry) registry.lookup(REG_SERVICENAME);
             if(regFun.userRegister(username, password, tags, InetAddress.getLocalHost().toString())) {
                 System.out.println("REGISTRAZIONE EFFETTUATA CON SUCCESSO");
                 System.out.println("-------- BENVENUTO SU WINSOME --------");

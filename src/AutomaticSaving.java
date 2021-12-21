@@ -1,5 +1,3 @@
-package Server;
-
 import java.io.*;
 
 import com.google.gson.*;

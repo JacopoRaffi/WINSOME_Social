@@ -1,6 +1,5 @@
-package Server;
-
 import Exceptions.IllegalRegisterException;
+import Utilities.*;
 
 import java.rmi.RemoteException;
 import java.security.NoSuchAlgorithmException;
