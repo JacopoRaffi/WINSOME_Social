@@ -23,10 +23,15 @@ public class ClientClass implements Runnable{
     private String REG_SERVICENAME = "serverRegistry";
     private long TIMEOUT = 100000;
     private boolean logged = false;
+    private final String fileConfigName;
+
+    public ClientClass(String fileConfigName){
+        this.fileConfigName = fileConfigName;
+    }
 
     public void run() {
-        String fileConfigName = "./Config/ClientConfig.txt";
         File clientConfigFile;
+        System.out.println(fileConfigName);
         try {
             clientConfigFile = new File(fileConfigName);
             configClient(clientConfigFile);

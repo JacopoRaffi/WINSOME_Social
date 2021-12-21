@@ -1,5 +1,3 @@
-package Server;
-
 import java.io.*;
 import java.lang.reflect.Type;
 import java.net.DatagramSocket;
