@@ -9,10 +9,15 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.RemoteObject;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
-public class ClientClass implements Runnable{
+public class ClientClass extends RemoteObject implements Runnable,ClientNotifyInterface {
     //principali variabili
     private int TCP_PORT = 9011;
     private int UDP_PORT = 33333;
@@ -24,8 +29,12 @@ public class ClientClass implements Runnable{
     private long TIMEOUT = 100000;
     private boolean logged = false;
     private final String fileConfigName;
+    private List<String> followers;
+    private final Lock listLock;
 
     public ClientClass(String fileConfigName){
+        listLock = new ReentrantLock();
+        this.followers = new LinkedList<>();
         this.fileConfigName = fileConfigName;
     }
 
@@ -68,7 +77,7 @@ public class ClientClass implements Runnable{
     private  void register(String username, String password, String tags){
         try{
             Registry registry = LocateRegistry.getRegistry(REG_PORT);
-            ServerRegistry regFun = (ServerRegistry) registry.lookup(REG_SERVICENAME);
+            ServerRegistryInterface regFun = (ServerRegistryInterface) registry.lookup(REG_SERVICENAME);
             if(regFun.userRegister(username, password, tags, InetAddress.getLocalHost().toString())) {
                 System.out.println("REGISTRAZIONE EFFETTUATA CON SUCCESSO");
                 System.out.println("-------- BENVENUTO SU WINSOME --------");
@@ -226,5 +235,24 @@ public class ClientClass implements Runnable{
                         getWallet
                         getWalletInBitcoin
                         """);
+    }
+
+    public void notifyNewFollow(String username) throws RemoteException{
+        try{
+            listLock.lock();
+            followers.add(username);
+        }finally {
+            listLock.unlock();
+        }
+
+    }
+
+    public void notifyNewUnfollow(String username) throws RemoteException{
+        try{
+            listLock.lock();
+            followers.remove(username);
+        }finally {
+            listLock.unlock();
+        }
     }
 }

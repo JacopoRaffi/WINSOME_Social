@@ -1,12 +1,11 @@
 import Exceptions.IllegalRegisterException;
-import Utilities.*;
 
 import java.rmi.RemoteException;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class WinsomeSocial implements ServerRegistry {
+public class WinsomeSocial implements ServerRegistryInterface {
     private ConcurrentHashMap<Integer, Post> socialPost;
     private ConcurrentHashMap<String, User> socialUsers;
     private volatile AtomicLong postID;

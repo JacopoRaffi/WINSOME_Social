@@ -11,7 +11,6 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.RejectedExecutionException;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
@@ -82,7 +81,7 @@ public class ServerMain {
         autoSaving.start();
 
         try{
-            ServerRegistry stub = (ServerRegistry) UnicastRemoteObject.exportObject(socialNetwork, 0);
+            ServerRegistryInterface stub = (ServerRegistryInterface) UnicastRemoteObject.exportObject(socialNetwork, 0);
             LocateRegistry.createRegistry(REG_PORT);
             Registry registry = LocateRegistry.getRegistry(REG_PORT);
             registry.rebind(REG_SERVICENAME, stub);
