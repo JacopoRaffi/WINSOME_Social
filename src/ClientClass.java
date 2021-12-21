@@ -25,7 +25,7 @@ public class ClientClass implements Runnable{
     private boolean logged = false;
 
     public void run() {
-        String fileConfigName = "./Config/ConfigClient.txt";
+        String fileConfigName = "./Config/ClientConfig.txt";
         File clientConfigFile;
         try {
             clientConfigFile = new File(fileConfigName);
