@@ -9,7 +9,6 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.rmi.server.RemoteObject;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.LinkedList;
 import java.util.List;
@@ -67,7 +66,7 @@ public class ClientClass implements Runnable {
             InetAddress address = InetAddress.getByName(MULTICAST_ADDRESS);
             msocket.setReuseAddress(true);
             msocket.joinGroup(address);
-            Thread waitingThread = new Thread(new WaitingThread(msocket, address, UDP_PORT));
+            Thread waitingThread = new Thread(new ClientUDPThread(msocket, address, UDP_PORT));
             waitingThread.setDaemon(true);
             waitingThread.start();
             socialActivity(socket); //inizio dell'utilizzo del social da parte del client

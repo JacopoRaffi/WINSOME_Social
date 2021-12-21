@@ -68,7 +68,7 @@ public class ServerMain {
             System.err.println("ERRORE: errore durante la creazione dei file di backup degli utenti");
             System.exit(-1);
         }
-        WinsomeSocial socialNetwork = new WinsomeSocial(); //creo il social vero e proprio
+        ServerWinsomeSocial socialNetwork = new ServerWinsomeSocial(); //creo il social vero e proprio
         try{
             rebootSocial(socialNetwork, socialUserStatus, postStatus);
         }catch(FileNotFoundException e){
@@ -77,7 +77,7 @@ public class ServerMain {
         }
 
         //creo e avvio il thread che si occuperà del backup
-        AutomaticSaving autoSaving = new AutomaticSaving(socialNetwork, socialUserStatus, postStatus, TIMELAPSEBACKUP);
+        ServerAutomaticSaving autoSaving = new ServerAutomaticSaving(socialNetwork, socialUserStatus, postStatus, TIMELAPSEBACKUP);
         autoSaving.start();
 
         try{
@@ -101,7 +101,7 @@ public class ServerMain {
             System.err.println("ERRORE: problemi con multicast socket" + e.getMessage());
             System.exit(-1);
         }
-        RewardThread threadUDP = new RewardThread(socialNetwork, TIMELAPSE, socketUDP, multiCastAddress, UDP_PORT);
+        ServerReward threadUDP = new ServerReward(socialNetwork, TIMELAPSE, socketUDP, multiCastAddress, UDP_PORT);
         threadUDP.start();
 
         ExecutorService threadPool = Executors.newCachedThreadPool(); //pool di worker(uno per client)
@@ -120,7 +120,7 @@ public class ServerMain {
             try {
                 welcomeSocket.setSoTimeout((int) TIMEOUT);
                 Socket clientSocket = welcomeSocket.accept();
-                threadPool.execute(new ThreadWorker(clientSocket, socialNetwork)); //genero un thread worker legato a quel client
+                threadPool.execute(new ServerWorker(clientSocket, socialNetwork)); //genero un thread worker legato a quel client
             } catch (IOException ex) {
                 ex.printStackTrace();
                 System.err.println("ERRORE: errore con il socket");
@@ -189,24 +189,24 @@ public class ServerMain {
         }
     }
 
-    private static void rebootSocial(WinsomeSocial social, File socialUserStatus, File postStatus) throws FileNotFoundException{
+    private static void rebootSocial(ServerWinsomeSocial social, File socialUserStatus, File postStatus) throws FileNotFoundException{
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonReader reader = new JsonReader(new FileReader(socialUserStatus));
-        Type typeOfMap = new TypeToken<ConcurrentHashMap<String, User>>() {}.getType();
-        ConcurrentHashMap<String, User> mapUser = gson.fromJson(reader, typeOfMap);
+        Type typeOfMap = new TypeToken<ConcurrentHashMap<String, ServerUser>>() {}.getType();
+        ConcurrentHashMap<String, ServerUser> mapUser = gson.fromJson(reader, typeOfMap);
         if(mapUser == null)
             mapUser = new ConcurrentHashMap<>();
         social.setSocialUsers(mapUser);
 
         JsonReader readerPost = new JsonReader(new FileReader(postStatus));
-        Type typeOfMapPost = new TypeToken<ConcurrentHashMap<Integer, Post>>() {}.getType();
-        ConcurrentHashMap<Integer, Post> mapPost = gson.fromJson(readerPost, typeOfMapPost);
+        Type typeOfMapPost = new TypeToken<ConcurrentHashMap<Integer, ServerPost>>() {}.getType();
+        ConcurrentHashMap<Integer, ServerPost> mapPost = gson.fromJson(readerPost, typeOfMapPost);
         if(mapPost == null)
             mapPost = new ConcurrentHashMap<>();
         social.setSocialPost(mapPost);
     }
 
-    private static void closeServer(ServerSocket socketTCP, DatagramSocket socketUDP, ExecutorService pool, RewardThread reward, AutomaticSaving autoSaving){
+    private static void closeServer(ServerSocket socketTCP, DatagramSocket socketUDP, ExecutorService pool, ServerReward reward, ServerAutomaticSaving autoSaving){
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
                 System.out.println("CHIUSURA DEL SERVER...");
