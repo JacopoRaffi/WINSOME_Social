@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class WinsomeSocial implements ServerRegistryInterface {
     private ConcurrentHashMap<Integer, Post> socialPost;
     private ConcurrentHashMap<String, User> socialUsers;
+    private ConcurrentHashMap<String, ClientNotifyInterface> usersCallbacks; //associo ad uno username la sua Interface così so a chi inviare la notifica
     private volatile AtomicLong postID;
 
     public WinsomeSocial(){
@@ -72,8 +73,32 @@ public class WinsomeSocial implements ServerRegistryInterface {
         this.socialPost = mapPost;
     }
 
-    public void registerForCallback (ClientNotifyInterface ClientInterface) throws RemoteException{}
+    public void registerForCallback (ClientNotifyInterface ClientInterface, String username) throws RemoteException{
+        usersCallbacks.putIfAbsent(username, ClientInterface);
+    }
 
-    public void unregisterForCallback (ClientNotifyInterface ClientInterface) throws RemoteException{}
+    public void unregisterForCallback (ClientNotifyInterface ClientInterface, String username) throws RemoteException{
+        usersCallbacks.remove(username, ClientInterface);
+    }
+
+    public boolean doCallbackFollow(String username){
+        ClientNotifyInterface client = usersCallbacks.get(username);
+        try{
+            client.notifyNewFollow(username);
+            return true;
+        }catch(RemoteException e){
+            return false;
+        }
+    }
+
+    public boolean doCallbackUnfollow(String username){
+        ClientNotifyInterface client = usersCallbacks.get(username);
+        try{
+            client.notifyNewUnfollow(username);
+            return true;
+        }catch(RemoteException e){
+            return false;
+        }
+    }
 
 }

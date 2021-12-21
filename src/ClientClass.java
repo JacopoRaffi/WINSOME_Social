@@ -81,7 +81,7 @@ public class ClientClass implements Runnable {
             ServerRegistryInterface regFun = (ServerRegistryInterface) registry.lookup(REG_SERVICENAME);
             ClientNotifyInterface callbackObj = new ClientNotifyClass(followers);
             ClientNotifyInterface stub = (ClientNotifyInterface) UnicastRemoteObject.exportObject(callbackObj, 0);
-            regFun.registerForCallback(stub);
+            regFun.registerForCallback(stub, username);
             if(regFun.userRegister(username, password, tags, InetAddress.getLocalHost().toString())) {
                 System.out.println("REGISTRAZIONE EFFETTUATA CON SUCCESSO");
                 System.out.println("-------- BENVENUTO SU WINSOME --------");
