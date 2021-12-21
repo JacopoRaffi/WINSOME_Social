@@ -1,6 +1,7 @@
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-public interface ClientNotifyInterface {
+public interface ClientNotifyInterface extends Remote {
 
     public void notifyNewFollow(String username) throws RemoteException;
 

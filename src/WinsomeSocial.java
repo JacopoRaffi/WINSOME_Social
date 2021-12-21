@@ -72,4 +72,8 @@ public class WinsomeSocial implements ServerRegistryInterface {
         this.socialPost = mapPost;
     }
 
+    public void registerForCallback (ClientNotifyInterface ClientInterface) throws RemoteException{}
+
+    public void unregisterForCallback (ClientNotifyInterface ClientInterface) throws RemoteException{}
+
 }

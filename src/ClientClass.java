@@ -10,6 +10,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.RemoteObject;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -17,7 +18,7 @@ import java.util.Scanner;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class ClientClass extends RemoteObject implements Runnable,ClientNotifyInterface {
+public class ClientClass implements Runnable {
     //principali variabili
     private int TCP_PORT = 9011;
     private int UDP_PORT = 33333;
@@ -40,7 +41,7 @@ public class ClientClass extends RemoteObject implements Runnable,ClientNotifyIn
 
     public void run() {
         File clientConfigFile;
-        System.out.println(fileConfigName);
+        
         try {
             clientConfigFile = new File(fileConfigName);
             configClient(clientConfigFile);
@@ -78,6 +79,9 @@ public class ClientClass extends RemoteObject implements Runnable,ClientNotifyIn
         try{
             Registry registry = LocateRegistry.getRegistry(REG_PORT);
             ServerRegistryInterface regFun = (ServerRegistryInterface) registry.lookup(REG_SERVICENAME);
+            ClientNotifyInterface callbackObj = new ClientNotifyClass(followers);
+            ClientNotifyInterface stub = (ClientNotifyInterface) UnicastRemoteObject.exportObject(callbackObj, 0);
+            regFun.registerForCallback(stub);
             if(regFun.userRegister(username, password, tags, InetAddress.getLocalHost().toString())) {
                 System.out.println("REGISTRAZIONE EFFETTUATA CON SUCCESSO");
                 System.out.println("-------- BENVENUTO SU WINSOME --------");
@@ -209,6 +213,14 @@ public class ClientClass extends RemoteObject implements Runnable,ClientNotifyIn
                 }else
                     System.out.println(NOT_LOGGED_MESSAGE);
             }
+            else if(request.compareTo("listfollowers") == 0){
+                try{
+                    listLock.lock();
+                    System.out.println(followers);
+                }finally {
+                    listLock.unlock();
+                }
+            }
         }
     }
 
@@ -235,24 +247,5 @@ public class ClientClass extends RemoteObject implements Runnable,ClientNotifyIn
                         getWallet
                         getWalletInBitcoin
                         """);
-    }
-
-    public void notifyNewFollow(String username) throws RemoteException{
-        try{
-            listLock.lock();
-            followers.add(username);
-        }finally {
-            listLock.unlock();
-        }
-
-    }
-
-    public void notifyNewUnfollow(String username) throws RemoteException{
-        try{
-            listLock.lock();
-            followers.remove(username);
-        }finally {
-            listLock.unlock();
-        }
     }
 }
