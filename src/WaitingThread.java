@@ -26,7 +26,7 @@ public class WaitingThread implements Runnable{
                 msocket.receive(packet);
                 String message = new String(buffer, StandardCharsets.UTF_8);
                 message = message.replace("\u0000", "");
-                System.out.println("< NOTIFICA: " + message + " >");
+                //System.out.println("< NOTIFICA: " + message + " >");
             }catch(IOException ex){
                 System.err.println("< ERRORE: PROBLEMA COL MULTICAST");
                 continue;

@@ -3,6 +3,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Scanner;
 
 public class ThreadWorker implements Runnable{
     WinsomeSocial social;
@@ -48,6 +49,8 @@ public class ThreadWorker implements Runnable{
                 writer.writeUTF(response);
                 writer.flush();
             }
+        }
+        else if(request.startsWith("follow")){
         }
     }
 

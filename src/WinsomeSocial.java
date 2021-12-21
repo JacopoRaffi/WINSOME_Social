@@ -1,17 +1,20 @@
 import Exceptions.IllegalRegisterException;
 
 import java.rmi.RemoteException;
+import java.rmi.server.RemoteObject;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class WinsomeSocial implements ServerRegistryInterface {
+public class WinsomeSocial extends RemoteObject implements ServerRegistryInterface {
     private ConcurrentHashMap<Integer, Post> socialPost;
     private ConcurrentHashMap<String, User> socialUsers;
     private ConcurrentHashMap<String, ClientNotifyInterface> usersCallbacks; //associo ad uno username la sua Interface così so a chi inviare la notifica
     private volatile AtomicLong postID;
 
     public WinsomeSocial(){
+        super();
+        usersCallbacks = new ConcurrentHashMap<>();
         socialPost = new ConcurrentHashMap<>();
         socialUsers = new ConcurrentHashMap<>();
         postID = new AtomicLong(0);
@@ -73,15 +76,16 @@ public class WinsomeSocial implements ServerRegistryInterface {
         this.socialPost = mapPost;
     }
 
-    public void registerForCallback (ClientNotifyInterface ClientInterface, String username) throws RemoteException{
+    public synchronized void registerForCallback (ClientNotifyInterface ClientInterface, String username) throws RemoteException{
         usersCallbacks.putIfAbsent(username, ClientInterface);
+        System.out.println(usersCallbacks.keySet());
     }
 
-    public void unregisterForCallback (ClientNotifyInterface ClientInterface, String username) throws RemoteException{
+    public synchronized void unregisterForCallback (ClientNotifyInterface ClientInterface, String username) throws RemoteException{
         usersCallbacks.remove(username, ClientInterface);
     }
 
-    public boolean doCallbackFollow(String usernameFollowed){
+    public synchronized boolean doCallbackFollow(String usernameFollowed){
         ClientNotifyInterface client = usersCallbacks.get(usernameFollowed);
         try{
             client.notifyNewFollow(usernameFollowed);

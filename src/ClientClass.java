@@ -20,7 +20,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class ClientClass implements Runnable {
     //principali variabili
-    private int TCP_PORT = 9011;
+    private int TCP_PORT = 6666;
     private int UDP_PORT = 33333;
     private int MULTICAST_PORT = 44444;
     private int REG_PORT = 7777;
@@ -32,6 +32,8 @@ public class ClientClass implements Runnable {
     private final String fileConfigName;
     private List<String> followers;
     private final Lock listLock;
+    private String username;
+    private ServerRegistryInterface regFun;
 
     public ClientClass(String fileConfigName){
         listLock = new ReentrantLock();
@@ -78,13 +80,16 @@ public class ClientClass implements Runnable {
     private  void register(String username, String password, String tags){
         try{
             Registry registry = LocateRegistry.getRegistry(REG_PORT);
-            ServerRegistryInterface regFun = (ServerRegistryInterface) registry.lookup(REG_SERVICENAME);
-            ClientNotifyInterface callbackObj = new ClientNotifyClass(followers);
+            regFun = (ServerRegistryInterface) registry.lookup(REG_SERVICENAME);
+            /*ClientNotifyInterface callbackObj = new ClientNotifyClass(followers);
             ClientNotifyInterface stub = (ClientNotifyInterface) UnicastRemoteObject.exportObject(callbackObj, 0);
-            regFun.registerForCallback(stub, username);
+            regFun.registerForCallback(stub, username);*/
             if(regFun.userRegister(username, password, tags, InetAddress.getLocalHost().toString())) {
                 System.out.println("REGISTRAZIONE EFFETTUATA CON SUCCESSO");
                 System.out.println("-------- BENVENUTO SU WINSOME --------");
+                System.out.println("Ricordati di fare il login per iniziare la tua attività sul social");
+                System.out.println("Digitare il comando help per la lista dei possibili comandi");
+                this.username = username;
             }
             else
                 System.err.println("ERRORE: username già registrato nel social");
@@ -93,7 +98,6 @@ public class ClientClass implements Runnable {
             System.exit(-1);
         }catch(IllegalRegisterException ex){
             System.err.println("ERRORE: la password deve essere compresa tra 8 e 16 caratteri");
-
         }
     }
 
@@ -170,7 +174,7 @@ public class ClientClass implements Runnable {
             }
             else if(request.compareTo("login") == 0) {
                 if (!logged) {
-                    if (commandLine.length < 2) {
+                    if (commandLine.length < 3) {
                         System.err.println("< ERRORE: il comando è: login <username> <password>");
                         continue;
                     }
@@ -180,6 +184,18 @@ public class ClientClass implements Runnable {
                     serverResponse = inReader.readUTF(); //leggo la risposta del server
                     if (serverResponse.startsWith("SUCCESSO")) {
                         logged = true;
+                        try {
+                            username = commandLine[1];
+                            Registry registry = LocateRegistry.getRegistry(REG_PORT);
+                            regFun = (ServerRegistryInterface) registry.lookup(REG_SERVICENAME);
+                            ClientNotifyInterface callbackObj = new ClientNotifyClass(followers);
+                            ClientNotifyInterface stub = (ClientNotifyInterface) UnicastRemoteObject.exportObject(callbackObj, 0);
+                            regFun.registerForCallback(stub, username);
+                        }catch(NotBoundException e){
+                            System.err.println("ERRORE: login fallito a causa di problemi col server");
+                            logged = false;
+                            continue;
+                        }
                     }
                     System.out.println("< " + serverResponse);
                 }
@@ -220,6 +236,21 @@ public class ClientClass implements Runnable {
                 }finally {
                     listLock.unlock();
                 }
+            }
+            else if(request.compareTo("follow") == 0){
+                if (logged) {
+                    if (commandLine.length < 2) {
+                        System.err.println("< ERRORE: il comando è: follow <username>");
+                        continue;
+                    }
+                    sendRequest = line;
+                    outWriter.writeUTF(sendRequest); //invio la richiesta al server con i relativi parametri
+                    outWriter.flush();
+                    serverResponse = inReader.readUTF(); //leggo la risposta del server
+                    System.out.println("< " + serverResponse);
+                }
+                else
+                    System.out.println("< non hai fatto il login");
             }
         }
     }
