@@ -81,20 +81,20 @@ public class WinsomeSocial implements ServerRegistryInterface {
         usersCallbacks.remove(username, ClientInterface);
     }
 
-    public boolean doCallbackFollow(String username){
-        ClientNotifyInterface client = usersCallbacks.get(username);
+    public boolean doCallbackFollow(String usernameFollowed){
+        ClientNotifyInterface client = usersCallbacks.get(usernameFollowed);
         try{
-            client.notifyNewFollow(username);
+            client.notifyNewFollow(usernameFollowed);
             return true;
         }catch(RemoteException e){
             return false;
         }
     }
 
-    public boolean doCallbackUnfollow(String username){
-        ClientNotifyInterface client = usersCallbacks.get(username);
+    public boolean doCallbackUnfollow(String usernameUnfollowed){
+        ClientNotifyInterface client = usersCallbacks.get(usernameUnfollowed);
         try{
-            client.notifyNewUnfollow(username);
+            client.notifyNewUnfollow(usernameUnfollowed);
             return true;
         }catch(RemoteException e){
             return false;
