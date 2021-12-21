@@ -1,5 +1,6 @@
 package Client;
 
+import java.io.File;
 import java.net.URL;
 import java.rmi.server.RMIClassLoader;
 
@@ -8,7 +9,8 @@ public class ThinClientMain {
     public static void main(String[]Args){
         if (Args.length == 0) {
             System.err.println("Usage: java LoadClient <remote URL>");
-            System.exit(-1);}
+            System.exit(-1);
+        }
         System.setSecurityManager(new SecurityManager());
         try {
             URL url = new URL(Args[0]);

@@ -26,9 +26,9 @@ public class ClientClass implements Runnable{
     private String REG_SERVICENAME = "serverRegistry";
     private long TIMEOUT = 100000;
     private boolean logged = false;
-    private String fileConfigName;
 
     public void run() {
+        String fileConfigName = "./Config/ConfigClient.txt";
         File clientConfigFile;
         try {
             clientConfigFile = new File(fileConfigName);
