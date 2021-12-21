@@ -26,12 +26,12 @@ public class ClientClass implements Runnable{
     private String REG_SERVICENAME = "serverRegistry";
     private long TIMEOUT = 100000;
     private boolean logged = false;
-    private String fileConfig;
+    private String fileConfigName;
 
     public void run() {
         File clientConfigFile;
         try {
-            clientConfigFile = new File(fileConfig);
+            clientConfigFile = new File(fileConfigName);
             configClient(clientConfigFile);
             System.out.println("--------CONFIGURAZIONE TERMINATA CON SUCCESSO--------");
         } catch (NullPointerException | IOException | IllegalArgumentException e) {
@@ -61,10 +61,6 @@ public class ClientClass implements Runnable{
             System.err.println("ERRORE: connessione col server interrotta");
             System.exit(-1);
         }
-    }
-
-    public void setFileConfig(String fileConfig){
-        this.fileConfig = fileConfig;
     }
 
     private  void register(String username, String password, String tags){
