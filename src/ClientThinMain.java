@@ -9,15 +9,15 @@ public class ClientThinMain {
             System.err.println("Usage: java LoadClient <remote URL>");
             System.exit(-1);
         }
-        String fileConfigName = "./Config/ClientConfig.txt";
+        String filesName = "./Config/ClientConfig.txt";
         if(Args.length >= 2){
-            fileConfigName = Args[1];
+            filesName = Args[1];
         }
         System.setSecurityManager(new MySecurityManager());
         try {
             URL url = new File(Args[0]).toURI().toURL();
             Class<?> clientClasss = RMIClassLoader.loadClass(url, "ClientClass");
-            Runnable client = (Runnable) clientClasss.getDeclaredConstructor(String.class).newInstance(fileConfigName);
+            Runnable client = (Runnable) clientClasss.getDeclaredConstructor(String.class).newInstance(filesName);
             client.run();
         } catch (Exception e) { System.out.println("Exception: " +
                 e.getMessage());

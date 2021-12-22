@@ -47,12 +47,20 @@ public class ServerUser {
         return (LinkedHashSet<String>) followed.clone();
     }
 
+    public LinkedHashSet<String> getFollowers(){
+        return (LinkedHashSet<String>) followers.clone();
+    }
+
     public ConcurrentHashMap<Integer, ServerPost> getFeed(){
         return (ConcurrentHashMap<Integer, ServerPost>)followers.clone();
     }
 
     public ConcurrentHashMap<Integer, ServerPost> getBlog(){
         return (ConcurrentHashMap<Integer, ServerPost>)followers.clone();
+    }
+
+    public boolean comparePassword(String password) throws NoSuchAlgorithmException{
+        return (hashedPassword.compareTo(HashFunction.bytesToHex(HashFunction.sha256(password))) == 0);
     }
 
     @Override

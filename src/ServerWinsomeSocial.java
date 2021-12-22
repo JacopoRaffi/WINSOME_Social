@@ -3,6 +3,8 @@ import Exceptions.IllegalRegisterException;
 import java.rmi.RemoteException;
 import java.rmi.server.RemoteObject;
 import java.security.NoSuchAlgorithmException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -36,6 +38,18 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
             return false;
         }
 
+    }
+
+    public List<String> backUpFollowers(String username, String password) throws RemoteException{
+        ServerUser user = socialUsers.get(username);
+        try{
+            if(!user.comparePassword(password)){
+                return new LinkedList<>();
+            }
+        }catch(NoSuchAlgorithmException e){
+            return null;
+        }
+        return socialUsers.get(username).getFollowers().stream().toList();
     }
 
     public boolean login(String username, String password){
@@ -76,13 +90,22 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
         this.socialPost = mapPost;
     }
 
-    public synchronized void registerForCallback (ClientNotifyInterface ClientInterface, String username) throws RemoteException{
-        usersCallbacks.putIfAbsent(username, ClientInterface);
+    public synchronized void registerForCallback (ClientNotifyInterface ClientInterface, String username, String password) throws RemoteException, NoSuchAlgorithmException{
+        ServerUser user = socialUsers.get(username);
+        if (!user.comparePassword(password))
+            return;
+        else
+            usersCallbacks.putIfAbsent(username, ClientInterface);
         System.out.println(usersCallbacks.keySet());
     }
 
-    public synchronized void unregisterForCallback (ClientNotifyInterface ClientInterface, String username) throws RemoteException{
-        usersCallbacks.remove(username, ClientInterface);
+    public synchronized void unregisterForCallback (ClientNotifyInterface ClientInterface, String username, String password) throws RemoteException, NoSuchAlgorithmException{
+        ServerUser user = socialUsers.get(username);
+        if (!user.comparePassword(password))
+            return;
+        else
+            usersCallbacks.remove(username, ClientInterface);
+        System.out.println(usersCallbacks.keySet());
     }
 
     public synchronized boolean doCallbackFollow(String usernameFollowed){

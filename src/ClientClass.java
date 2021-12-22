@@ -10,6 +10,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.security.NoSuchAlgorithmException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -19,7 +20,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class ClientClass implements Runnable {
     //principali variabili
-    private int TCP_PORT = 6666;
+    private int TCP_PORT = 9011;
     private int UDP_PORT = 33333;
     private int MULTICAST_PORT = 44444;
     private int REG_PORT = 7777;
@@ -32,6 +33,7 @@ public class ClientClass implements Runnable {
     private final List<String> followers;
     private final Lock listLock;
     private String username;
+    private String password;
     private ServerRegistryInterface regFun;
 
     public ClientClass(String fileConfigName){
@@ -80,9 +82,6 @@ public class ClientClass implements Runnable {
         try{
             Registry registry = LocateRegistry.getRegistry(REG_PORT);
             regFun = (ServerRegistryInterface) registry.lookup(REG_SERVICENAME);
-            /*ClientNotifyInterface callbackObj = new ClientNotifyClass(followers);
-            ClientNotifyInterface stub = (ClientNotifyInterface) UnicastRemoteObject.exportObject(callbackObj, 0);
-            regFun.registerForCallback(stub, username);*/
             if(regFun.userRegister(username, password, tags, InetAddress.getLocalHost().toString())) {
                 System.out.println("REGISTRAZIONE EFFETTUATA CON SUCCESSO");
                 System.out.println("-------- BENVENUTO SU WINSOME --------");
@@ -183,11 +182,17 @@ public class ClientClass implements Runnable {
                         logged = true;
                         try {
                             username = commandLine[1];
+                            password = commandLine[2];
                             Registry registry = LocateRegistry.getRegistry(REG_PORT);
                             regFun = (ServerRegistryInterface) registry.lookup(REG_SERVICENAME);
                             ClientNotifyInterface callbackObj = new ClientNotifyClass(followers);
                             ClientNotifyInterface stub = (ClientNotifyInterface) UnicastRemoteObject.exportObject(callbackObj, 0);
-                            regFun.registerForCallback(stub, username);
+                            try {
+                                followers.addAll(regFun.backUpFollowers(username, password));
+                                regFun.registerForCallback(stub, username, password);
+                            }catch(NoSuchAlgorithmException e){
+                                System.err.println("ERRORE SERVER: c'è stato un problema, riprovare successivamente");
+                            }
                         }catch(NotBoundException e){
                             System.err.println("ERRORE: login fallito a causa di problemi col server");
                             logged = false;
@@ -476,8 +481,6 @@ public class ClientClass implements Runnable {
             }
         }
     }
-
-    private void listUsersBackup(){}
 
     private void help(){
         System.out.println("LISTA DEI POSSIBILI COMANDI");
