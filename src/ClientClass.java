@@ -29,7 +29,7 @@ public class ClientClass implements Runnable {
     private long TIMEOUT = 100000;
     private boolean logged = false;
     private final String fileConfigName;
-    private List<String> followers;
+    private final List<String> followers;
     private final Lock listLock;
     private String username;
     private ServerRegistryInterface regFun;
@@ -144,7 +144,6 @@ public class ClientClass implements Runnable {
     private void socialActivity(Socket socket) throws IOException{
         String NOT_LOGGED_MESSAGE = "< ERRORE: non hai fatto il login in WINSOME";
         String[] commandLine;
-        String sendRequest;
         String serverResponse;
         Scanner scanner = new Scanner(System.in);
         DataOutputStream outWriter = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
@@ -177,8 +176,7 @@ public class ClientClass implements Runnable {
                         System.err.println("< ERRORE: il comando è: login <username> <password>");
                         continue;
                     }
-                    sendRequest = line;
-                    outWriter.writeUTF(sendRequest); //invio la richiesta al server con i relativi parametri
+                    outWriter.writeUTF(line); //invio la richiesta al server con i relativi parametri
                     outWriter.flush();
                     serverResponse = inReader.readUTF(); //leggo la risposta del server
                     if (serverResponse.startsWith("SUCCESSO")) {
@@ -218,8 +216,7 @@ public class ClientClass implements Runnable {
             }
             else if(request.compareTo("listusers") == 0){
                 if(logged){
-                    sendRequest = line;
-                    outWriter.writeUTF(sendRequest);
+                    outWriter.writeUTF(line);
                     outWriter.flush();
                     serverResponse = inReader.readUTF();
 
@@ -236,23 +233,251 @@ public class ClientClass implements Runnable {
                     listLock.unlock();
                 }
             }
+            else if(request.compareTo("listfollowing") == 0){
+                if(logged){
+                    outWriter.writeUTF(line); //invio la richiesta al server con i relativi parametri
+                    outWriter.flush();
+                    serverResponse = inReader.readUTF(); //leggo la risposta del server
+                    System.out.println("< " + serverResponse);
+                }else
+                    System.out.println(NOT_LOGGED_MESSAGE);
+
+            }
             else if(request.compareTo("follow") == 0){
                 if (logged) {
                     if (commandLine.length < 2) {
                         System.err.println("< ERRORE: il comando è: follow <username>");
                         continue;
                     }
-                    sendRequest = line;
-                    outWriter.writeUTF(sendRequest); //invio la richiesta al server con i relativi parametri
+                    outWriter.writeUTF(line); //invio la richiesta al server con i relativi parametri
                     outWriter.flush();
                     serverResponse = inReader.readUTF(); //leggo la risposta del server
                     System.out.println("< " + serverResponse);
                 }
                 else
-                    System.out.println("< non hai fatto il login");
+                    System.out.println(NOT_LOGGED_MESSAGE);
+            }
+            else if(request.compareTo("unfollow") == 0){
+                if (logged) {
+                    if (commandLine.length < 2) {
+                        System.err.println("< ERRORE: il comando è: unfollow <username>");
+                        continue;
+                    }
+                    
+                    outWriter.writeUTF(line); //invio la richiesta al server con i relativi parametri
+                    outWriter.flush();
+                    serverResponse = inReader.readUTF(); //leggo la risposta del server
+                    System.out.println("< " + serverResponse);
+                }
+                else
+                    System.out.println(NOT_LOGGED_MESSAGE);
+            }
+            else if(request.compareTo("createpost") == 0){
+                if (logged) {
+                    if (commandLine.length < 3) {
+                        System.err.println("< ERRORE: il comando è: cretepost <titolo> <contenuto>");
+                        System.out.println("Lunghezza massima titolo 50 caratteri");
+                        System.out.println("Lunghezza massima contenuto 500 caratteri");
+                        continue;
+                    }
+                    if(commandLine[1].length() > 50){
+                        System.err.println("ERRORE: lunghezza massima titolo 50 caratteri");
+                    }
+                    if(commandLine[2].length() > 500){
+                        System.err.println("ERRORE: lunghezza massima contenuto 500 caratteri");
+                    }
+                    
+                    outWriter.writeUTF(line); //invio la richiesta al server con i relativi parametri
+                    outWriter.flush();
+                    serverResponse = inReader.readUTF(); //leggo la risposta del server
+                    System.out.println("< " + serverResponse);
+                }
+                else
+                    System.out.println(NOT_LOGGED_MESSAGE);
+            }
+            else if(request.compareTo("viewblog") == 0){
+                if(logged){
+                    outWriter.writeUTF(line);
+                    outWriter.flush();
+                    serverResponse = inReader.readUTF();
+
+                    System.out.println(serverResponse);
+
+                }else
+                    System.out.println(NOT_LOGGED_MESSAGE);
+            }
+            else if(request.compareTo("showfeed") == 0){
+                if(logged){
+                    outWriter.writeUTF(line);
+                    outWriter.flush();
+                    serverResponse = inReader.readUTF();
+
+                    System.out.println(serverResponse);
+
+                }else
+                    System.out.println(NOT_LOGGED_MESSAGE);
+            }
+            else if(request.compareTo("showpost") == 0){
+                if (logged) {
+                    if (commandLine.length < 2) {
+                        System.err.println("< ERRORE: il comando è: showpost <idpost>");
+                        System.out.println("idpost deve essere un numero non negativo");
+                        continue;
+                    }
+                    try{
+                        long idpost = Long.parseLong(commandLine[1]);
+                        if(idpost < 0){
+                            System.err.println("idpost deve essere un numero non negativo");
+                            continue;
+                        }
+                    }catch(RuntimeException e){
+                        System.err.println("idpost deve essere un numero non negativo");
+                        continue;
+                    }
+                    outWriter.writeUTF(line); //invio la richiesta al server con i relativi parametri
+                    outWriter.flush();
+                    serverResponse = inReader.readUTF(); //leggo la risposta del server
+                    System.out.println("< " + serverResponse);
+                }
+                else
+                    System.out.println(NOT_LOGGED_MESSAGE);
+            }
+            else if(request.compareTo("deletepost") == 0){
+                if (logged) {
+                    if (commandLine.length < 2) {
+                        System.err.println("< ERRORE: il comando è: delete <idpost>");
+                        System.out.println("idpost deve essere un numero non negativo");
+                        continue;
+                    }
+                    try{
+                        long idpost = Long.parseLong(commandLine[1]);
+                        if(idpost < 0){
+                            System.err.println("idpost deve essere un numero non negativo");
+                            continue;
+                        }
+                    }catch(RuntimeException e){
+                        System.err.println("idpost deve essere un numero non negativo");
+                        continue;
+                    }
+                    outWriter.writeUTF(line); //invio la richiesta al server con i relativi parametri
+                    outWriter.flush();
+                    serverResponse = inReader.readUTF(); //leggo la risposta del server
+                    System.out.println("< " + serverResponse);
+                }
+                else
+                    System.out.println(NOT_LOGGED_MESSAGE);
+            }
+            else if(request.compareTo("rewinpost") == 0){
+                if (logged) {
+                    if (commandLine.length < 2) {
+                        System.err.println("< ERRORE: il comando è: rewinpost <idpost>");
+                        System.out.println("idpost deve essere un numero non negativo");
+                        continue;
+                    }
+                    try{
+                        long idpost = Long.parseLong(commandLine[1]);
+                        if(idpost < 0){
+                            System.err.println("idpost deve essere un numero non negativo");
+                            continue;
+                        }
+                    }catch(RuntimeException e){
+                        System.err.println("idpost deve essere un numero non negativo");
+                        continue;
+                    }
+                    outWriter.writeUTF(line); //invio la richiesta al server con i relativi parametri
+                    outWriter.flush();
+                    serverResponse = inReader.readUTF(); //leggo la risposta del server
+                    System.out.println("< " + serverResponse);
+                }
+                else
+                    System.out.println(NOT_LOGGED_MESSAGE);
+            }
+            else if(request.compareTo("ratepost") == 0){
+                if (logged) {
+                    if (commandLine.length < 3) {
+                        System.err.println("< ERRORE: il comando è: ratepost <idpost> <voto>");
+                        System.out.println("idpost deve essere un numero non negativo");
+                        System.out.println("il voto deve essere +1 o -1");
+                        continue;
+                    }
+                    try{
+                        long idpost = Long.parseLong(commandLine[1]);
+                        if(idpost < 0){
+                            System.err.println("idpost deve essere un numero non negativo");
+                            continue;
+                        }
+                    }catch(RuntimeException e){
+                        System.err.println("idpost deve essere un numero non negativo");
+                        continue;
+                    }
+                    try{
+                        Long.parseLong(commandLine[2]);
+                    }catch(RuntimeException e){
+                        System.err.println("il voto deve essere +1 o -1");
+                        continue;
+                    }
+                    outWriter.writeUTF(line); //invio la richiesta al server con i relativi parametri
+                    outWriter.flush();
+                    serverResponse = inReader.readUTF(); //leggo la risposta del server
+                    System.out.println("< " + serverResponse);
+                }
+                else
+                    System.out.println(NOT_LOGGED_MESSAGE);
+            }
+            else if(request.compareTo("addcomment") == 0){
+                if (logged) {
+                    if (commandLine.length < 3) {
+                        System.err.println("< ERRORE: il comando è: addcomment <idpost> <commento>");
+                        System.out.println("idpost deve essere un numero non negativo");
+                        continue;
+                    }
+                    try{
+                        long idpost = Long.parseLong(commandLine[1]);
+                        if(idpost < 0){
+                            System.err.println("idpost deve essere un numero non negativo");
+                            continue;
+                        }
+                    }catch(RuntimeException e){
+                        System.err.println("idpost deve essere un numero non negativo");
+                        continue;
+                    }
+                    outWriter.writeUTF(line); //invio la richiesta al server con i relativi parametri
+                    outWriter.flush();
+                    serverResponse = inReader.readUTF(); //leggo la risposta del server
+                    System.out.println("< " + serverResponse);
+                }
+                else
+                    System.out.println(NOT_LOGGED_MESSAGE);
+            }
+            else if(request.compareTo("getwallet") == 0){
+                if(logged){
+                    outWriter.writeUTF(line);
+                    outWriter.flush();
+                    serverResponse = inReader.readUTF();
+
+                    System.out.println(serverResponse);
+
+                }else
+                    System.out.println(NOT_LOGGED_MESSAGE);
+            }
+            else if(request.compareTo("getwalletinbitcoin") == 0){
+                if(logged){
+                    outWriter.writeUTF(line);
+                    outWriter.flush();
+                    serverResponse = inReader.readUTF();
+
+                    System.out.println(serverResponse);
+
+                }else
+                    System.out.println(NOT_LOGGED_MESSAGE);
+            }
+            else{
+                System.out.println("Comando non riconosciuto: digitare help per la lista di comandi");
             }
         }
     }
+
+    private void listUsersBackup(){}
 
     private void help(){
         System.out.println("LISTA DEI POSSIBILI COMANDI");
