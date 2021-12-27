@@ -114,7 +114,7 @@ public class ServerMain {
             System.exit(-1);
         }
         closeServer(welcomeSocket, socketUDP, threadPool, threadUDP, autoSaving);
-        
+
         while (true) {
             try {
                 welcomeSocket.setSoTimeout((int) TIMEOUT);

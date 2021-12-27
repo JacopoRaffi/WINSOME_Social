@@ -27,4 +27,9 @@ public class Wallet {
     public boolean addTransazione(String transazione){ //una stringa transazione è incremento, date
         return transazioni.add(transazione);
     }
+
+    @Override
+    public String toString(){
+        return "" + totale + ", {" + transazioni + "}";
+    }
 }
