@@ -118,7 +118,7 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
         }
     }
 
-    public boolean doCallbackUnfollow(String usernameUnfollowed){
+    public synchronized boolean doCallbackUnfollow(String usernameUnfollowed){
         ClientNotifyInterface client = usersCallbacks.get(usernameUnfollowed);
         try{
             client.notifyNewUnfollow(usernameUnfollowed);
