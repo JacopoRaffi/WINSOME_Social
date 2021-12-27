@@ -39,6 +39,8 @@ public class ServerReward extends Thread {
         }
     }
 
-    private void calcoloRicompense(){}
+    private void calcoloRicompense(){
+
+    }
 
 }

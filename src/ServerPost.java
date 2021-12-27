@@ -2,6 +2,7 @@ import Utilities.Comment;
 import Utilities.FeedBack;
 
 import java.util.Calendar;
+import java.util.Hashtable;
 import java.util.LinkedList;
 
 public class ServerPost {
@@ -10,7 +11,7 @@ public class ServerPost {
     private String titolo;
     private String contenuto;
     private long timeStamp;
-    LinkedList<Comment> comments;
+    Hashtable<String, LinkedList<Comment>> comments;
     LinkedList<FeedBack> likes;
 
     public ServerPost(Long idpost, String titolo, String contenuto, String autore){
@@ -18,7 +19,7 @@ public class ServerPost {
         this.autore = autore;
         this.idpost = idpost;
         this.titolo = titolo;
-        comments = new LinkedList<>();
+        comments = new Hashtable<>();
         likes = new LinkedList<>();
         timeStamp = Calendar.getInstance().getTimeInMillis(); //serve sapere per il calcolo delle ricompense
     }
@@ -35,8 +36,10 @@ public class ServerPost {
         return (LinkedList<FeedBack>)likes.clone();
     }
 
-    public synchronized boolean addComment(String contenuto, String autore){
-        return comments.add(new Comment(autore, contenuto));
+    public synchronized void addComment(String contenuto, String autore){
+        LinkedList<Comment> comm = comments.get(autore);
+        comm.add((new Comment(autore, contenuto)));
+        comments.replace(autore, comm);
     }
 
     public synchronized boolean ratePost(String autore, Integer voto){
