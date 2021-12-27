@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Wallet {
-    private int totale; //wincoin
+    private double totale; //wincoin
     private List<String> transazioni;
 
     public Wallet(){
@@ -12,7 +12,7 @@ public class Wallet {
         transazioni = new LinkedList<>();
     }
 
-    public int getTotale() {
+    public double getTotale() {
         return totale;
     }
 
@@ -20,7 +20,7 @@ public class Wallet {
         return transazioni;
     }
 
-    public void addIncremento(int incremento) {
+    public void addIncremento(double incremento) {
         totale += incremento;
     }
 

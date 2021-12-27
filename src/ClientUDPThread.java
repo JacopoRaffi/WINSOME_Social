@@ -7,14 +7,9 @@ import java.nio.charset.StandardCharsets;
 //questo thread sta in ascolto(tramite multicast) della notifica di avvenuta modifica del suo "wallet"
 public class ClientUDPThread implements Runnable{
     private MulticastSocket msocket;
-    private InetAddress address;
-    private int portUDP;
-    private long timeout;
 
 
-    public ClientUDPThread(MulticastSocket msocket, InetAddress address, int portUDP){
-        this.portUDP = portUDP;
-        this.address = address;
+    public ClientUDPThread(MulticastSocket msocket){
         this.msocket = msocket;
     }
 

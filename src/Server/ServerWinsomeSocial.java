@@ -29,12 +29,12 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
         postID = new AtomicLong(0);
     }
 
-    public boolean userRegister(String username, String password, String tags, String userAddress) throws RemoteException {
+    public boolean userRegister(String username, String password, String tags) throws RemoteException {
         if(password.length() > 16 || password.length() < 8){
             throw new IllegalRegisterException();
         }
         try{
-            ServerUser newUser = new ServerUser(username, password, tags, userAddress);
+            ServerUser newUser = new ServerUser(username, password, tags);
             if(socialUsers.putIfAbsent(username, newUser) == null){ //aggiungo l'utente registrato
                 System.out.println("NUOVO UTENTE REGISTRATO: " + username);
                 return true;
@@ -135,9 +135,9 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
         }
     }
 
-    public double toBitcoin (int wincoins) throws IOException {
+    public double toBitcoin (double wincoins) throws IOException {
         //voglio un numero decimale per evitare che i wincoin valgano più dei bitcoin
-        URL url = new URL("https://www.random.org/decimal-fractions/?num=1&dec=4&col=2&format=plain&rnd=new");
+        URL url = new URL("https://www.random.org/decimal-fractions/?num=1&dec=10&col=2&format=plain&rnd=new");
         InputStream urlReader = url.openStream();
         BufferedReader buffReader = new BufferedReader(new InputStreamReader(urlReader));
         String line;

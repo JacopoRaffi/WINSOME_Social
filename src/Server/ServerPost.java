@@ -13,10 +13,12 @@ public class ServerPost {
     private String titolo;
     private String contenuto;
     private long timeStamp;
+    private int numIterazioni;
     Hashtable<String, LinkedList<Comment>> comments;
     LinkedList<FeedBack> likes;
 
     public ServerPost(Long idpost, String titolo, String contenuto, String autore){
+        numIterazioni = 0;
         this.contenuto = contenuto;
         this.autore = autore;
         this.idpost = idpost;
@@ -32,6 +34,11 @@ public class ServerPost {
 
     public synchronized Hashtable<String, LinkedList<Comment>> getComments() {
         return (Hashtable<String, LinkedList<Comment>>)comments.clone();
+    }
+
+    protected int addGetNumIterazioni(){
+        numIterazioni++;
+        return numIterazioni;
     }
 
     public synchronized LinkedList<FeedBack> getLikes() {

@@ -71,7 +71,7 @@ public class ClientClass implements Runnable {
             InetAddress address = InetAddress.getByName(MULTICAST_ADDRESS);
             msocket.setReuseAddress(true);
             msocket.joinGroup(address);
-            Thread waitingThread = new Thread(new ClientUDPThread(msocket, address, UDP_PORT));
+            Thread waitingThread = new Thread(new ClientUDPThread(msocket));
             waitingThread.setDaemon(true);
             waitingThread.start();
             registry = LocateRegistry.getRegistry(REG_PORT);
@@ -88,7 +88,7 @@ public class ClientClass implements Runnable {
     private  void register(String username, String password, String tags){
         try{
             regFun = (ServerRegistryInterface) registry.lookup(REG_SERVICENAME);
-            if(regFun.userRegister(username, password, tags, InetAddress.getLocalHost().toString())) {
+            if(regFun.userRegister(username, password, tags)) {
                 System.out.println("REGISTRAZIONE EFFETTUATA CON SUCCESSO");
                 System.out.println("-------- BENVENUTO SU WINSOME --------");
                 System.out.println("Ricordati di fare il login per iniziare la tua attività sul social");
@@ -97,7 +97,7 @@ public class ClientClass implements Runnable {
             }
             else
                 System.err.println("ERRORE: username già registrato nel social");
-        }catch(RemoteException | NotBoundException | UnknownHostException e){
+        }catch(RemoteException | NotBoundException e){
             System.err.println("ERRORE: registrazione fallita");
             System.exit(-1);
         }catch(IllegalRegisterException ex){
@@ -476,9 +476,11 @@ public class ClientClass implements Runnable {
                     System.out.println(NOT_LOGGED_MESSAGE);
             }
             else if(request.compareTo("quit") == 0){
+                System.out.println("Chiusura WINSOME...");
                 outWriter.close();
                 inReader.close();
                 socket.close();
+                System.out.println("Arrivederci :)");
                 System.exit(0);
             }
             else{

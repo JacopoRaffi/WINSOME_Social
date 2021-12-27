@@ -102,7 +102,7 @@ public class ServerMain {
             System.err.println("ERRORE: problemi con multicast socket" + e.getMessage());
             System.exit(-1);
         }
-        ServerReward threadUDP = new ServerReward(socialNetwork, TIMELAPSE, socketUDP, multiCastAddress, UDP_PORT);
+        ServerReward threadUDP = new ServerReward(socialNetwork, TIMELAPSE, socketUDP, multiCastAddress, UDP_PORT, AUTHOR_RATE);
         threadUDP.start();
         ExecutorService threadPool = Executors.newCachedThreadPool(); //pool di worker(uno per client)
         //il server main si occupa delle connessioni TCP

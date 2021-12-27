@@ -1,6 +1,5 @@
 package Server;
 
-import Server.ServerPost;
 import Utilities.*;
 
 import java.nio.charset.StandardCharsets;
@@ -21,14 +20,14 @@ public class ServerUser {
     private ConcurrentHashMap<Long, ServerPost> blog;
     private final Wallet wallet;
 
-    public ServerUser(String username, String password, String tags, String userAddress) throws NoSuchAlgorithmException {
+    public ServerUser(String username, String password, String tags) throws NoSuchAlgorithmException {
         byte[] arr = new byte[32];
         ThreadLocalRandom.current().nextBytes(arr);
         this.logged = false;
         this.seed = new String(arr, StandardCharsets.UTF_8);
         this.username = username;
         this.tags = tags.split(" ");
-        hashedPassword = HashFunction.bytesToHex(HashFunction.sha256(password));
+        hashedPassword = HashFunction.bytesToHex(HashFunction.sha256(password+seed));
         followers = new LinkedHashSet<>();
         followed = new LinkedHashSet<>();
         feed = new ConcurrentHashMap<>();
@@ -53,7 +52,7 @@ public class ServerUser {
     }
 
     public synchronized boolean login(String username, String password) throws NoSuchAlgorithmException{
-        if (hashedPassword.compareTo(HashFunction.bytesToHex(HashFunction.sha256(password))) == 0 && (username.compareTo(this.username) == 0)) {
+        if (hashedPassword.compareTo(HashFunction.bytesToHex(HashFunction.sha256(password+seed))) == 0 && (username.compareTo(this.username) == 0)) {
             logged = true;
             return true;
         }
@@ -81,7 +80,7 @@ public class ServerUser {
     }
 
     public boolean comparePassword(String password) throws NoSuchAlgorithmException{
-        return (hashedPassword.compareTo(HashFunction.bytesToHex(HashFunction.sha256(password))) == 0);
+        return (hashedPassword.compareTo(HashFunction.bytesToHex(HashFunction.sha256(password+seed))) == 0);
     }
 
     public Wallet getWallet(){
