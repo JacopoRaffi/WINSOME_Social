@@ -134,7 +134,7 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
         }
     }
 
-    public double toBitcoin (int wincoins) throws MalformedURLException, IOException {
+    public double toBitcoin (int wincoins) throws IOException {
         //voglio un numero decimale per evitare che i wincoin valgano più dei bitcoin
         URL url = new URL("https://www.random.org/decimal-fractions/?num=1&dec=4&col=2&format=plain&rnd=new");
         InputStream urlReader = url.openStream();
