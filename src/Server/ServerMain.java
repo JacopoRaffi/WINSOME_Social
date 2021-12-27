@@ -121,6 +121,10 @@ public class ServerMain {
             try {
                 welcomeSocket.setSoTimeout((int) TIMEOUT);
                 Socket clientSocket = welcomeSocket.accept();
+                DataOutputStream outWriter = new DataOutputStream(new BufferedOutputStream(clientSocket.getOutputStream()));
+                outWriter.writeUTF(UDP_PORT + " " + MULTICAST_ADDRESS);
+                outWriter.flush();
+
                 threadPool.execute(new ServerWorker(clientSocket, socialNetwork)); //genero un thread worker legato a quel client
             } catch (IOException ex) {
                 ex.printStackTrace();

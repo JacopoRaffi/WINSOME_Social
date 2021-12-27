@@ -66,14 +66,24 @@ public class ClientClass implements Runnable {
         System.out.println("MULTICAST_PORT = " + MULTICAST_PORT);
         System.out.println("TIMEOUT_SOCKET = " + TIMEOUT);
         try{
+            //configurazione TCP
             Socket socket = new Socket("localhost", TCP_PORT);
-            MulticastSocket msocket = new MulticastSocket(UDP_PORT);
-            InetAddress address = InetAddress.getByName(MULTICAST_ADDRESS);
+            //lettura parametri per il Multicast Socket
+            DataInputStream inReader = new DataInputStream(socket.getInputStream());
+            String multiCastParam = "";
+            multiCastParam = inReader.readUTF();
+            String[] parametriMS = multiCastParam.split(" ");
+
+            //configurazione multicastSocket
+            MulticastSocket msocket = new MulticastSocket(Integer.parseInt(parametriMS[0]));
+            InetAddress address = InetAddress.getByName(parametriMS[1]);
             msocket.setReuseAddress(true);
             msocket.joinGroup(address);
             Thread waitingThread = new Thread(new ClientUDPThread(msocket));
             waitingThread.setDaemon(true);
             waitingThread.start();
+
+            //configurazione RMI
             registry = LocateRegistry.getRegistry(REG_PORT);
             regFun = (ServerRegistryInterface) registry.lookup(REG_SERVICENAME);
             ClientNotifyInterface callbackObj = new ClientNotifyClass(followers);
