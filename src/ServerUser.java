@@ -16,6 +16,7 @@ public class ServerUser {
     private LinkedHashSet<String> followed;
     private ConcurrentHashMap<Integer, ServerPost> feed; //la key è l'idPost
     private ConcurrentHashMap<Integer, ServerPost> blog;
+    private final Wallet wallet;
 
     public ServerUser(String username, String password, String tags, String userAddress) throws NoSuchAlgorithmException {
         byte[] arr = new byte[32];
@@ -29,6 +30,7 @@ public class ServerUser {
         followed = new LinkedHashSet<>();
         feed = new ConcurrentHashMap<>();
         blog = new ConcurrentHashMap<>();
+        wallet = new Wallet();
     }
 
     public boolean login(String username, String password) throws NoSuchAlgorithmException{
@@ -63,6 +65,9 @@ public class ServerUser {
         return (hashedPassword.compareTo(HashFunction.bytesToHex(HashFunction.sha256(password))) == 0);
     }
 
+    public Wallet getWallet(){
+        return wallet;
+    }
     @Override
     public String toString(){
         return this.username;

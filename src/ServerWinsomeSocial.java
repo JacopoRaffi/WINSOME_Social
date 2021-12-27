@@ -1,5 +1,11 @@
 import Exceptions.IllegalRegisterException;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.rmi.RemoteException;
 import java.rmi.server.RemoteObject;
 import java.security.NoSuchAlgorithmException;
@@ -126,6 +132,18 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
         }catch(RemoteException e){
             return false;
         }
+    }
+
+    public double toBitcoin (int wincoins) throws MalformedURLException, IOException {
+        //voglio un numero decimale per evitare che i wincoin valgano più dei bitcoin
+        URL url = new URL("https://www.random.org/decimal-fractions/?num=1&dec=4&col=2&format=plain&rnd=new");
+        InputStream urlReader = url.openStream();
+        BufferedReader buffReader = new BufferedReader(new InputStreamReader(urlReader));
+        String line;
+        line = buffReader.readLine();
+        System.out.println("ho letto riga: " + line);
+
+        return Double.parseDouble(line) * wincoins;
     }
 
 }

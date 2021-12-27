@@ -1,9 +1,6 @@
 import java.io.*;
 import java.lang.reflect.Type;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.*;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -117,6 +114,7 @@ public class ServerMain {
             System.exit(-1);
         }
         closeServer(welcomeSocket, socketUDP, threadPool, threadUDP, autoSaving);
+        
         while (true) {
             try {
                 welcomeSocket.setSoTimeout((int) TIMEOUT);
@@ -128,7 +126,6 @@ public class ServerMain {
                 System.exit(-1);
             }
         }
-
     }
 
     private static void restoreValues() {
