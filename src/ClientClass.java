@@ -190,7 +190,7 @@ public class ClientClass implements Runnable {
                             try {
                                 followers.addAll(regFun.backUpFollowers(username, password));
                                 regFun.registerForCallback(stub, username, password);
-                            }catch(NoSuchAlgorithmException e){
+                            }catch(NoSuchAlgorithmException | NullPointerException e){
                                 System.err.println("ERRORE SERVER: c'è stato un problema, riprovare successivamente");
                             }
                         }catch(NotBoundException e){
@@ -206,11 +206,8 @@ public class ClientClass implements Runnable {
             }
             else if(request.compareTo("logout") == 0){
                 if(logged) {
-                    outWriter.close();
-                    inReader.close();
-                    socket.close();
                     System.out.println("< Chiusura da WINSOME");
-                    break;
+                    continue;
                 }
                 else{
                     System.err.println(NOT_LOGGED_MESSAGE);
@@ -476,6 +473,12 @@ public class ClientClass implements Runnable {
                 }else
                     System.out.println(NOT_LOGGED_MESSAGE);
             }
+            else if(request.compareTo("quit") == 0){
+                outWriter.close();
+                inReader.close();
+                socket.close();
+                System.exit(0);
+            }
             else{
                 System.out.println("Comando non riconosciuto: digitare help per la lista di comandi");
             }
@@ -504,6 +507,7 @@ public class ClientClass implements Runnable {
                         addComment <idpost> <commento>
                         getWallet
                         getWalletInBitcoin
+                        quit
                         """);
     }
 }
