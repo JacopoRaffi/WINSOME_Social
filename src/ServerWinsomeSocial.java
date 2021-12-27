@@ -162,16 +162,17 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
     }
 
     public boolean deletePost(Long idPost, String username){
-        if(socialPost.remove(idPost) != null){
-            ServerUser user = socialUsers.get(username);
-            user.removePostBlog(idPost);
-            for (String key: user.getFollowers()) {
-                socialUsers.get(key).removePostFeed(idPost);
+        synchronized (socialPost.get(idPost)) { //per evitare il rischio che qualcuno commenti il post mentre viene cancellato
+            if (socialPost.remove(idPost) != null) {
+                ServerUser user = socialUsers.get(username);
+                user.removePostBlog(idPost);
+                for (String key : user.getFollowers()) {
+                    socialUsers.get(key).removePostFeed(idPost);
+                }
+                return true;
+            } else {
+                return false;
             }
-            return true;
-        }
-        else {
-            return false;
         }
     }
 }

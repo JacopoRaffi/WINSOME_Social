@@ -3,6 +3,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
+import java.util.Calendar;
 
 public class ServerReward extends Thread {
     private DatagramSocket socketUDP;
@@ -40,7 +41,14 @@ public class ServerReward extends Thread {
     }
 
     private void calcoloRicompense(){
+        long startTimeMillis = Calendar.getInstance().getTimeInMillis();
+        for (ServerUser user: social.getSocialUsers().values()) {
+            for (ServerPost post: user.getBlog().values()) {
+                if(post.getAutore().compareTo(user.getUsername()) == 0){
 
+                }
+            }
+        }
     }
 
 }

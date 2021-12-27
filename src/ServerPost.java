@@ -28,8 +28,8 @@ public class ServerPost {
         return idpost;
     }
 
-    public synchronized LinkedList<Comment> getComments() {
-        return (LinkedList<Comment>)comments.clone();
+    public synchronized Hashtable<String, LinkedList<Comment>> getComments() {
+        return (Hashtable<String, LinkedList<Comment>>)comments.clone();
     }
 
     public synchronized LinkedList<FeedBack> getLikes() {

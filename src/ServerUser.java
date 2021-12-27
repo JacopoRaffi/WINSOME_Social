@@ -84,6 +84,10 @@ public class ServerUser {
     public Wallet getWallet(){
         return wallet;
     }
+
+    public String getUsername(){
+        return username;
+    }
     @Override
     public String toString(){
         return this.username;
