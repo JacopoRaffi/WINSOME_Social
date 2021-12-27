@@ -90,11 +90,11 @@ public class ServerWorker implements Runnable{
             writer.flush();
         }
         else if(request.startsWith("showfeed")){
-            response = "FEED:: " + social.showFeed(clientUserName);
+            response = "FEED: " + social.showFeed(clientUserName);
             writer.writeUTF(response);
             writer.flush();
         }
-        else if(request.startsWith("showblog")){
+        else if(request.startsWith("viewblog")){
             response = "BLOG: " + social.showBlog(clientUserName);
             writer.writeUTF(response);
             writer.flush();
