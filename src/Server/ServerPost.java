@@ -64,4 +64,8 @@ public class ServerPost {
     public String getAutore(){
         return autore;
     }
+
+    public String getContenuto(){
+        return contenuto;
+    }
 }

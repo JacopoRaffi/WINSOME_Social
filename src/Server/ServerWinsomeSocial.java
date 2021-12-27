@@ -188,4 +188,14 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
             }
         }
     }
+
+    public String showPost(Long idpost){
+        ServerPost post;
+        if((post = socialPost.get(idpost)) == null){
+            return null;
+        }
+        else{
+            return "" + post.getIdpost() + ", TITOLO: "+ post.getAutore() + "\n" + post.getContenuto();
+        }
+    }
 }

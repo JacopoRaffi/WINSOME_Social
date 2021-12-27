@@ -77,6 +77,17 @@ public class ServerWorker implements Runnable{
                 writer.flush();
             }
         }
+        else if(request.startsWith("showpost")){
+            response = social.showPost(Long.parseLong(param[1]));
+            if(response == null) {
+                writer.writeUTF("ERRORE: post non presente nel social");
+                writer.flush();
+            }
+            else{
+                writer.writeUTF(response);
+                writer.flush();
+            }
+        }
         else if(request.startsWith("getwalletinbitcoin")){
             try{
                 Wallet wallet = social.getSocialUsers().get(clientUserName).getWallet();
