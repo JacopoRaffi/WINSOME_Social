@@ -58,12 +58,9 @@ public class ClientClass implements Runnable {
         }
         System.out.println("VALORI DEL CLIENT:");
         System.out.println("SERVER_ADDRESS = " + SERVER_ADDRESS);
-        System.out.println("MULTICAST_ADDRESS = " + MULTICAST_ADDRESS);
         System.out.println("REG_SERVICENAME = " + REG_SERVICENAME);
         System.out.println("TCP_PORT = " + TCP_PORT);
-        System.out.println("UDP_PORT = " + UDP_PORT);
         System.out.println("REG_PORT = " + REG_PORT);
-        System.out.println("MULTICAST_PORT = " + MULTICAST_PORT);
         System.out.println("TIMEOUT_SOCKET = " + TIMEOUT);
         try{
             //configurazione TCP

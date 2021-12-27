@@ -21,7 +21,6 @@ public class ServerMain {
     //principali variabili(con relativi valori di default)
     private static int TCP_PORT = 9011;
     private static int UDP_PORT = 33333;
-    private static int MULTICAST_PORT = 44444;
     private static int REG_PORT = 7777;
     private static String SERVER_ADDRESS = "192.168.1.2";
     private static String MULTICAST_ADDRESS = "239.255.32.32";
@@ -48,7 +47,6 @@ public class ServerMain {
         System.out.println("TCP_PORT = " + TCP_PORT);
         System.out.println("UDP_PORT = " + UDP_PORT);
         System.out.println("REG_PORT = " + REG_PORT);
-        System.out.println("MULTICAST_PORT = " + MULTICAST_PORT);
         System.out.println("TIMEOUT_SOCKET = " + TIMEOUT);
         System.out.println("AUTHOR PERCENTAGE REWARD = " + AUTHOR_RATE*100 + "%");
         System.out.println("TIMELAPSE BETWEEN REWARDS = " + TIMELAPSE);
@@ -137,7 +135,6 @@ public class ServerMain {
     private static void restoreValues() {
         TCP_PORT = 6666;
         UDP_PORT = 33333;
-        MULTICAST_PORT = 44444;
         REG_PORT = 7777;
         SERVER_ADDRESS = "192.168.1.2";
         MULTICAST_ADDRESS = "239.255.32.32";
@@ -165,9 +162,7 @@ public class ServerMain {
                     UDP_PORT = Integer.parseInt(tokens[1]);
                 } else if (tokens[0].compareTo("REG_PORT") == 0) {
                     REG_PORT = Integer.parseInt(tokens[1]);
-                } else if (tokens[0].compareTo("MULTICAST_PORT") == 0) {
-                    MULTICAST_PORT = Integer.parseInt(tokens[1]);
-                } else if (tokens[0].compareTo("TIMEOUT") == 0) {
+                }  else if (tokens[0].compareTo("TIMEOUT") == 0) {
                     TIMEOUT = Long.parseLong(tokens[1]);
                 }
                 else if (tokens[0].compareTo("AUTHOR_RATE") == 0) {
