@@ -63,8 +63,11 @@ public class ServerReward extends Thread {
             double percCuratori = guadagnoTotale * (1 - percentualeAutore) / dimCuratori;
             double percAutore = guadagnoTotale * percentualeAutore;
             for (String cur:curatori) {
+                social.getSocialUsers().get(cur).getWallet().addTransazione(percCuratori + ", " + Calendar.getInstance().getTime());
                 social.getSocialUsers().get(cur).getWallet().addIncremento(percCuratori);
             }
+            social.getSocialUsers().get(user.getUsername()).getWallet().addIncremento(percAutore);
+            social.getSocialUsers().get(user.getUsername()).getWallet().addTransazione(percAutore + ", " + Calendar.getInstance().getTime());
         }
     }
     private double guadagno(ServerPost post, Set<String> curatori){

@@ -103,7 +103,6 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
             return;
         else
             usersCallbacks.putIfAbsent(username, ClientInterface);
-        System.out.println(usersCallbacks.keySet());
     }
 
     public synchronized void unregisterForCallback (ClientNotifyInterface ClientInterface, String username, String password) throws RemoteException, NoSuchAlgorithmException{
@@ -142,7 +141,6 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
         BufferedReader buffReader = new BufferedReader(new InputStreamReader(urlReader));
         String line;
         line = buffReader.readLine();
-        System.out.println("ho letto riga: " + line);
 
         return Double.parseDouble(line) * wincoins;
     }

@@ -1,5 +1,7 @@
 package Server;
 
+import Utilities.Wallet;
+
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -77,7 +79,8 @@ public class ServerWorker implements Runnable{
         }
         else if(request.startsWith("getwalletinbitcoin")){
             try{
-                response = "PORTAFOGLIO(BITCOIN): " + social.toBitcoin(social.getSocialUsers().get(clientUserName).getWallet().getTotale());
+                Wallet wallet = social.getSocialUsers().get(clientUserName).getWallet();
+                response = "PORTAFOGLIO(BITCOIN): " + social.toBitcoin(wallet.getTotale()) + wallet.toString();
             }catch(IOException e){
                 response = "ERRORE: problema durante il calcolo del portafoglio, riprovare più tardi";
             }
