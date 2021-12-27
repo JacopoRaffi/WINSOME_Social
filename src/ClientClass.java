@@ -35,6 +35,7 @@ public class ClientClass implements Runnable {
     private String username;
     private String password;
     private ServerRegistryInterface regFun;
+    private Registry registry;
 
     public ClientClass(String fileConfigName){
         listLock = new ReentrantLock();
@@ -71,8 +72,12 @@ public class ClientClass implements Runnable {
             Thread waitingThread = new Thread(new ClientUDPThread(msocket, address, UDP_PORT));
             waitingThread.setDaemon(true);
             waitingThread.start();
-            socialActivity(socket); //inizio dell'utilizzo del social da parte del client
-        }catch(IOException e){
+            registry = LocateRegistry.getRegistry(REG_PORT);
+            regFun = (ServerRegistryInterface) registry.lookup(REG_SERVICENAME);
+            ClientNotifyInterface callbackObj = new ClientNotifyClass(followers);
+            ClientNotifyInterface stub = (ClientNotifyInterface) UnicastRemoteObject.exportObject(callbackObj, 0);
+            socialActivity(socket, stub); //inizio dell'utilizzo del social da parte del client
+        }catch(IOException | NotBoundException e){
             System.err.println("ERRORE: connessione col server interrotta");
             System.exit(-1);
         }
@@ -80,7 +85,6 @@ public class ClientClass implements Runnable {
 
     private  void register(String username, String password, String tags){
         try{
-            Registry registry = LocateRegistry.getRegistry(REG_PORT);
             regFun = (ServerRegistryInterface) registry.lookup(REG_SERVICENAME);
             if(regFun.userRegister(username, password, tags, InetAddress.getLocalHost().toString())) {
                 System.out.println("REGISTRAZIONE EFFETTUATA CON SUCCESSO");
@@ -140,7 +144,7 @@ public class ClientClass implements Runnable {
     }
 
     //funzione che legge i comandi da tastiera
-    private void socialActivity(Socket socket) throws IOException{
+    private void socialActivity(Socket socket, ClientNotifyInterface stub) throws IOException{
         String NOT_LOGGED_MESSAGE = "< ERRORE: non hai fatto il login in WINSOME";
         String[] commandLine;
         String serverResponse;
@@ -180,23 +184,13 @@ public class ClientClass implements Runnable {
                     serverResponse = inReader.readUTF(); //leggo la risposta del server
                     if (serverResponse.startsWith("SUCCESSO")) {
                         logged = true;
+                        username = commandLine[1];
+                        password = commandLine[2];
                         try {
-                            username = commandLine[1];
-                            password = commandLine[2];
-                            Registry registry = LocateRegistry.getRegistry(REG_PORT);
-                            regFun = (ServerRegistryInterface) registry.lookup(REG_SERVICENAME);
-                            ClientNotifyInterface callbackObj = new ClientNotifyClass(followers);
-                            ClientNotifyInterface stub = (ClientNotifyInterface) UnicastRemoteObject.exportObject(callbackObj, 0);
-                            try {
-                                followers.addAll(regFun.backUpFollowers(username, password));
-                                regFun.registerForCallback(stub, username, password);
-                            }catch(NoSuchAlgorithmException | NullPointerException e){
-                                System.err.println("ERRORE SERVER: c'è stato un problema, riprovare successivamente");
-                            }
-                        }catch(NotBoundException e){
-                            System.err.println("ERRORE: login fallito a causa di problemi col server");
-                            logged = false;
-                            continue;
+                            followers.addAll(regFun.backUpFollowers(username, password));
+                            regFun.registerForCallback(stub, username, password);
+                        }catch(NoSuchAlgorithmException | NullPointerException e){
+                            System.err.println("ERRORE SERVER: c'è stato un problema, riprovare successivamente");
                         }
                     }
                     System.out.println("< " + serverResponse);
@@ -207,7 +201,13 @@ public class ClientClass implements Runnable {
             else if(request.compareTo("logout") == 0){
                 if(logged) {
                     System.out.println("< Chiusura da WINSOME");
-                    continue;
+                    try {
+                        regFun.unregisterForCallback(stub, username, password);
+                        logged = false;
+                    }catch(NoSuchAlgorithmException e){
+                        System.err.println("ERRORE SERVER: c'è stato un problema, riprovare successivamente");
+                        continue;
+                    }
                 }
                 else{
                     System.err.println(NOT_LOGGED_MESSAGE);
