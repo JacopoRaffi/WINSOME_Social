@@ -35,8 +35,8 @@ public class ServerWorker implements Runnable{
 
     private void executeRequest(String request, DataOutputStream writer) throws IOException{
         String response = "";
+        String[] param = request.split(" ");
         if(request.startsWith("login")){
-            String[] param = request.split(" ");
             if(social.login(param[1], param[2])) { //username e password
                 response = "SUCCESSO: Login effettuato con successo";
                 clientUserName = param[1];
@@ -49,7 +49,17 @@ public class ServerWorker implements Runnable{
                 writer.flush();
             }
         }
-        else if(request.startsWith("follow")){
+        else if(request.startsWith("createpost")){
+            if(social.createPost(clientUserName, param[1], param[2])){
+                response = "SUCCESSO: Post creato";
+                writer.writeUTF(response);
+                writer.flush();
+            }
+            else{
+                response = "ERRORE: errore durante la creazione del post";
+                writer.writeUTF(response);
+                writer.flush();
+            }
         }
     }
 

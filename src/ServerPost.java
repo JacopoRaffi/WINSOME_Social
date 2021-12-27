@@ -5,26 +5,32 @@ import java.util.Calendar;
 import java.util.LinkedList;
 
 public class ServerPost {
-    private Integer idpost;
+    private Long idpost;
     private String autore;
     private String titolo;
     private String contenuto;
     private long timeStamp;
+    private boolean rewined;
     LinkedList<Comment> comments;
     LinkedList<FeedBack> likes;
 
-    public ServerPost(Integer idpost, String titolo, String contenuto, String autore){
+    public ServerPost(Long idpost, String titolo, String contenuto, String autore){
         this.contenuto = contenuto;
         this.autore = autore;
         this.idpost = idpost;
         this.titolo = titolo;
+        rewined = false;
         comments = new LinkedList<>();
         likes = new LinkedList<>();
         timeStamp = Calendar.getInstance().getTimeInMillis(); //serve sapere per il calcolo delle ricompense
     }
 
-    public synchronized Integer getIdpost() {
+    public synchronized Long getIdpost() {
         return idpost;
+    }
+
+    public void setRewined(boolean rewined) {
+        this.rewined = rewined;
     }
 
     public synchronized LinkedList<Comment> getComments() {

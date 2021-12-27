@@ -29,7 +29,7 @@ public class Wallet {
     }
 
     @Override
-    public String toString(){
-        return "" + totale + ", {" + transazioni + "}";
+    public String toString(){ //la stringa sarà totale, [transazione1, transazione2,..., transazioneN]
+        return "" + totale + ", "  + transazioni;
     }
 }

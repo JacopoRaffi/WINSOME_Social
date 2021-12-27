@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryInterface {
-    private ConcurrentHashMap<Integer, ServerPost> socialPost;
+    private ConcurrentHashMap<Long, ServerPost> socialPost;
     private ConcurrentHashMap<String, ServerUser> socialUsers;
     private ConcurrentHashMap<String, ClientNotifyInterface> usersCallbacks; //associo ad uno username la sua Interface così so a chi inviare la notifica
     private volatile AtomicLong postID;
@@ -79,20 +79,20 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
     }
 
     //questi due metodi get sono utili per il backup su file json
-    protected ConcurrentHashMap<Integer, ServerPost> getSocialPost(){
+    public ConcurrentHashMap<Long, ServerPost> getSocialPost(){
         return new ConcurrentHashMap<>(socialPost);
     }
 
-    protected ConcurrentHashMap<String, ServerUser> getSocialUsers(){
+    public ConcurrentHashMap<String, ServerUser> getSocialUsers(){
         return new ConcurrentHashMap<>(socialUsers);
     }
 
     //questi due metodi set sono utili per l'avvio del server(ripristinare tutto dal backup)
-    protected void setSocialUsers(ConcurrentHashMap<String, ServerUser> mapUser){
+    public void setSocialUsers(ConcurrentHashMap<String, ServerUser> mapUser){
         this.socialUsers = mapUser;
     }
 
-    protected void setSocialPost(ConcurrentHashMap<Integer, ServerPost> mapPost){
+    public void setSocialPost(ConcurrentHashMap<Long, ServerPost> mapPost){
         this.socialPost = mapPost;
     }
 
@@ -146,4 +146,32 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
         return Double.parseDouble(line) * wincoins;
     }
 
+    public boolean createPost(String autore, String titolo, String contenuto){
+        long id = postID.addAndGet(1);
+        ServerPost newPost = new ServerPost(id, titolo, contenuto, autore);
+        if(socialPost.putIfAbsent(id, newPost) == null){ //aggiungo l'utente registrato
+            socialUsers.get(autore).addPostBlog(newPost);
+            System.out.println("NUOVO POST CREATO: " + titolo);
+            for (String key : socialUsers.get(autore).getFollowers()) {
+                socialUsers.get(key).addPostFeed(newPost);
+            }
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public boolean deletePost(Long idPost, String username){
+        if(socialPost.remove(idPost) != null){
+            ServerUser user = socialUsers.get(username);
+            user.removePostBlog(idPost);
+            for (String key: user.getFollowers()) {
+                socialUsers.get(key).removePostFeed(idPost);
+            }
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
 }

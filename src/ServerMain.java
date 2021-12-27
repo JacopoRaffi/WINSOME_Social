@@ -5,6 +5,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -101,7 +102,6 @@ public class ServerMain {
         }
         ServerReward threadUDP = new ServerReward(socialNetwork, TIMELAPSE, socketUDP, multiCastAddress, UDP_PORT);
         threadUDP.start();
-
         ExecutorService threadPool = Executors.newCachedThreadPool(); //pool di worker(uno per client)
         //il server main si occupa delle connessioni TCP
         ServerSocket welcomeSocket = null;
@@ -197,8 +197,8 @@ public class ServerMain {
         social.setSocialUsers(mapUser);
 
         JsonReader readerPost = new JsonReader(new FileReader(postStatus));
-        Type typeOfMapPost = new TypeToken<ConcurrentHashMap<Integer, ServerPost>>() {}.getType();
-        ConcurrentHashMap<Integer, ServerPost> mapPost = gson.fromJson(readerPost, typeOfMapPost);
+        Type typeOfMapPost = new TypeToken<ConcurrentHashMap<Long, ServerPost>>() {}.getType();
+        ConcurrentHashMap<Long, ServerPost> mapPost = gson.fromJson(readerPost, typeOfMapPost);
         if(mapPost == null)
             mapPost = new ConcurrentHashMap<>();
         social.setSocialPost(mapPost);

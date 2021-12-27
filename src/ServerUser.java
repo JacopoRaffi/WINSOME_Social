@@ -14,8 +14,8 @@ public class ServerUser {
     private boolean logged;
     private LinkedHashSet<String> followers; //la key è il nome dell'utente(username unico nel social)
     private LinkedHashSet<String> followed;
-    private ConcurrentHashMap<Integer, ServerPost> feed; //la key è l'idPost
-    private ConcurrentHashMap<Integer, ServerPost> blog;
+    private ConcurrentHashMap<Long, ServerPost> feed; //la key è l'idPost
+    private ConcurrentHashMap<Long, ServerPost> blog;
     private final Wallet wallet;
 
     public ServerUser(String username, String password, String tags, String userAddress) throws NoSuchAlgorithmException {
@@ -33,7 +33,23 @@ public class ServerUser {
         wallet = new Wallet();
     }
 
-    public boolean login(String username, String password) throws NoSuchAlgorithmException{
+    public boolean addPostBlog(ServerPost post){
+        return (blog.putIfAbsent(post.getIdpost(), post) == null);
+    }
+
+    public boolean addPostFeed(ServerPost post){
+        return (feed.putIfAbsent(post.getIdpost(), post) == null);
+    }
+
+    public boolean removePostFeed(Long idpost){
+        return (feed.remove(idpost) != null);
+    }
+
+    public boolean removePostBlog(Long idpost){
+        return (blog.remove(idpost) != null);
+    }
+
+    public synchronized boolean login(String username, String password) throws NoSuchAlgorithmException{
         if (hashedPassword.compareTo(HashFunction.bytesToHex(HashFunction.sha256(password))) == 0 && (username.compareTo(this.username) == 0)) {
             logged = true;
             return true;
