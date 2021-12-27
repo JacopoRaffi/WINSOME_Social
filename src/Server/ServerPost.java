@@ -18,11 +18,9 @@ public class ServerPost {
     private int numIterazioni;
     private Hashtable<String, LinkedList<Comment>> comments;
     private LinkedList<FeedBack> likes;
-    private Lock postLock;
 
     public ServerPost(Long idpost, String titolo, String contenuto, String autore){
         numIterazioni = 0;
-        postLock = new ReentrantLock();
         this.contenuto = contenuto;
         this.autore = autore;
         this.idpost = idpost;
