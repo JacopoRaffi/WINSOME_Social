@@ -109,6 +109,8 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
 
     public void setSocialPost(ConcurrentHashMap<Long, ServerPost> mapPost){
         this.socialPost = mapPost;
+        if(!socialPost.keySet().isEmpty())
+            this.postID = new AtomicLong(Collections.max(socialPost.keySet()));
     }
 
     public synchronized void registerForCallback (ClientNotifyInterface ClientInterface, String username, String password) throws RemoteException, NoSuchAlgorithmException{
