@@ -61,6 +61,32 @@ public class ServerWorker implements Runnable{
                 writer.flush();
             }
         }
+        else if(request.startsWith("deletepost")){
+            if(social.deletePost(Long.parseLong(param[1]), clientUserName)){
+                response = "SUCCESSO: Post eliminato";
+                writer.writeUTF(response);
+                writer.flush();
+            }
+            else{
+                response = "ERRORE: errore durante la cancellazione del post";
+                writer.writeUTF(response);
+                writer.flush();
+            }
+        }
+        else if(request.startsWith("getwalletinbitcoin")){
+            try{
+                response = "PORTAFOGLIO(BITCOIN): " + social.toBitcoin(social.getSocialUsers().get(clientUserName).getWallet().getTotale());
+            }catch(IOException e){
+                response = "ERRORE: problema durante il calcolo del portafoglio, riprovare più tardi";
+            }
+            writer.writeUTF(response);
+            writer.flush();
+        }
+        else if(request.startsWith("getwallet")){
+            response = "PORTAFOGLIO(WINCOIN): " + (social.getSocialUsers().get(clientUserName).getWallet().getTotale());
+            writer.writeUTF(response);
+            writer.flush();
+        }
     }
 
 }

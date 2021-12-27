@@ -12,7 +12,7 @@ public class Wallet {
         transazioni = new LinkedList<>();
     }
 
-    public long getTotale() {
+    public int getTotale() {
         return totale;
     }
 

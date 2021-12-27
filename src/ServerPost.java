@@ -10,7 +10,6 @@ public class ServerPost {
     private String titolo;
     private String contenuto;
     private long timeStamp;
-    private boolean rewined;
     LinkedList<Comment> comments;
     LinkedList<FeedBack> likes;
 
@@ -19,7 +18,6 @@ public class ServerPost {
         this.autore = autore;
         this.idpost = idpost;
         this.titolo = titolo;
-        rewined = false;
         comments = new LinkedList<>();
         likes = new LinkedList<>();
         timeStamp = Calendar.getInstance().getTimeInMillis(); //serve sapere per il calcolo delle ricompense
@@ -27,10 +25,6 @@ public class ServerPost {
 
     public synchronized Long getIdpost() {
         return idpost;
-    }
-
-    public void setRewined(boolean rewined) {
-        this.rewined = rewined;
     }
 
     public synchronized LinkedList<Comment> getComments() {

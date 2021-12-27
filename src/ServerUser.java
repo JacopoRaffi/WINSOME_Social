@@ -81,8 +81,8 @@ public class ServerUser {
         return (hashedPassword.compareTo(HashFunction.bytesToHex(HashFunction.sha256(password))) == 0);
     }
 
-    public String getWallet(){
-        return wallet.toString();
+    public Wallet getWallet(){
+        return wallet;
     }
     @Override
     public String toString(){
