@@ -136,9 +136,9 @@ public class ServerMain {
         UDP_PORT = 33333;
         MULTICAST_PORT = 44444;
         REG_PORT = 7777;
-        String SERVER_ADDRESS = "192.168.1.2";
-        String MULTICAST_ADDRESS = "239.255.32.32";
-        String REG_SERVICENAME = "localhost";
+        SERVER_ADDRESS = "192.168.1.2";
+        MULTICAST_ADDRESS = "239.255.32.32";
+        REG_SERVICENAME = "localhost";
         TIMEOUT = 100000;
         TIMELAPSE = 100000;
         AUTHOR_RATE = 0.8;
