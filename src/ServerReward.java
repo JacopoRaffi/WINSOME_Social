@@ -44,8 +44,8 @@ public class ServerReward extends Thread {
         long startTimeMillis = Calendar.getInstance().getTimeInMillis();
         for (ServerUser user: social.getSocialUsers().values()) {
             for (ServerPost post: user.getBlog().values()) {
-                if(post.getAutore().compareTo(user.getUsername()) == 0){
-
+                if(post.getAutore().compareTo(user.getUsername()) == 0){ //usata per evitare di fare calcoli su post rewined
+                    
                 }
             }
         }
