@@ -213,7 +213,7 @@ public class ServerMain {
                     autoSaving.backupPost();
                     autoSaving.backupUsers();
                     autoSaving.interrupt();
-                    pool.shutdown();
+                    pool.shutdownNow();
                     socketTCP.close();
                     socketUDP.close();
                     System.out.println("SERVER TERMINATO");
