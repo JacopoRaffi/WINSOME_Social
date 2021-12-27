@@ -56,6 +56,7 @@ public class ServerReward extends Thread {
             double guadagnoTotale = 0;
             Set<String> curatori = new TreeSet<>(); //voglio i curatori per aumentare la loro ricompensa(Set perchè non voglio ripetere gli stessi curatori)
             for (ServerPost post: user.getBlog().values()) {
+                if(user.getUsername().compareTo(post.getAutore()) == 0)
                 guadagnoTotale += guadagno(post, curatori);
             }
             int dimCuratori = curatori.size() == 0 ? 1 : curatori.size(); //serve per evitare di dividere per 0
@@ -102,7 +103,7 @@ public class ServerReward extends Thread {
         Set<String> newPeople = new TreeSet<>(); //qui metto le persone che avranno commentato di recente
 
         for (String key: post.getComments().keySet()) {
-            List<Comment> filteredComment = post.comments.get(key).stream().filter(comment -> comment.getTime() < lastCalculation).collect(Collectors.toList());
+            List<Comment> filteredComment = post.getComments().get(key).stream().filter(comment -> comment.getTime() < lastCalculation).collect(Collectors.toList());
             if(!filteredComment.isEmpty()){
                 newPeople.add(key);
             }

@@ -6,19 +6,23 @@ import Utilities.FeedBack;
 import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.LinkedList;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class ServerPost {
-    private Long idpost;
-    private String autore;
-    private String titolo;
-    private String contenuto;
-    private long timeStamp;
+    private final Long idpost;
+    private final String autore;
+    private final String titolo;
+    private final String contenuto;
+    private final long timeStamp;
     private int numIterazioni;
-    Hashtable<String, LinkedList<Comment>> comments;
-    LinkedList<FeedBack> likes;
+    private Hashtable<String, LinkedList<Comment>> comments;
+    private LinkedList<FeedBack> likes;
+    private Lock postLock;
 
     public ServerPost(Long idpost, String titolo, String contenuto, String autore){
         numIterazioni = 0;
+        postLock = new ReentrantLock();
         this.contenuto = contenuto;
         this.autore = autore;
         this.idpost = idpost;

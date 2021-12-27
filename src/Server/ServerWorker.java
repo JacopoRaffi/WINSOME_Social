@@ -1,7 +1,5 @@
 package Server;
 
-import Server.ServerWinsomeSocial;
-
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -88,6 +86,16 @@ public class ServerWorker implements Runnable{
         }
         else if(request.startsWith("getwallet")){
             response = "PORTAFOGLIO(WINCOIN): " + (social.getSocialUsers().get(clientUserName).getWallet().getTotale());
+            writer.writeUTF(response);
+            writer.flush();
+        }
+        else if(request.startsWith("showfeed")){
+            response = "FEED:: " + social.showFeed(clientUserName);
+            writer.writeUTF(response);
+            writer.flush();
+        }
+        else if(request.startsWith("showblog")){
+            response = "BLOG: " + social.showBlog(clientUserName);
             writer.writeUTF(response);
             writer.flush();
         }
