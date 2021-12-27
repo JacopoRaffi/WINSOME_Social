@@ -10,8 +10,7 @@ import java.net.URL;
 import java.rmi.RemoteException;
 import java.rmi.server.RemoteObject;
 import java.security.NoSuchAlgorithmException;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -69,6 +68,21 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
 
     public String listFollowed(String username){
         return socialUsers.get(username).getFollowed().toString();
+    }
+
+    public String listUsers(String[] tags, String username){
+        Set<String> commonTagsUsers = new TreeSet<>();
+        for (ServerUser user : socialUsers.values()) {
+            if(username.compareTo(user.getUsername()) != 0) {
+                Iterator<String> it = Arrays.stream(tags).iterator();
+                while (it.hasNext()) {
+                    if (Arrays.asList(user.getTags()).contains(it.next())) {
+                        commonTagsUsers.add(user.getUsername());
+                    }
+                }
+            }
+        }
+        return commonTagsUsers.toString();
     }
 
     public String showFeed(String username){

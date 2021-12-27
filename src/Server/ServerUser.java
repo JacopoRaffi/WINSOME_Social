@@ -79,6 +79,10 @@ public class ServerUser {
         return blog;
     }
 
+    public String[] getTags(){
+        return tags;
+    }
+
     public boolean comparePassword(String password) throws NoSuchAlgorithmException{
         return (hashedPassword.compareTo(HashFunction.bytesToHex(HashFunction.sha256(password+seed))) == 0);
     }
