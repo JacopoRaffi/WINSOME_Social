@@ -100,7 +100,7 @@ public class ServerWorker implements Runnable{
         else if(request.startsWith("getwalletinbitcoin")){
             try{
                 Wallet wallet = social.getSocialUsers().get(clientUserName).getWallet();
-                response = "PORTAFOGLIO(BITCOIN): " + social.toBitcoin(wallet.getTotale()) + wallet.toString();
+                response = "PORTAFOGLIO(BITCOIN): " + social.toBitcoin(wallet.getTotale());
             }catch(IOException e){
                 response = "ERRORE: problema durante il calcolo del portafoglio, riprovare più tardi";
             }
@@ -108,7 +108,8 @@ public class ServerWorker implements Runnable{
             writer.flush();
         }
         else if(request.startsWith("getwallet")){
-            response = "PORTAFOGLIO(WINCOIN): " + (social.getSocialUsers().get(clientUserName).getWallet().getTotale());
+            Wallet wallet = social.getSocialUsers().get(clientUserName).getWallet();
+            response = "PORTAFOGLIO(WINCOIN): " + wallet.getTotale() + ", " + wallet.getTransazioni();
             writer.writeUTF(response);
             writer.flush();
         }
