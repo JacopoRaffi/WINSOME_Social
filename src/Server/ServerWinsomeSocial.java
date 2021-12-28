@@ -124,13 +124,16 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
         return aux;
     }
 
-    //questi due metodi get sono utili per il backup su file json
-    public ConcurrentHashMap<Long, ServerPost> getSocialPost(){
-        return socialPost;
+    public ConcurrentHashMap<String, ServerUser> getSocialUsers(){
+        return new ConcurrentHashMap<>(socialUsers); //restituisco una copia per il calcolo delle ricompense
     }
 
-    public ConcurrentHashMap<String, ServerUser> getSocialUsers(){
+    public ConcurrentHashMap<String, ServerUser> getBackupUsers(){
         return socialUsers;
+    }
+
+    public ConcurrentHashMap<Long, ServerPost> getBackupPost(){
+        return socialPost;
     }
 
     //questi due metodi set sono utili per l'avvio del server(ripristinare tutto dal backup)

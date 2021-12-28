@@ -56,7 +56,7 @@ public class ServerReward extends Thread {
             double guadagnoTotale = 0;
             Set<String> curatori = new TreeSet<>(); //voglio i curatori per aumentare la loro ricompensa(Set perchè non voglio ripetere gli stessi curatori)
             for (ServerPost post: user.getBlog().values()) {
-                if(user.getUsername().compareTo(post.getAutore()) == 0)
+                if(user.getUsername().compareTo(post.getAutore()) == 0) //serve per evitare guadagni su post rewined
                 guadagnoTotale += guadagno(post, curatori);
             }
             int dimCuratori = curatori.size() == 0 ? 1 : curatori.size(); //serve per evitare di dividere per 0
