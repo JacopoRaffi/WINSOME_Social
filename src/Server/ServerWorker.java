@@ -89,7 +89,7 @@ public class ServerWorker implements Runnable{
             }
         }
         else if(request.startsWith("rewinpost")){
-            if(social.rewinPost(Long.parseLong(param[1]), clientUserName)) {
+            if(!social.rewinPost(Long.parseLong(param[1]), clientUserName)) {
                 writer.writeUTF("ERRORE: post non presente nel social oppure utente non seguito");
             }
             else{

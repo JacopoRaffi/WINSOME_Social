@@ -70,4 +70,9 @@ public class ServerPost {
     public String getContenuto(){
         return contenuto;
     }
+
+    @Override
+    public String toString(){
+        return "AUTORE: " + autore + "\n" + "TITOLO: " + titolo + "\n";
+    }
 }
