@@ -48,6 +48,7 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
 
     public List<String> backUpFollowers(String username, String password) throws RemoteException{
         ServerUser user = socialUsers.get(username);
+        List<String> auxList = new LinkedList<>();
         try{
             if(!user.comparePassword(password)){
                 return new LinkedList<>();
@@ -55,7 +56,13 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
         }catch(NoSuchAlgorithmException e){
             return null;
         }
-        return socialUsers.get(username).getFollowers().stream().toList();
+        try {
+            user.lock(0, 2);
+            auxList = user.getFollowers().stream().toList();
+        }finally{
+            user.unlock(0, 2);
+        }
+        return auxList;
     }
 
     public boolean login(String username, String password){
@@ -67,7 +74,15 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
     }
 
     public String listFollowed(String username){
-        return socialUsers.get(username).getFollowed().toString();
+        String aux = "";
+        ServerUser user = socialUsers.get(username);
+        try{
+            user.lock(0, 3);
+            aux = user.getFollowed().toString();
+        }finally{
+            user.unlock(0, 3);
+        }
+        return aux;
     }
 
     public String listUsers(String[] tags, String username){
@@ -86,11 +101,27 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
     }
 
     public String showFeed(String username){
-        return socialUsers.get(username).getFeed().toString();
+        ServerUser user = socialUsers.get(username);
+        String aux = "";
+        try{
+            user.lock(0, 0);
+            aux = user.getFeed().toString();
+        }finally{
+            user.unlock(0, 0);
+        }
+        return aux;
     }
 
     public String showBlog(String username){
-        return  socialUsers.get(username).getBlog().toString();
+        ServerUser user = socialUsers.get(username);
+        String aux = "";
+        try{
+            user.lock(0, 1);
+            aux = user.getBlog().toString();
+        }finally{
+            user.unlock(0, 1);
+        }
+        return aux;
     }
 
     //questi due metodi get sono utili per il backup su file json
@@ -174,30 +205,26 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
         }
     }
 
-    public boolean deletePost(Long idPost, String username){
-        synchronized (socialPost.get(idPost)) { //per evitare il rischio che qualcuno commenti il post mentre viene cancellato
-            if (socialPost.remove(idPost) != null) {
-                ServerUser user = socialUsers.get(username);
-                user.removePostBlog(idPost);
-                for (String key : user.getFollowers()) {
-                    socialUsers.get(key).removePostFeed(idPost);
-                }
-                return true;
-            } else {
-                return false;
+    public boolean deletePost(Long idPost, String username){//per evitare il rischio che qualcuno commenti il post mentre viene cancellato
+        if (socialPost.remove(idPost) != null) {
+            ServerUser user = socialUsers.get(username);
+            user.removePostBlog(idPost);
+            for (String key : user.getFollowers()) {
+                socialUsers.get(key).removePostFeed(idPost);
             }
+            return true;
+        } else {
+            return false;
         }
     }
 
     public String showPost(Long idpost){
         ServerPost post;
-        synchronized (socialPost.get(idpost)) {
             if ((post = socialPost.get(idpost)) == null) {
                 return null;
             } else {
                 return "" + post.getIdpost() + ", AUTORE: " + post.getAutore() + "\n" + "TITOLO: " + post.getTitolo() +
                         "\n" + post.getContenuto();
             }
-        }
     }
 }
