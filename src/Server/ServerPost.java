@@ -6,36 +6,34 @@ import Utilities.FeedBack;
 import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.LinkedList;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class ServerPost {
     private final Long idpost;
     private final String autore;
     private final String titolo;
     private final String contenuto;
-    private final long timeStamp;
     private int numIterazioni;
-    private Hashtable<String, LinkedList<Comment>> comments;
-    private LinkedList<FeedBack> likes;
+    private final Hashtable<String, LinkedList<Comment>> comments;
+    private final LinkedList<FeedBack> likes;
 
     public ServerPost(Long idpost, String titolo, String contenuto, String autore){
         numIterazioni = 0;
+        ReentrantReadWriteLock auxLock = new ReentrantReadWriteLock();
         this.contenuto = contenuto;
         this.autore = autore;
         this.idpost = idpost;
         this.titolo = titolo;
         comments = new Hashtable<>();
         likes = new LinkedList<>();
-        timeStamp = Calendar.getInstance().getTimeInMillis(); //serve sapere per il calcolo delle ricompense
     }
 
-    public synchronized Long getIdpost() {
+    public Long getIdpost() {
         return idpost;
     }
 
-    public synchronized Hashtable<String, LinkedList<Comment>> getComments() {
-        return (Hashtable<String, LinkedList<Comment>>)comments.clone();
+    public Hashtable<String, LinkedList<Comment>> getComments() {
+        return comments;
     }
 
     protected int addGetNumIterazioni(){
@@ -43,26 +41,30 @@ public class ServerPost {
         return numIterazioni;
     }
 
-    public synchronized LinkedList<FeedBack> getLikes() {
-        return (LinkedList<FeedBack>)likes.clone();
+    public LinkedList<FeedBack> getLikes() {
+        return likes;
     }
 
-    public synchronized void addComment(String contenuto, String autore){
+    public void addComment(String contenuto, String autore){
         LinkedList<Comment> comm = comments.get(autore);
         comm.add((new Comment(autore, contenuto)));
         comments.replace(autore, comm);
     }
 
-    public synchronized boolean ratePost(String autore, Integer voto){
+    public void ratePost(String autore, Integer voto){
         if (voto > 0){
-            return likes.add(new FeedBack(autore, true, Calendar.getInstance().getTimeInMillis()));
+            likes.add(new FeedBack(autore, true, Calendar.getInstance().getTimeInMillis()));
         }else{
-            return likes.add(new FeedBack(autore, false, Calendar.getInstance().getTimeInMillis()));
+            likes.add(new FeedBack(autore, false, Calendar.getInstance().getTimeInMillis()));
         }
     }
 
     public String getAutore(){
         return autore;
+    }
+
+    public String getTitolo(){
+        return titolo;
     }
 
     public String getContenuto(){

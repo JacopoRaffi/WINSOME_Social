@@ -74,7 +74,7 @@ public class ServerMain {
         }
 
         //creo e avvio il thread che si occuperà del backup
-        ServerAutomaticSaving autoSaving = new ServerAutomaticSaving(socialNetwork, socialUserStatus, postStatus, TIMELAPSEBACKUP);
+        ServerBackup autoSaving = new ServerBackup(socialNetwork, socialUserStatus, postStatus, TIMELAPSEBACKUP);
         autoSaving.start();
 
         try{
@@ -203,7 +203,7 @@ public class ServerMain {
         social.setSocialPost(mapPost);
     }
 
-    private static void closeServer(ServerSocket socketTCP, DatagramSocket socketUDP, ExecutorService pool, ServerReward reward, ServerAutomaticSaving autoSaving){
+    private static void closeServer(ServerSocket socketTCP, DatagramSocket socketUDP, ExecutorService pool, ServerReward reward, ServerBackup autoSaving){
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
                 System.out.println("CHIUSURA DEL SERVER...");

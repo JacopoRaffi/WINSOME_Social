@@ -7,6 +7,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.LinkedHashSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class ServerUser {
     final private String seed;
@@ -14,16 +17,33 @@ public class ServerUser {
     final private String username;
     final private String hashedPassword;
     private boolean logged;
-    private LinkedHashSet<String> followers; //la key è il nome dell'utente(username unico nel social)
-    private LinkedHashSet<String> followed;
-    private ConcurrentHashMap<Long, ServerPost> feed; //la key è l'idPost
-    private ConcurrentHashMap<Long, ServerPost> blog;
+    private final LinkedHashSet<String> followers; //la key è il nome dell'utente(username unico nel social)
+    private final LinkedHashSet<String> followed;
+    private final ConcurrentHashMap<Long, ServerPost> feed; //la key è l'idPost
+    private final ConcurrentHashMap<Long, ServerPost> blog;
     private final Wallet wallet;
+    private final ReentrantReadWriteLock[] locks; //lock per feed, blog, followers, followed(messe in un array per avere codice pulito)
+    private final Lock[][] RWlocks;
 
     public ServerUser(String username, String password, String tags) throws NoSuchAlgorithmException {
         byte[] arr = new byte[32];
         ThreadLocalRandom.current().nextBytes(arr);
         this.logged = false;
+        locks = new ReentrantReadWriteLock[4];
+        RWlocks = new Lock[2][4];
+        //righe: 0->readLock, 1->writeLock
+        //colonne: 0->feed, 1->blog, 2->followers, 3->followed
+        RWlocks[0][0] = locks[0].readLock(); //feed read
+        RWlocks[1][0] = locks[0].writeLock();//feed write
+
+        RWlocks[0][1] = locks[0].readLock(); //blog read
+        RWlocks[1][1] = locks[0].writeLock();//blog write
+
+        RWlocks[0][2] = locks[0].readLock(); //followers read
+        RWlocks[1][2] = locks[0].writeLock();//followers write
+
+        RWlocks[0][3] = locks[0].readLock(); //followed read
+        RWlocks[1][3] = locks[0].writeLock();//followed write
         this.seed = new String(arr, StandardCharsets.UTF_8);
         this.username = username;
         this.tags = tags.split(" ");
@@ -33,6 +53,18 @@ public class ServerUser {
         feed = new ConcurrentHashMap<>();
         blog = new ConcurrentHashMap<>();
         wallet = new Wallet();
+    }
+
+    public void lock(int riga, int colonna){
+        //righe: 0->readLock, 1->writeLock
+        //colonne: 0->feed, 1->blog, 2->followers, 3->followed
+        RWlocks[riga][colonna].lock();
+    }
+
+    public void unlock(int riga, int colonna){
+        //righe: 0->readLock, 1->writeLock
+        //colonne: 0->feed, 1->blog, 2->followers, 3->followed
+        RWlocks[riga][colonna].unlock();
     }
 
     public boolean addPostBlog(ServerPost post){
@@ -64,11 +96,11 @@ public class ServerUser {
     }
 
     public LinkedHashSet<String> getFollowed(){
-        return (LinkedHashSet<String>) followed.clone();
+        return followed;
     }
 
     public LinkedHashSet<String> getFollowers(){
-        return (LinkedHashSet<String>) followers.clone();
+        return followers;
     }
 
     public ConcurrentHashMap<Long, ServerPost> getFeed(){

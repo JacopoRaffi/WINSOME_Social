@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryInterface {
     private ConcurrentHashMap<Long, ServerPost> socialPost;
     private ConcurrentHashMap<String, ServerUser> socialUsers;
-    private ConcurrentHashMap<String, ClientNotifyInterface> usersCallbacks; //associo ad uno username la sua Interface così so a chi inviare la notifica
+    private final ConcurrentHashMap<String, ClientNotifyInterface> usersCallbacks; //associo ad uno username la sua Interface così so a chi inviare la notifica
     private volatile AtomicLong postID;
 
     public ServerWinsomeSocial(){
@@ -115,9 +115,7 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
 
     public synchronized void registerForCallback (ClientNotifyInterface ClientInterface, String username, String password) throws RemoteException, NoSuchAlgorithmException{
         ServerUser user = socialUsers.get(username);
-        if (!user.comparePassword(password))
-            return;
-        else
+        if (user.comparePassword(password))
             usersCallbacks.putIfAbsent(username, ClientInterface);
     }
 
@@ -193,11 +191,13 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
 
     public String showPost(Long idpost){
         ServerPost post;
-        if((post = socialPost.get(idpost)) == null){
-            return null;
-        }
-        else{
-            return "" + post.getIdpost() + ", TITOLO: "+ post.getAutore() + "\n" + post.getContenuto();
+        synchronized (socialPost.get(idpost)) {
+            if ((post = socialPost.get(idpost)) == null) {
+                return null;
+            } else {
+                return "" + post.getIdpost() + ", AUTORE: " + post.getAutore() + "\n" + "TITOLO: " + post.getTitolo() +
+                        "\n" + post.getContenuto();
+            }
         }
     }
 }
