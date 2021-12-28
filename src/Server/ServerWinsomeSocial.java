@@ -128,6 +128,7 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
         return new ConcurrentHashMap<>(socialUsers); //restituisco una copia per il calcolo delle ricompense
     }
 
+    //metodi utili per il backup(passo il riferimento e non la copia dell'oggetto)
     public ConcurrentHashMap<String, ServerUser> getBackupUsers(){
         return socialUsers;
     }
@@ -263,6 +264,22 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
         } else {
             return false;
         }
+    }
+
+    public boolean rewinPost(Long idpost, String username){
+        ServerUser user = socialUsers.get(username);
+        boolean seguito = false;
+        boolean rewin = false;
+        try{
+            user.lock(1, 1);
+            if(user.getFeed().containsKey(idpost)){
+                seguito = true;
+                rewin = user.addPostBlog(socialPost.get(idpost));
+            }
+        }finally{
+            user.unlock(1, 1);
+        }
+        return (rewin && seguito);
     }
 
     public String showPost(Long idpost){

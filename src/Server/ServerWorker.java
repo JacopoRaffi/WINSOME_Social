@@ -88,6 +88,15 @@ public class ServerWorker implements Runnable{
                 writer.flush();
             }
         }
+        else if(request.startsWith("rewinpost")){
+            if(social.rewinPost(Long.parseLong(param[1]), clientUserName)) {
+                writer.writeUTF("ERRORE: post non presente nel social oppure utente non seguito");
+            }
+            else{
+                writer.writeUTF("SUCCESSO: post condiviso nel tuo blog");
+            }
+            writer.flush();
+        }
         else if(request.startsWith("getwalletinbitcoin")){
             try{
                 Wallet wallet = social.getSocialUsers().get(clientUserName).getWallet();
@@ -123,7 +132,7 @@ public class ServerWorker implements Runnable{
             writer.writeUTF(response);
             writer.flush();
         }
-        else if(request.startsWith("followuser")){
+        else if(request.startsWith("follow")){
             if(!social.followUser(clientUserName, param[1])){
                 response = "ERRORE: utente già seguito";
             }
@@ -133,7 +142,7 @@ public class ServerWorker implements Runnable{
             writer.writeUTF(response);
             writer.flush();
         }
-        else if(request.startsWith("unfollowuser")){
+        else if(request.startsWith("unfollow")){
             if(!social.unFollowUser(clientUserName, param[1])){
                 response = "ERRORE: non segui questo utente :(";
             }

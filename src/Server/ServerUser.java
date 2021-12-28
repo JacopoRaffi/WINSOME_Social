@@ -15,7 +15,6 @@ public class ServerUser {
     final private String[] tags;
     final private String username;
     final private String hashedPassword;
-    private boolean logged;
     private final LinkedHashSet<String> followers; //la key è il nome dell'utente(username unico nel social)
     private final LinkedHashSet<String> followed;
     private final ConcurrentHashMap<Long, ServerPost> feed; //la key è l'idPost
@@ -26,7 +25,6 @@ public class ServerUser {
     public ServerUser(String username, String password, String tags) throws NoSuchAlgorithmException {
         byte[] arr = new byte[32];
         ThreadLocalRandom.current().nextBytes(arr);
-        this.logged = false;
         //lock per feed, blog, followers, followed(messe in un array per avere codice pulito)
         ReentrantReadWriteLock[] locks = new ReentrantReadWriteLock[4];
         for(int i = 0; i < 4; i++){
@@ -86,15 +84,7 @@ public class ServerUser {
     }
 
     public synchronized boolean login(String username, String password) throws NoSuchAlgorithmException{
-        if (hashedPassword.compareTo(HashFunction.bytesToHex(HashFunction.sha256(password+seed))) == 0 && (username.compareTo(this.username) == 0)) {
-            logged = true;
-            return true;
-        }
-        return false;
-    }
-
-    public boolean isLogged(){
-        return logged;
+        return hashedPassword.compareTo(HashFunction.bytesToHex(HashFunction.sha256(password + seed))) == 0 && (username.compareTo(this.username) == 0);
     }
 
     public boolean addFollower(String follower){

@@ -253,7 +253,7 @@ public class ClientClass implements Runnable {
                     System.out.println(NOT_LOGGED_MESSAGE);
 
             }
-            else if(request.compareTo("followuser") == 0){
+            else if(request.compareTo("follow") == 0){
                 if (logged) {
                     if (commandLine.length < 2) {
                         System.err.println("< ERRORE: il comando è: follow <username>");
@@ -267,7 +267,7 @@ public class ClientClass implements Runnable {
                 else
                     System.out.println(NOT_LOGGED_MESSAGE);
             }
-            else if(request.compareTo("unfollowuser") == 0){
+            else if(request.compareTo("unfollow") == 0){
                 if (logged) {
                     if (commandLine.length < 2) {
                         System.err.println("< ERRORE: il comando è: unfollow <username>");
