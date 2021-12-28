@@ -253,7 +253,7 @@ public class ClientClass implements Runnable {
                     System.out.println(NOT_LOGGED_MESSAGE);
 
             }
-            else if(request.compareTo("follow") == 0){
+            else if(request.compareTo("followuser") == 0){
                 if (logged) {
                     if (commandLine.length < 2) {
                         System.err.println("< ERRORE: il comando è: follow <username>");
@@ -267,7 +267,7 @@ public class ClientClass implements Runnable {
                 else
                     System.out.println(NOT_LOGGED_MESSAGE);
             }
-            else if(request.compareTo("unfollow") == 0){
+            else if(request.compareTo("unfollowuser") == 0){
                 if (logged) {
                     if (commandLine.length < 2) {
                         System.err.println("< ERRORE: il comando è: unfollow <username>");
@@ -496,29 +496,28 @@ public class ClientClass implements Runnable {
     }
 
     private void help(){
-        /*
+
         System.out.println("LISTA DEI POSSIBILI COMANDI");
         System.out.println(
-                """
-                        register <username> <password> <tags>
-                        login <username> <password>
-                        logout <username>
-                        listUsers
-                        listFollowers
-                        listFollowing
-                        followUser <username>
-                        unfollowUser <username>
-                        viewBlog
-                        showFeed
-                        createPost <titolo> <contenuto>
-                        showPost <idpost>
-                        deletePost <idpost>
-                        rewinPost <idpost>
-                        ratePost <idpost> <voto>
-                        addComment <idpost> <commento>
-                        getWallet
-                        getWalletInBitcoin
-                        quit
-                        """);*/
+                        "register <username> <password> <tags>\n"+
+                        "login <username> <password>\n"+
+                        "logout <username>\n"+
+                        "listUsers\n"+
+                        "listFollowers\n"+
+                        "listFollowing\n"+
+                        "followUser <username>\n"+
+                        "unfollowUser <username>\n"+
+                        "viewBlog\n"+
+                        "showFeed\n"+
+                        "createPost <titolo> <contenuto>\n"+
+                        "showPost <idpost>\n"+
+                        "deletePost <idpost>\n"+
+                        "rewinPost <idpost>\n"+
+                        "ratePost <idpost> <voto>\n"+
+                        "addComment <idpost> <commento>\n"+
+                        "getWallet\n"+
+                        "getWalletInBitcoin\n"+
+                        "quit\n")
+                        ;
     }
 }

@@ -159,13 +159,15 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
         System.out.println(usersCallbacks.keySet());
     }
 
-    public synchronized boolean doCallbackFollow(String usernameFollowed){
+    public synchronized boolean doCallbackFollow(String usernameFollowed) {
         ClientNotifyInterface client = usersCallbacks.get(usernameFollowed);
         try{
             client.notifyNewFollow(usernameFollowed);
             return true;
         }catch(RemoteException e){
             return false;
+        }catch(NullPointerException e){
+            return true;
         }
     }
 
@@ -176,6 +178,8 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
             return true;
         }catch(RemoteException e){
             return false;
+        }catch(NullPointerException e){
+            return true;
         }
     }
 
@@ -188,6 +192,9 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
             userFollowed.lock(1, 2);//aggiunge il follower
             seguito = user.addFollowed(followed);
             userFollowed.addFollower(username);
+            for (ServerPost post : userFollowed.getBlog().values()) {
+                user.addPostFeed(post);
+            }
             doCallbackFollow(followed); //notifico l'utente interessato
         }finally{
             user.unlock(1, 3);
@@ -205,6 +212,9 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
             userFollowed.lock(1, 2);//rimuove il follower
             seguito = user.removeFollowed(followed);
             userFollowed.removeFollower(username);
+            for (ServerPost post : userFollowed.getBlog().values()) {
+                user.removePostFeed(post.getIdpost());
+            }
             doCallbackUnfollow(followed); //notifico l'utente interessato
         }finally{
             user.unlock(1, 3);

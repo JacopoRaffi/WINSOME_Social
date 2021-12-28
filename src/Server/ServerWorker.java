@@ -37,7 +37,7 @@ public class ServerWorker implements Runnable{
         }
     }
 
-    private void executeRequest(String request, DataOutputStream writer) throws IOException{
+    private void executeRequest(String request, DataOutputStream writer) throws IOException, NullPointerException{
         String response = "";
         String[] param = request.split(" ");
         if(request.startsWith("login")){
@@ -123,6 +123,27 @@ public class ServerWorker implements Runnable{
             writer.writeUTF(response);
             writer.flush();
         }
+        else if(request.startsWith("followuser")){
+            if(!social.followUser(clientUserName, param[1])){
+                response = "ERRORE: utente già seguito";
+            }
+            else{
+                response = "SUCCESSO: ora segui" + param[1];
+            }
+            writer.writeUTF(response);
+            writer.flush();
+        }
+        else if(request.startsWith("unfollowuser")){
+            if(!social.unFollowUser(clientUserName, param[1])){
+                response = "ERRORE: non segui questo utente :(";
+            }
+            else{
+                response = "SUCCESSO: non segui più" + param[1];
+            }
+            writer.writeUTF(response);
+            writer.flush();
+        }
+
     }
 
 }
