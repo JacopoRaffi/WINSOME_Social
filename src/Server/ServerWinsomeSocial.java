@@ -205,13 +205,14 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
 
     public double toBitcoin (double wincoins) throws IOException {
         //voglio un numero decimale per evitare che i wincoin valgano più dei bitcoin
-        URL url = new URL("https://www.random.org/decimal-fractions/?num=1&dec=10&col=2&format=plain&rnd=new");
-        InputStream urlReader = url.openStream();
+        URL randomOrg = new URL("https://www.random.org/decimal-fractions/?num=1&dec=10&col=2&format=plain&rnd=new");
+        InputStream urlReader = randomOrg.openStream();
         BufferedReader buffReader = new BufferedReader(new InputStreamReader(urlReader));
-        String line;
-        line = buffReader.readLine();
+        String randomValue;
+        randomValue = buffReader.readLine();
+        buffReader.close();
 
-        return Double.parseDouble(line) * wincoins;
+        return Double.parseDouble(randomValue) * wincoins;
     }
 
     public boolean createPost(String autore, String titolo, String contenuto){
