@@ -9,7 +9,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class ServerUser {
     final private String seed;
@@ -122,5 +121,4 @@ public class ServerUser {
     public String toString(){
         return this.username;
     }
-
 }

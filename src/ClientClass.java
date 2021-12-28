@@ -213,7 +213,7 @@ public class ClientClass implements Runnable {
                         regFun.unregisterForCallback(stub, username, password);
                         logged = false;
                     }catch(NoSuchAlgorithmException e){
-                        System.err.println("ERRORE SERVER: c'è stato un problema, riprovare successivamente");
+                        System.err.println("< ERRORE SERVER: c'è stato un problema, riprovare successivamente");
                         continue;
                     }
                 }
@@ -230,7 +230,7 @@ public class ClientClass implements Runnable {
                     outWriter.flush();
                     serverResponse = inReader.readUTF();
 
-                    System.out.println(serverResponse);
+                    System.out.println("< " + serverResponse);
 
                 }else
                     System.out.println(NOT_LOGGED_MESSAGE);
@@ -311,7 +311,7 @@ public class ClientClass implements Runnable {
                     outWriter.flush();
                     serverResponse = inReader.readUTF();
 
-                    System.out.println(serverResponse);
+                    System.out.println("< " + serverResponse);
 
                 }else
                     System.out.println(NOT_LOGGED_MESSAGE);
@@ -322,7 +322,7 @@ public class ClientClass implements Runnable {
                     outWriter.flush();
                     serverResponse = inReader.readUTF();
 
-                    System.out.println(serverResponse);
+                    System.out.println("< " + serverResponse);
 
                 }else
                     System.out.println(NOT_LOGGED_MESSAGE);
@@ -331,17 +331,17 @@ public class ClientClass implements Runnable {
                 if (logged) {
                     if (commandLine.length < 2) {
                         System.err.println("< ERRORE: il comando è: showpost <idpost>");
-                        System.out.println("idpost deve essere un numero non negativo");
+                        System.out.println("< idpost deve essere un numero non negativo");
                         continue;
                     }
                     try{
                         long idpost = Long.parseLong(commandLine[1]);
                         if(idpost < 0){
-                            System.err.println("idpost deve essere un numero non negativo");
+                            System.err.println("< idpost deve essere un numero non negativo");
                             continue;
                         }
                     }catch(RuntimeException e){
-                        System.err.println("idpost deve essere un numero non negativo");
+                        System.err.println("< idpost deve essere un numero non negativo");
                         continue;
                     }
                     outWriter.writeUTF(line); //invio la richiesta al server con i relativi parametri
@@ -406,24 +406,24 @@ public class ClientClass implements Runnable {
                 if (logged) {
                     if (commandLine.length < 3) {
                         System.err.println("< ERRORE: il comando è: ratepost <idpost> <voto>");
-                        System.out.println("idpost deve essere un numero non negativo");
-                        System.out.println("il voto deve essere +1 o -1");
+                        System.out.println("< idpost deve essere un numero non negativo");
+                        System.out.println("< il voto deve essere +1 o -1");
                         continue;
                     }
                     try{
                         long idpost = Long.parseLong(commandLine[1]);
                         if(idpost < 0){
-                            System.err.println("idpost deve essere un numero non negativo");
+                            System.err.println("< idpost deve essere un numero non negativo");
                             continue;
                         }
                     }catch(RuntimeException e){
-                        System.err.println("idpost deve essere un numero non negativo");
+                        System.err.println("< idpost deve essere un numero non negativo");
                         continue;
                     }
                     try{
                         Long.parseLong(commandLine[2]);
                     }catch(RuntimeException e){
-                        System.err.println("il voto deve essere +1 o -1");
+                        System.err.println("< il voto deve essere +1 o -1");
                         continue;
                     }
                     outWriter.writeUTF(line); //invio la richiesta al server con i relativi parametri
@@ -438,17 +438,17 @@ public class ClientClass implements Runnable {
                 if (logged) {
                     if (commandLine.length < 3) {
                         System.err.println("< ERRORE: il comando è: addcomment <idpost> <commento>");
-                        System.out.println("idpost deve essere un numero non negativo");
+                        System.out.println("< idpost deve essere un numero non negativo");
                         continue;
                     }
                     try{
                         long idpost = Long.parseLong(commandLine[1]);
                         if(idpost < 0){
-                            System.err.println("idpost deve essere un numero non negativo");
+                            System.err.println("< idpost deve essere un numero non negativo");
                             continue;
                         }
                     }catch(RuntimeException e){
-                        System.err.println("idpost deve essere un numero non negativo");
+                        System.err.println("< idpost deve essere un numero non negativo");
                         continue;
                     }
                     outWriter.writeUTF(line); //invio la richiesta al server con i relativi parametri
@@ -465,7 +465,7 @@ public class ClientClass implements Runnable {
                     outWriter.flush();
                     serverResponse = inReader.readUTF();
 
-                    System.out.println(serverResponse);
+                    System.out.println("< " + serverResponse);
 
                 }else
                     System.out.println(NOT_LOGGED_MESSAGE);
@@ -476,7 +476,7 @@ public class ClientClass implements Runnable {
                     outWriter.flush();
                     serverResponse = inReader.readUTF();
 
-                    System.out.println(serverResponse);
+                    System.out.println("< " + serverResponse);
 
                 }else
                     System.out.println(NOT_LOGGED_MESSAGE);
@@ -490,14 +490,13 @@ public class ClientClass implements Runnable {
                 System.exit(0);
             }
             else{
-                System.out.println("Comando non riconosciuto: digitare help per la lista di comandi");
+                System.out.println("< Comando non riconosciuto: digitare help per la lista di comandi");
             }
         }
     }
 
     private void help(){
-
-        System.out.println("LISTA DEI POSSIBILI COMANDI");
+        System.out.println("LISTA DEI COMANDI");
         System.out.println(
                         "register <username> <password> <tags>\n"+
                         "login <username> <password>\n"+

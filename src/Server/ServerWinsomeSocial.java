@@ -229,7 +229,13 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
             socialUsers.get(autore).addPostBlog(newPost);
             System.out.println("NUOVO POST CREATO: " + titolo);
             for (String key : socialUsers.get(autore).getFollowers()) {
-                socialUsers.get(key).addPostFeed(newPost);
+                ServerUser auxUser = socialUsers.get(key);
+                try {
+                    auxUser.lock(0);
+                    auxUser.addPostFeed(newPost);
+                }finally{
+                    auxUser.unlock(0);
+                }
             }
             return true;
         }else{
@@ -242,7 +248,13 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
             ServerUser user = socialUsers.get(username);
             user.removePostBlog(idPost);
             for (String key : user.getFollowers()) {
-                socialUsers.get(key).removePostFeed(idPost);
+                ServerUser auxUser = socialUsers.get(key);
+                try {
+                    auxUser.lock(0);
+                    auxUser.removePostFeed(idPost);
+                }finally{
+                    auxUser.unlock(0);
+                }
             }
             return true;
         } else {
