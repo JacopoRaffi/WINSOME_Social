@@ -211,6 +211,7 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
         String randomValue;
         randomValue = buffReader.readLine();
         buffReader.close();
+        urlReader.close();
 
         return Double.parseDouble(randomValue) * wincoins;
     }
