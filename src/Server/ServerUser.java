@@ -26,24 +26,19 @@ public class ServerUser {
         byte[] arr = new byte[32];
         ThreadLocalRandom.current().nextBytes(arr);
         //lock per feed, blog, followers, followed(messe in un array per avere codice pulito)
-        ReentrantReadWriteLock[] locks = new ReentrantReadWriteLock[4];
-        for(int i = 0; i < 4; i++){
+        ReentrantReadWriteLock[] locks = new ReentrantReadWriteLock[2];
+        for(int i = 0; i < 2; i++){
             locks[i] = new ReentrantReadWriteLock();
         }
-        RWlocks = new Lock[2][4];
+        RWlocks = new Lock[2][2];
         //righe: 0->readLock, 1->writeLock
         //colonne: 0->feed, 1->blog, 2->followers, 3->followed
         RWlocks[0][0] = locks[0].readLock(); //feed read
         RWlocks[1][0] = locks[0].writeLock();//feed write
 
-        RWlocks[0][1] = locks[0].readLock(); //blog read
-        RWlocks[1][1] = locks[0].writeLock();//blog write
+        RWlocks[0][1] = locks[1].readLock(); //followers read
+        RWlocks[1][1] = locks[1].writeLock();//followers write
 
-        RWlocks[0][2] = locks[0].readLock(); //followers read
-        RWlocks[1][2] = locks[0].writeLock();//followers write
-
-        RWlocks[0][3] = locks[0].readLock(); //followed read
-        RWlocks[1][3] = locks[0].writeLock();//followed write
         this.seed = new String(arr, StandardCharsets.UTF_8);
         this.username = username;
         this.tags = tags.split(" ");
@@ -57,7 +52,7 @@ public class ServerUser {
 
     public void lock(int riga, int colonna){
         //righe: 0->readLock, 1->writeLock
-        //colonne: 0->feed, 1->blog, 2->followers, 3->followed
+        //colonne: 0->feed 1->followers
         RWlocks[riga][colonna].lock();
     }
 

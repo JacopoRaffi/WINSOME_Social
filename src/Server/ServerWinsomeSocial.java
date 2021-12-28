@@ -76,12 +76,7 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
     public String listFollowed(String username){
         String aux = "";
         ServerUser user = socialUsers.get(username);
-        try{
-            user.lock(0, 3);
-            aux = user.getFollowed().toString();
-        }finally{
-            user.unlock(0, 3);
-        }
+        aux = user.getFollowed().toString();
         return aux;
     }
 
@@ -192,8 +187,7 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
         ServerUser userFollowed = socialUsers.get(followed);
         boolean seguito = false;
         try{
-            user.lock(1, 3);//aggiunge il followed
-            userFollowed.lock(1, 2);//aggiunge il follower
+            userFollowed.lock(1, 1);//aggiunge il follower
             seguito = user.addFollowed(followed);
             userFollowed.addFollower(username);
             for (ServerPost post : userFollowed.getBlog().values()) {
@@ -201,8 +195,7 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
             }
             doCallbackFollow(followed); //notifico l'utente interessato
         }finally{
-            user.unlock(1, 3);
-            userFollowed.unlock(1, 2);
+            userFollowed.unlock(1, 1);
         }
         return seguito;
     }
@@ -212,8 +205,7 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
         ServerUser userFollowed = socialUsers.get(followed);
         boolean seguito = false;
         try{
-            user.lock(1, 3);//rimuove il followed
-            userFollowed.lock(1, 2);//rimuove il follower
+            userFollowed.lock(1, 1);//rimuove il follower
             seguito = user.removeFollowed(followed);
             userFollowed.removeFollower(username);
             for (ServerPost post : userFollowed.getBlog().values()) {
@@ -221,8 +213,7 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
             }
             doCallbackUnfollow(followed); //notifico l'utente interessato
         }finally{
-            user.unlock(1, 3);
-            userFollowed.unlock(1, 2);
+            userFollowed.unlock(1, 1);
         }
         return seguito;
     }
@@ -271,13 +262,13 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
         boolean seguito = false;
         boolean rewin = false;
         try{
-            user.lock(1, 1);
+            user.lock(1, 0);
             if(user.getFeed().containsKey(idpost)){
                 seguito = true;
                 rewin = user.addPostBlog(socialPost.get(idpost));
             }
         }finally{
-            user.unlock(1, 1);
+            user.unlock(1, 0);
         }
         return (rewin && seguito);
     }
