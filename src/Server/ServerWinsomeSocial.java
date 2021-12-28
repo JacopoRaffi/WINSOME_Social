@@ -48,7 +48,7 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
 
     public List<String> backUpFollowers(String username, String password) throws RemoteException{
         ServerUser user = socialUsers.get(username);
-        List<String> auxList = new LinkedList<>();
+        List<String> auxList;
         try{
             if(!user.comparePassword(password)){
                 return new LinkedList<>();
@@ -58,7 +58,7 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
         }
         try {
             user.lock(0, 2);
-            auxList = user.getFollowers().stream().toList();
+            auxList = new LinkedList<>(user.getFollowers());
         }finally{
             user.unlock(0, 2);
         }

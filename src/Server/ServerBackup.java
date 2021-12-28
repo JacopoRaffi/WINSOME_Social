@@ -35,19 +35,19 @@ public class ServerBackup extends Thread {
         }
     }
 
-    protected void backupPost() throws IOException {
+    protected void backupPost() throws IOException {/*
         FileWriter writer = new FileWriter(postStatus);
         Gson builder = new GsonBuilder().setPrettyPrinting().create();
         Type typeOfMapPost = new TypeToken<ConcurrentHashMap<Long, ServerPost>>() {}.getType();
         writer.write(builder.toJson(social.getSocialPost(), typeOfMapPost));
-        writer.close();
+        writer.close();*/
     }
 
-    protected void backupUsers() throws IOException {
+    protected void backupUsers() throws IOException {/*
         FileWriter writer = new FileWriter(usersStatus);
         Gson builder = new GsonBuilder().setPrettyPrinting().create();
         Type typeOfMap = new TypeToken<ConcurrentHashMap<String, ServerUser>>() {}.getType();
         writer.write(builder.toJson(social.getSocialUsers(), typeOfMap));
-        writer.close();
+        writer.close();*/
     }
 }

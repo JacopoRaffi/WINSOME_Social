@@ -146,7 +146,7 @@ public class ServerMain {
         BufferedReader configReader = new BufferedReader(new FileReader(config));
         String line = configReader.readLine();
         while (line != null) {
-            if(!line.contains("#") || !line.isBlank()) {
+            if(!line.contains("#") || !line.isEmpty()) {
                 String[] tokens = line.split("=");
                 if (tokens[0].compareTo("SERVER_ADDRESS") == 0) {
                     SERVER_ADDRESS = tokens[1];

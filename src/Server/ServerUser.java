@@ -29,6 +29,9 @@ public class ServerUser {
         ThreadLocalRandom.current().nextBytes(arr);
         this.logged = false;
         locks = new ReentrantReadWriteLock[4];
+        for(int i = 0; i < 4; i++){
+            locks[i] = new ReentrantReadWriteLock();
+        }
         RWlocks = new Lock[2][4];
         //righe: 0->readLock, 1->writeLock
         //colonne: 0->feed, 1->blog, 2->followers, 3->followed

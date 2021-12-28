@@ -126,7 +126,7 @@ public class ClientClass implements Runnable {
         BufferedReader configReader = new BufferedReader(new FileReader(config));
         String line = configReader.readLine();
         while (line != null) {
-            if(!line.contains("#") || !line.isBlank()) {
+            if(!line.contains("#") || !line.isEmpty()) {
                 String[] tokens = line.split("=");
                 if (tokens[0].compareTo("SERVER_ADDRESS") == 0) {
                     SERVER_ADDRESS = tokens[1];
@@ -496,6 +496,7 @@ public class ClientClass implements Runnable {
     }
 
     private void help(){
+        /*
         System.out.println("LISTA DEI POSSIBILI COMANDI");
         System.out.println(
                 """
@@ -518,6 +519,6 @@ public class ClientClass implements Runnable {
                         getWallet
                         getWalletInBitcoin
                         quit
-                        """);
+                        """);*/
     }
 }
