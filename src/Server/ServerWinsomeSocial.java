@@ -117,6 +117,10 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
         return new ConcurrentHashMap<>(socialUsers); //restituisco una copia per il calcolo delle ricompense
     }
 
+    public ConcurrentHashMap<Long, ServerPost> getSocialPost(){
+        return new ConcurrentHashMap<>(socialPost); //restituisco una copia per il calcolo delle ricompense
+    }
+
     //questi due metodi set sono utili per l'avvio del server(ripristinare tutto dal backup)
     public void setSocialUsers(ConcurrentHashMap<String, ServerUser> mapUser){
         this.socialUsers = mapUser;

@@ -9,6 +9,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class ServerReward extends Thread {
@@ -52,22 +53,26 @@ public class ServerReward extends Thread {
     }
 
     private void calcoloRicompense(){
-        for (ServerUser user: social.getSocialUsers().values()) {
+        ConcurrentHashMap<Long, ServerPost> copyPost = social.getSocialPost();
+        for (Long id: copyPost.keySet()) {
             double guadagnoTotale = 0;
+            ServerPost post = new ServerPost(copyPost.get(id));
+            String autore = post.getAutore();
             Set<String> curatori = new TreeSet<>(); //voglio i curatori per aumentare la loro ricompensa(Set perchè non voglio ripetere gli stessi curatori)
-            for (ServerPost post: user.getBlog().values()) {
-                if(user.getUsername().compareTo(post.getAutore()) == 0) //serve per evitare guadagni su post rewined
-                guadagnoTotale += guadagno(post, curatori);
-            }
+
+            guadagnoTotale += guadagno(new ServerPost(copyPost.get(id)), curatori); //calcola il guadagno derivato da un post
+
             int dimCuratori = curatori.size() == 0 ? 1 : curatori.size(); //serve per evitare di dividere per 0
             double percCuratori = guadagnoTotale * (1 - percentualeAutore) / dimCuratori;
             double percAutore = guadagnoTotale * percentualeAutore;
+
             for (String cur:curatori) {
                 social.getSocialUsers().get(cur).getWallet().addTransazione(percCuratori + ", " + Calendar.getInstance().getTime());
                 social.getSocialUsers().get(cur).getWallet().addIncremento(percCuratori);
             }
-            social.getSocialUsers().get(user.getUsername()).getWallet().addIncremento(percAutore);
-            social.getSocialUsers().get(user.getUsername()).getWallet().addTransazione(percAutore + ", " + Calendar.getInstance().getTime());
+
+            social.getSocialUsers().get(autore).getWallet().addIncremento(percAutore);
+            social.getSocialUsers().get(autore).getWallet().addTransazione(percAutore + ", " + Calendar.getInstance().getTime());
         }
     }
     private double guadagno(ServerPost post, Set<String> curatori){
@@ -93,7 +98,6 @@ public class ServerReward extends Thread {
         //le key sono gli autori
         for (String key: filterNewPeopleCommenting(post)) {
             int Cp = comments.get(key).size();
-
             sommaAux += 2 / (1 + Math.pow(Math.E, -Cp + 1));
         }
         somma2 = Math.log(somma2 + 1);

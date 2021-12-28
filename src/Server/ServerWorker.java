@@ -123,10 +123,12 @@ public class ServerWorker implements Runnable{
             writer.writeUTF(response);
             writer.flush();
         }
-        else if(request.startsWith("listfollowing ")){
+        else if(request.startsWith("listfollowing")){
             response = social.listFollowed(clientUserName);
+            System.out.println(response);
             writer.writeUTF(response);
             writer.flush();
+            System.out.println("arrivato qui");
         }
         else if(request.startsWith("listusers")){
             response = social.listUsers(social.getSocialUsers().get(clientUserName).getTags(), clientUserName);

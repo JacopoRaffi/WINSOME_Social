@@ -20,7 +20,7 @@ public class ServerUser {
     private final ConcurrentHashMap<Long, ServerPost> feed; //la key è l'idPost
     private final ConcurrentHashMap<Long, ServerPost> blog;
     private final Wallet wallet;
-    private final Lock[] locks;
+    private final ReentrantLock[] locks;
 
     public ServerUser(String username, String password, String tags) throws NoSuchAlgorithmException {
         byte[] arr = new byte[32];
