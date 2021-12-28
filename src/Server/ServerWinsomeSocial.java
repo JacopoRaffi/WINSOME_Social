@@ -179,6 +179,40 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
         }
     }
 
+    public boolean followUser(String username, String followed){
+        ServerUser user = socialUsers.get(username);
+        ServerUser userFollowed = socialUsers.get(followed);
+        boolean seguito = false;
+        try{
+            user.lock(1, 3);//aggiunge il followed
+            userFollowed.lock(1, 2);//aggiunge il follower
+            seguito = user.addFollowed(followed);
+            userFollowed.addFollower(username);
+            doCallbackFollow(followed); //notifico l'utente interessato
+        }finally{
+            user.unlock(1, 3);
+            userFollowed.unlock(1, 2);
+        }
+        return seguito;
+    }
+
+    public boolean unFollowUser(String username, String followed){
+        ServerUser user = socialUsers.get(username);
+        ServerUser userFollowed = socialUsers.get(followed);
+        boolean seguito = false;
+        try{
+            user.lock(1, 3);//rimuove il followed
+            userFollowed.lock(1, 2);//rimuove il follower
+            seguito = user.removeFollowed(followed);
+            userFollowed.removeFollower(username);
+            doCallbackUnfollow(followed); //notifico l'utente interessato
+        }finally{
+            user.unlock(1, 3);
+            userFollowed.unlock(1, 2);
+        }
+        return seguito;
+    }
+
     public double toBitcoin (double wincoins) throws IOException {
         //voglio un numero decimale per evitare che i wincoin valgano più dei bitcoin
         URL url = new URL("https://www.random.org/decimal-fractions/?num=1&dec=10&col=2&format=plain&rnd=new");

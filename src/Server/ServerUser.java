@@ -8,7 +8,6 @@ import java.util.LinkedHashSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class ServerUser {
@@ -93,6 +92,22 @@ public class ServerUser {
 
     public boolean isLogged(){
         return logged;
+    }
+
+    public boolean addFollower(String follower){
+        return followers.add(follower);
+    }
+
+    public boolean addFollowed(String followedd){
+        return followed.add(followedd);
+    }
+
+    public boolean removeFollower(String follower){
+        return followers.add(follower);
+    }
+
+    public boolean removeFollowed(String followedd){
+        return followed.remove(followedd);
     }
 
     public LinkedHashSet<String> getFollowed(){
