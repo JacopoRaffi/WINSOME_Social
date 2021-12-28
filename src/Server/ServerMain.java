@@ -209,8 +209,7 @@ public class ServerMain {
                 System.out.println("CHIUSURA DEL SERVER...");
                 try{
                     reward.interrupt();
-                    autoSaving.backupPost();
-                    autoSaving.backupUsers();
+                    autoSaving.backup();
                     autoSaving.interrupt();
                     pool.shutdownNow();
                     socketTCP.close();

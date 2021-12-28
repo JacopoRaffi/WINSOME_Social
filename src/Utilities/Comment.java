@@ -13,4 +13,9 @@ public class Comment extends FeedBack{
     public String getContenuto(){
         return contenuto;
     }
+
+    @Override
+    public String toString(){
+        return "COMMENTO: " + contenuto;
+    }
 }

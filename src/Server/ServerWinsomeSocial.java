@@ -112,17 +112,9 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
         return user.getBlog().toString();
     }
 
+    //metodo usato per il backup(il backup dei post viene fatto tramite i blog degli utenti)
     public ConcurrentHashMap<String, ServerUser> getSocialUsers(){
         return new ConcurrentHashMap<>(socialUsers); //restituisco una copia per il calcolo delle ricompense
-    }
-
-    //metodi utili per il backup(passo il riferimento e non la copia dell'oggetto)
-    public ConcurrentHashMap<String, ServerUser> getBackupUsers(){
-        return socialUsers;
-    }
-
-    public ConcurrentHashMap<Long, ServerPost> getBackupPost(){
-        return socialPost;
     }
 
     //questi due metodi set sono utili per l'avvio del server(ripristinare tutto dal backup)

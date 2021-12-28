@@ -25,8 +25,7 @@ public class ServerBackup extends Thread {
         while(!Thread.currentThread().isInterrupted()){
             try{
                 Thread.sleep(timelapse);
-                backupPost();
-                backupUsers();
+                backup();
             }catch(InterruptedException e){
                 break;
             }catch(IOException e){
@@ -35,20 +34,14 @@ public class ServerBackup extends Thread {
         }
     }
 
-    //idea backup: fare la get di un elemento alla volta e salvarlo nel file(costruire manualmente la tabella hash JSON)
-    protected void backupPost() throws IOException {
-        FileWriter writer = new FileWriter(postStatus);
-        Gson builder = new GsonBuilder().setPrettyPrinting().create();
-        Type typeOfMapPost = new TypeToken<ConcurrentHashMap<Long, ServerPost>>() {}.getType();
-        writer.write(builder.toJson(social.getBackupPost(), typeOfMapPost));
-        writer.close();
-    }
-
-    protected void backupUsers() throws IOException {
+    //idea backup: fare la get di un utente alla volta e salvarlo nel file(costruire manualmente la tabella hash JSON)
+    //sfruttare i blog degli utenti per fare il backup dei post
+    protected void backup() throws IOException {
         FileWriter writer = new FileWriter(usersStatus);
+        FileWriter writerPost = new FileWriter(postStatus);
         Gson builder = new GsonBuilder().setPrettyPrinting().create();
         Type typeOfMap = new TypeToken<ConcurrentHashMap<String, ServerUser>>() {}.getType();
-        writer.write(builder.toJson(social.getBackupUsers(), typeOfMap));
+        writer.write(builder.toJson(social.getSocialUsers(), typeOfMap));
         writer.close();
     }
 }

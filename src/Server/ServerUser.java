@@ -26,9 +26,10 @@ public class ServerUser {
         byte[] arr = new byte[32];
         ThreadLocalRandom.current().nextBytes(arr);
 
-        locks = new ReentrantLock[2];
+        locks = new ReentrantLock[3];
         locks[0] = new ReentrantLock();
         locks[1] = new ReentrantLock();
+        locks[2] = new ReentrantLock();
         this.seed = new String(arr, StandardCharsets.UTF_8);
         this.username = username;
         this.tags = tags.split(" ");

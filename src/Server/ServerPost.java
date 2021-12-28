@@ -28,6 +28,22 @@ public class ServerPost {
         likes = new LinkedList<>();
     }
 
+    public ServerPost(ServerPost post){ //mi serve per fare la deepCopy dei post(utile per backup e calcolo ricompense)
+        idpost = getIdpost();
+        autore = post.autore;
+        titolo = post.titolo;
+        contenuto = post.contenuto;
+        likes = new LinkedList<>();
+        for (FeedBack like:post.getLikes()) {
+            likes.add(like);
+        }
+        comments = new Hashtable<>();
+        Hashtable<String, LinkedList<Comment>> aux = post.getComments();
+        for (String key : aux.keySet()) {
+            comments.put(key, new LinkedList<>(aux.get(key)));
+        };
+    }
+
     public Long getIdpost() {
         return idpost;
     }
@@ -46,9 +62,16 @@ public class ServerPost {
     }
 
     public void addComment(String contenuto, String autore){
-        LinkedList<Comment> comm = comments.get(autore);
-        comm.add((new Comment(autore, contenuto)));
-        comments.replace(autore, comm);
+        if(comments.get(autore) != null) {
+            LinkedList<Comment> comm = comments.get(autore);
+            comm.add((new Comment(autore, contenuto)));
+            comments.replace(autore, comm);
+        }
+        else{
+            LinkedList<Comment> list = new LinkedList<>();
+            list.add(new Comment(autore, contenuto));
+            comments.put(autore, list);
+        }
     }
 
     public void ratePost(String autore, Integer voto){

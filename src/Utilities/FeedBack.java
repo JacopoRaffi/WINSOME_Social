@@ -9,7 +9,6 @@ public class FeedBack {
         this.positivo = positivo;
         this.timeStamp = timestamp;
     }
-
     public boolean isPositivo(){
         return positivo;
     }
@@ -20,5 +19,15 @@ public class FeedBack {
 
     public long getTime(){
         return timeStamp;
+    }
+
+    @Override
+    public String toString(){
+        String pos;
+        if(positivo)
+            pos = "positivo";
+        else
+            pos = "negativo";
+        return "VOTO: " + pos + ", AUTORE: " + autore;
     }
 }
