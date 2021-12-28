@@ -21,14 +21,14 @@ public class ServerUser {
     private final ConcurrentHashMap<Long, ServerPost> feed; //la key è l'idPost
     private final ConcurrentHashMap<Long, ServerPost> blog;
     private final Wallet wallet;
-    private final ReentrantReadWriteLock[] locks; //lock per feed, blog, followers, followed(messe in un array per avere codice pulito)
     private final Lock[][] RWlocks;
 
     public ServerUser(String username, String password, String tags) throws NoSuchAlgorithmException {
         byte[] arr = new byte[32];
         ThreadLocalRandom.current().nextBytes(arr);
         this.logged = false;
-        locks = new ReentrantReadWriteLock[4];
+        //lock per feed, blog, followers, followed(messe in un array per avere codice pulito)
+        ReentrantReadWriteLock[] locks = new ReentrantReadWriteLock[4];
         for(int i = 0; i < 4; i++){
             locks[i] = new ReentrantReadWriteLock();
         }
