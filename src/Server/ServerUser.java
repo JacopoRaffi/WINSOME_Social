@@ -50,7 +50,7 @@ public class ServerUser {
         locks[index].unlock();
     }
 
-    public boolean addPostBlog(ServerPost post){
+    public synchronized boolean addPostBlog(ServerPost post){
         return (blog.putIfAbsent(post.getIdpost(), post) == null);
     }
 
@@ -62,7 +62,7 @@ public class ServerUser {
         return (feed.remove(idpost) != null);
     }
 
-    public boolean removePostBlog(Long idpost){
+    public synchronized boolean removePostBlog(Long idpost){
         return (blog.remove(idpost) != null);
     }
 
@@ -98,7 +98,7 @@ public class ServerUser {
         return feed;
     }
 
-    public ConcurrentHashMap<Long, ServerPost> getBlog(){
+    public synchronized ConcurrentHashMap<Long, ServerPost> getBlog(){
         return blog;
     }
 
