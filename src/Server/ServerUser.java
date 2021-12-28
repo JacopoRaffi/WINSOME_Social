@@ -8,6 +8,7 @@ import java.util.LinkedHashSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class ServerUser {
@@ -20,25 +21,15 @@ public class ServerUser {
     private final ConcurrentHashMap<Long, ServerPost> feed; //la key è l'idPost
     private final ConcurrentHashMap<Long, ServerPost> blog;
     private final Wallet wallet;
-    private final Lock[][] RWlocks;
+    private final Lock[] locks;
 
     public ServerUser(String username, String password, String tags) throws NoSuchAlgorithmException {
         byte[] arr = new byte[32];
         ThreadLocalRandom.current().nextBytes(arr);
-        //lock per feed, blog, followers, followed(messe in un array per avere codice pulito)
-        ReentrantReadWriteLock[] locks = new ReentrantReadWriteLock[2];
-        for(int i = 0; i < 2; i++){
-            locks[i] = new ReentrantReadWriteLock();
-        }
-        RWlocks = new Lock[2][2];
-        //righe: 0->readLock, 1->writeLock
-        //colonne: 0->feed, 1->blog, 2->followers, 3->followed
-        RWlocks[0][0] = locks[0].readLock(); //feed read
-        RWlocks[1][0] = locks[0].writeLock();//feed write
 
-        RWlocks[0][1] = locks[1].readLock(); //followers read
-        RWlocks[1][1] = locks[1].writeLock();//followers write
-
+        locks = new ReentrantLock[2];
+        locks[0] = new ReentrantLock();
+        locks[1] = new ReentrantLock();
         this.seed = new String(arr, StandardCharsets.UTF_8);
         this.username = username;
         this.tags = tags.split(" ");
@@ -50,16 +41,14 @@ public class ServerUser {
         wallet = new Wallet();
     }
 
-    public void lock(int riga, int colonna){
-        //righe: 0->readLock, 1->writeLock
-        //colonne: 0->feed 1->followers
-        RWlocks[riga][colonna].lock();
+    public void lock(int index){
+        //0->feed, 1->followers
+        locks[index].lock();
     }
 
-    public void unlock(int riga, int colonna){
-        //righe: 0->readLock, 1->writeLock
-        //colonne: 0->feed, 1->blog, 2->followers, 3->followed
-        RWlocks[riga][colonna].unlock();
+    public void unlock(int index){
+        //0->feed, 1->followers
+        locks[index].unlock();
     }
 
     public boolean addPostBlog(ServerPost post){
