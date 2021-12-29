@@ -71,11 +71,17 @@ public class ServerUser {
     }
 
     public boolean addFollower(String follower){
-        return followers.add(follower);
+        if(follower.compareTo(username) != 0) {
+            return followers.add(follower);
+        }else
+            return false;
     }
 
     public boolean addFollowed(String followedd){
-        return followed.add(followedd);
+        if(followedd.compareTo(username) != 0) {
+            return followed.add(followedd);
+        }else
+            return false;
     }
 
     public boolean removeFollower(String follower){

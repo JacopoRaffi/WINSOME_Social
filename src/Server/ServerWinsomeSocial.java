@@ -199,14 +199,21 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
         boolean seguito = false;
         try{
             userFollowed.lock(1);//rimuove il follower
+            userFollowed.lock(2);
             seguito = user.removeFollowed(followed);
             userFollowed.removeFollower(username);
             for (ServerPost post : userFollowed.getBlog().values()) {
-                user.removePostFeed(post.getIdpost());
+                try {
+                    user.lock(2);
+                    user.removePostFeed(post.getIdpost());
+                }finally{
+                    user.unlock(2);
+                }
             }
             doCallbackUnfollow(followed); //notifico l'utente interessato
         }finally{
             userFollowed.unlock(1);
+            userFollowed.lock(2);
         }
         return seguito;
     }
@@ -230,6 +237,7 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
         ServerPost newPost = new ServerPost(id, titolo, contenuto, autore);
         if(socialPost.putIfAbsent(id, newPost) == null){ //aggiungo l'utente registrato
             try {
+                user.lock(1);
                 user.lock(2);
                 user.addPostBlog(newPost);
                 System.out.println("NUOVO POST CREATO: " + titolo);
@@ -243,6 +251,7 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
                     }
                 }
             }finally{
+                user.unlock(1);
                 user.unlock(2);
             }
             return true;
@@ -301,7 +310,11 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
                     user.lock(0);
                     post.lock(0);
                     if(user.getFeed().containsKey(idpost)){ //il post deve essere nel feed
-                        post.ratePost(username, voto);
+                        if(post.ratePost(username, voto)){
+                            rated = "SUCCESSO: hai votato il post";
+                        }
+                        else
+                            rated = "ERRORE: hai già votato il post";
                     }
                     else{
                         rated = "ERRORE: il post non è presente nel tuo feed";
@@ -310,6 +323,7 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
                     user.unlock(0);
                     post.unlock(0);
                 }
+                return rated;
             }
             return "ERRORE: sei l'autore del post";
         }
