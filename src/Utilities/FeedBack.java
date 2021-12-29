@@ -1,6 +1,6 @@
 package Utilities;
 
-public class FeedBack {
+public class FeedBack implements Comparable<FeedBack> {
     private String autore;
     private boolean positivo;
     private long timeStamp;
@@ -29,5 +29,9 @@ public class FeedBack {
         else
             pos = "negativo";
         return "VOTO: " + pos + ", AUTORE: " + autore;
+    }
+
+    public int compareTo(FeedBack feed){
+        return (autore.compareTo(feed.getAutore()));
     }
 }

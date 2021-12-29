@@ -6,7 +6,7 @@ import Utilities.FeedBack;
 import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.LinkedList;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class ServerPost {
     private final Long idpost;
@@ -16,32 +16,31 @@ public class ServerPost {
     private int numIterazioni;
     private final Hashtable<String, LinkedList<Comment>> comments;
     private final LinkedList<FeedBack> likes;
+    private final ReentrantLock[] locks;
+    private final long lastTimeReward;
 
     public ServerPost(Long idpost, String titolo, String contenuto, String autore){
         numIterazioni = 0;
-        ReentrantReadWriteLock auxLock = new ReentrantReadWriteLock();
+        locks = new ReentrantLock[2];
+        locks[0] = new ReentrantLock();
+        locks[1] = new ReentrantLock();
         this.contenuto = contenuto;
         this.autore = autore;
         this.idpost = idpost;
         this.titolo = titolo;
+        lastTimeReward = Calendar.getInstance().getTimeInMillis();
         comments = new Hashtable<>();
         likes = new LinkedList<>();
     }
 
-    public ServerPost(ServerPost post){ //mi serve per fare la deepCopy dei post(utile per backup e calcolo ricompense)
-        idpost = getIdpost();
-        autore = post.autore;
-        titolo = post.titolo;
-        contenuto = post.contenuto;
-        likes = new LinkedList<>();
-        for (FeedBack like:post.getLikes()) {
-            likes.add(like);
-        }
-        comments = new Hashtable<>();
-        Hashtable<String, LinkedList<Comment>> aux = post.getComments();
-        for (String key : aux.keySet()) {
-            comments.put(key, new LinkedList<>(aux.get(key)));
-        };
+    public void lock(int index){
+        //0->likes, 1->comments
+        locks[index].lock();
+    }
+
+    public void unlock(int index){
+        //0->likes, 1->comments
+        locks[index].unlock();
     }
 
     public Long getIdpost() {
@@ -74,12 +73,16 @@ public class ServerPost {
         }
     }
 
-    public void ratePost(String autore, Integer voto){
+    public boolean ratePost(String autore, Integer voto){
+        FeedBack feedback;
         if (voto > 0){
-            likes.add(new FeedBack(autore, true, Calendar.getInstance().getTimeInMillis()));
+            feedback = new FeedBack(autore, true, Calendar.getInstance().getTimeInMillis());
         }else{
-            likes.add(new FeedBack(autore, false, Calendar.getInstance().getTimeInMillis()));
+            feedback = new FeedBack(autore, false, Calendar.getInstance().getTimeInMillis());
         }
+        if(!likes.contains(feedback))
+            return likes.add(feedback);
+        return false;
     }
 
     public String getAutore(){

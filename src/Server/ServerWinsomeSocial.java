@@ -1,6 +1,7 @@
 package Server;
 
 import Exceptions.IllegalRegisterException;
+import Utilities.FeedBack;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -177,14 +178,17 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
         boolean seguito = false;
         try{
             userFollowed.lock(1);//aggiunge il follower
-            seguito = user.addFollowed(followed);
-            userFollowed.addFollower(username);
-            for (ServerPost post : userFollowed.getBlog().values()) {
-                user.addPostFeed(post);
+            userFollowed.lock(2);
+            if((seguito = user.addFollowed(followed))) {
+                userFollowed.addFollower(username);
+                for (ServerPost post : userFollowed.getBlog().values()) {
+                    user.addPostFeed(post);
+                }
+                doCallbackFollow(followed); //notifico l'utente interessato
             }
-            doCallbackFollow(followed); //notifico l'utente interessato
         }finally{
             userFollowed.unlock(1);
+            userFollowed.unlock(2);
         }
         return seguito;
     }
@@ -222,18 +226,24 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
 
     public boolean createPost(String autore, String titolo, String contenuto){
         long id = postID.addAndGet(1);
+        ServerUser user = socialUsers.get(autore);
         ServerPost newPost = new ServerPost(id, titolo, contenuto, autore);
         if(socialPost.putIfAbsent(id, newPost) == null){ //aggiungo l'utente registrato
-            socialUsers.get(autore).addPostBlog(newPost);
-            System.out.println("NUOVO POST CREATO: " + titolo);
-            for (String key : socialUsers.get(autore).getFollowers()) {
-                ServerUser auxUser = socialUsers.get(key);
-                try {
-                    auxUser.lock(0);
-                    auxUser.addPostFeed(newPost);
-                }finally{
-                    auxUser.unlock(0);
+            try {
+                user.lock(2);
+                user.addPostBlog(newPost);
+                System.out.println("NUOVO POST CREATO: " + titolo);
+                for (String key : socialUsers.get(autore).getFollowers()) {
+                    ServerUser auxUser = socialUsers.get(key);
+                    try {
+                        auxUser.lock(0);
+                        auxUser.addPostFeed(newPost);
+                    } finally {
+                        auxUser.unlock(0);
+                    }
                 }
+            }finally{
+                user.unlock(2);
             }
             return true;
         }else{
@@ -244,15 +254,20 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
     public boolean deletePost(Long idPost, String username){//per evitare il rischio che qualcuno commenti il post mentre viene cancellato
         if (socialPost.remove(idPost) != null) {
             ServerUser user = socialUsers.get(username);
-            user.removePostBlog(idPost);
-            for (String key : user.getFollowers()) {
-                ServerUser auxUser = socialUsers.get(key);
-                try {
-                    auxUser.lock(0);
-                    auxUser.removePostFeed(idPost);
-                }finally{
-                    auxUser.unlock(0);
+            try {
+                user.unlock(2);
+                user.removePostBlog(idPost);
+                for (String key : user.getFollowers()) {
+                    ServerUser auxUser = socialUsers.get(key);
+                    try {
+                        auxUser.lock(0);
+                        auxUser.removePostFeed(idPost);
+                    } finally {
+                        auxUser.unlock(0);
+                    }
                 }
+            }finally{
+                user.unlock(2);
             }
             return true;
         } else {
@@ -274,6 +289,31 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
             user.unlock(0);
         }
         return (rewin && seguito);
+    }
+
+    public String ratePost(String username, Long idpost, Integer voto){
+        ServerPost post = socialPost.get(idpost);
+        String rated = "";
+        if(post != null) { //il post deve esistere
+            if (username.compareTo(post.getAutore()) != 0) { //non deve essere l'autore
+                ServerUser user = socialUsers.get(username);
+                try{
+                    user.lock(0);
+                    post.lock(0);
+                    if(user.getFeed().containsKey(idpost)){ //il post deve essere nel feed
+                        post.ratePost(username, voto);
+                    }
+                    else{
+                        rated = "ERRORE: il post non è presente nel tuo feed";
+                    }
+                }finally{
+                    user.unlock(0);
+                    post.unlock(0);
+                }
+            }
+            return "ERRORE: sei l'autore del post";
+        }
+        return "ERRORE: post non presente";
     }
 
     public String showPost(Long idpost){

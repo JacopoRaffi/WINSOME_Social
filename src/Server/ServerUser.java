@@ -7,7 +7,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.LinkedHashSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class ServerUser {
@@ -42,16 +41,16 @@ public class ServerUser {
     }
 
     public void lock(int index){
-        //0->feed, 1->followers
+        //0->feed, 1->followers, 2->blog
         locks[index].lock();
     }
 
     public void unlock(int index){
-        //0->feed, 1->followers
+        //0->feed, 1->followers, 2->blog
         locks[index].unlock();
     }
 
-    public synchronized boolean addPostBlog(ServerPost post){
+    public boolean addPostBlog(ServerPost post){
         return (blog.putIfAbsent(post.getIdpost(), post) == null);
     }
 
@@ -63,7 +62,7 @@ public class ServerUser {
         return (feed.remove(idpost) != null);
     }
 
-    public synchronized boolean removePostBlog(Long idpost){
+    public boolean removePostBlog(Long idpost){
         return (blog.remove(idpost) != null);
     }
 
@@ -99,7 +98,7 @@ public class ServerUser {
         return feed;
     }
 
-    public synchronized ConcurrentHashMap<Long, ServerPost> getBlog(){
+    public ConcurrentHashMap<Long, ServerPost> getBlog(){
         return blog;
     }
 
