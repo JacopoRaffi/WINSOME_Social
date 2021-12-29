@@ -191,14 +191,16 @@ public class ServerMain {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonReader reader = new JsonReader(new FileReader(socialUserStatus));
         Type typeOfMap = new TypeToken<ConcurrentHashMap<String, ServerUser>>() {}.getType();
-        ConcurrentHashMap<String, ServerUser> mapUser = null;//gson.fromJson(reader, typeOfMap);
+        ConcurrentHashMap<String, ServerUser> mapUser = null;
+        gson.fromJson(reader, typeOfMap);
         if(mapUser == null)
             mapUser = new ConcurrentHashMap<>();
         social.setSocialUsers(mapUser);
 
         JsonReader readerPost = new JsonReader(new FileReader(postStatus));
         Type typeOfMapPost = new TypeToken<ConcurrentHashMap<Long, ServerPost>>() {}.getType();
-        ConcurrentHashMap<Long, ServerPost> mapPost = null;//gson.fromJson(readerPost, typeOfMapPost);
+        ConcurrentHashMap<Long, ServerPost> mapPost = null;
+        gson.fromJson(readerPost, typeOfMapPost);
         if(mapPost == null)
             mapPost = new ConcurrentHashMap<>();
         social.setSocialPost(mapPost);
