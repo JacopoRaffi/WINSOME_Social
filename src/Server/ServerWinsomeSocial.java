@@ -1,7 +1,6 @@
 package Server;
 
 import Exceptions.IllegalRegisterException;
-import Utilities.FeedBack;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -175,6 +174,8 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
     public boolean followUser(String username, String followed){
         ServerUser user = socialUsers.get(username);
         ServerUser userFollowed = socialUsers.get(followed);
+        if(followed.compareTo(username) == 0)
+            return false;
         boolean seguito = false;
         try{
             userFollowed.lock(1);//aggiunge il follower
@@ -196,6 +197,8 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
     public boolean unFollowUser(String username, String followed){
         ServerUser user = socialUsers.get(username);
         ServerUser userFollowed = socialUsers.get(followed);
+        if(followed.compareTo(username) == 0)
+            return false;
         boolean seguito = false;
         try{
             userFollowed.lock(1);//rimuove il follower

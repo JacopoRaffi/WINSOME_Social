@@ -70,7 +70,6 @@ public class ServerReward extends Thread {
                 social.getSocialUsers().get(cur).getWallet().addTransazione(percCuratori + ", " + Calendar.getInstance().getTime());
                 social.getSocialUsers().get(cur).getWallet().addIncremento(percCuratori);
             }
-
             social.getSocialUsers().get(autore).getWallet().addIncremento(percAutore);
             social.getSocialUsers().get(autore).getWallet().addTransazione(percAutore + ", " + Calendar.getInstance().getTime());
         }
