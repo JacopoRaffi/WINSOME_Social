@@ -97,7 +97,20 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
         String aux = "";
         try{
             user.lock(0);
-            aux = user.getFeed().toString();
+            ConcurrentHashMap<Long, ServerPost> mapAux = user.getFeed();
+            Iterator<Long> it = mapAux.keySet().iterator();
+            while(it.hasNext()){
+                Long idp = it.next();
+                ServerPost post = socialPost.get(idp);
+                try{
+                    post.lock(0);
+                    post.lock(1);
+                    aux += showPost(idp) + "~";
+                }finally{
+                    post.unlock(0);
+                    post.unlock(1);
+                }
+            }
         }finally{
             user.unlock(0);
         }
@@ -106,7 +119,27 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
 
     public String showBlog(String username){
         ServerUser user = socialUsers.get(username);
-        return user.getBlog().toString();
+        String aux = "";
+        try{
+            user.lock(2);
+            Iterator<Long> idp = user.getBlog().keySet().iterator();
+            while(idp.hasNext()){
+                long idPost = idp.next();
+                ServerPost post = socialPost.get(idPost);
+                try{
+                    post.lock(0);
+                    post.lock(1);
+                    aux += showPost(idPost) + "~";
+                }finally{
+                    post.unlock(0);
+                    post.unlock(1);
+                }
+            }
+        }finally{
+            user.unlock(2);
+        }
+
+        return aux;
     }
 
     //metodo usato per il backup(il backup dei post viene fatto tramite i blog degli utenti)

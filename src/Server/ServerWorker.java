@@ -139,14 +139,30 @@ public class ServerWorker implements Runnable{
             }
         }
         else if(request.startsWith("showfeed")){
-            response = "FEED: " + social.showFeed(clientUserName);
-            writer.writeUTF(response);
+            response = social.showFeed(clientUserName);
+            String[] posts = response.split("~");
+            Integer dim = posts.length;
+            writer.writeUTF(dim.toString());
             writer.flush();
+
+            for(int i = 0; i < dim; i++){
+                response = posts[i];
+                writer.writeUTF(response);
+                writer.flush();
+            }
         }
         else if(request.startsWith("viewblog")){
-            response = "BLOG: " + social.showBlog(clientUserName);
-            writer.writeUTF(response);
+            response = social.showBlog(clientUserName);
+            String[] posts = response.split("~");
+            Integer dim = posts.length;
+            writer.writeUTF(dim.toString());
             writer.flush();
+
+            for(int i = 0; i < dim; i++){
+                response = posts[i];
+                writer.writeUTF(response);
+                writer.flush();
+            }
         }
         else if(request.startsWith("listfollowing")){
             LinkedHashSet<String> aux = social.listFollowed(clientUserName);

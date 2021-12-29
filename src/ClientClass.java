@@ -86,7 +86,7 @@ public class ClientClass implements Runnable {
             ClientNotifyInterface stub = (ClientNotifyInterface) UnicastRemoteObject.exportObject(callbackObj, 0);
             socialActivity(socket, stub); //inizio dell'utilizzo del social da parte del client
         }catch(IOException | NotBoundException e){
-            System.err.println("ERRORE: connessione col server interrotta");
+            System.out.println("ERRORE: connessione col server interrotta");
             System.exit(-1);
         }
     }
@@ -102,12 +102,12 @@ public class ClientClass implements Runnable {
                 this.username = username;
             }
             else
-                System.err.println("ERRORE: username già registrato nel social");
+                System.out.println("ERRORE: username già registrato nel social");
         }catch(RemoteException | NotBoundException e){
-            System.err.println("ERRORE: registrazione fallita");
+            System.out.println("ERRORE: registrazione fallita");
             System.exit(-1);
         }catch(IllegalRegisterException ex){
-            System.err.println("ERRORE: la password deve essere compresa tra 8 e 16 caratteri");
+            System.out.println("ERRORE: la password deve essere compresa tra 8 e 16 caratteri");
         }
     }
 
@@ -163,13 +163,17 @@ public class ClientClass implements Runnable {
         while(true){
             System.out.printf("> ");
             String line = scanner.nextLine();
+            if(line.contains("~")){
+                System.out.println("ERRORE: la ~ è abolita in questo social :)");
+                continue;
+            }
             commandLine = line.split(" ");
             String request = commandLine[0].toLowerCase(Locale.ROOT);
 
             if(request.compareTo("register") == 0){
                 if(commandLine.length < 4 || commandLine.length > 8){
-                    System.err.println("< ERRORE: il comando è: register <username> <password> <tags>");
-                    System.err.println("Numero di tags tra 1 e 5");
+                    System.out.println("< ERRORE: il comando è: register <username> <password> <tags>");
+                    System.out.println("Numero di tags tra 1 e 5");
                     continue;
                 }
                 String tags = ""; //in questa stringa mi salvo i tags del client
@@ -184,7 +188,7 @@ public class ClientClass implements Runnable {
             else if(request.compareTo("login") == 0) {
                 if (!logged) {
                     if (commandLine.length != 3) {
-                        System.err.println("< ERRORE: il comando è: login <username> <password>");
+                        System.out.println("< ERRORE: il comando è: login <username> <password>");
                         continue;
                     }
                     outWriter.writeUTF(line); //invio la richiesta al server con i relativi parametri
@@ -198,7 +202,7 @@ public class ClientClass implements Runnable {
                             followers.addAll(regFun.backUpFollowers(username, password));
                             regFun.registerForCallback(stub, username, password);
                         }catch(NoSuchAlgorithmException | NullPointerException e){
-                            System.err.println("ERRORE SERVER: c'è stato un problema, riprovare successivamente");
+                            System.out.println("ERRORE SERVER: c'è stato un problema, riprovare successivamente");
                         }
                     }
                     System.out.println("< " + serverResponse);
@@ -213,12 +217,12 @@ public class ClientClass implements Runnable {
                         regFun.unregisterForCallback(stub, username, password);
                         logged = false;
                     }catch(NoSuchAlgorithmException e){
-                        System.err.println("< ERRORE SERVER: c'è stato un problema, riprovare successivamente");
+                        System.out.println("< ERRORE SERVER: c'è stato un problema, riprovare successivamente");
                         continue;
                     }
                 }
                 else{
-                    System.err.println(NOT_LOGGED_MESSAGE);
+                    System.out.println(NOT_LOGGED_MESSAGE);
                 }
             }
             else if(request.compareTo("help") == 0){
@@ -265,7 +269,7 @@ public class ClientClass implements Runnable {
             else if(request.compareTo("follow") == 0){
                 if (logged) {
                     if (commandLine.length != 2) {
-                        System.err.println("< ERRORE: il comando è: follow <username>");
+                        System.out.println("< ERRORE: il comando è: follow <username>");
                         continue;
                     }
                     outWriter.writeUTF(line); //invio la richiesta al server con i relativi parametri
@@ -279,7 +283,7 @@ public class ClientClass implements Runnable {
             else if(request.compareTo("unfollow") == 0){
                 if (logged) {
                     if (commandLine.length != 2) {
-                        System.err.println("< ERRORE: il comando è: unfollow <username>");
+                        System.out.println("< ERRORE: il comando è: unfollow <username>");
                         continue;
                     }
                     
@@ -294,16 +298,16 @@ public class ClientClass implements Runnable {
             else if(request.compareTo("createpost") == 0){
                 if (logged) {
                     if (commandLine.length != 3) {
-                        System.err.println("< ERRORE: il comando è: cretepost <titolo> <contenuto>");
+                        System.out.println("< ERRORE: il comando è: cretepost <titolo> <contenuto>");
                         System.out.println("Lunghezza massima titolo 50 caratteri");
                         System.out.println("Lunghezza massima contenuto 500 caratteri");
                         continue;
                     }
                     if(commandLine[1].length() > 50){
-                        System.err.println("ERRORE: lunghezza massima titolo 50 caratteri");
+                        System.out.println("ERRORE: lunghezza massima titolo 50 caratteri");
                     }
                     if(commandLine[2].length() > 500){
-                        System.err.println("ERRORE: lunghezza massima contenuto 500 caratteri");
+                        System.out.println("ERRORE: lunghezza massima contenuto 500 caratteri");
                     }
                     
                     outWriter.writeUTF(line); //invio la richiesta al server con i relativi parametri
@@ -319,8 +323,12 @@ public class ClientClass implements Runnable {
                     outWriter.writeUTF(line);
                     outWriter.flush();
                     serverResponse = inReader.readUTF();
+                    int dim = Integer.parseInt(serverResponse);
 
-                    System.out.println("< " + serverResponse);
+                    for(int i = 0; i < dim; i++){
+                        serverResponse = inReader.readUTF();
+                        System.out.println("< " + serverResponse);
+                    }
 
                 }else
                     System.out.println(NOT_LOGGED_MESSAGE);
@@ -330,8 +338,12 @@ public class ClientClass implements Runnable {
                     outWriter.writeUTF(line);
                     outWriter.flush();
                     serverResponse = inReader.readUTF();
+                    int dim = Integer.parseInt(serverResponse);
 
-                    System.out.println("< " + serverResponse);
+                    for(int i = 0; i < dim; i++){
+                        serverResponse = inReader.readUTF();
+                        System.out.println("< " + serverResponse);
+                    }
 
                 }else
                     System.out.println(NOT_LOGGED_MESSAGE);
@@ -339,18 +351,18 @@ public class ClientClass implements Runnable {
             else if(request.compareTo("showpost") == 0){
                 if (logged) {
                     if (commandLine.length != 2) {
-                        System.err.println("< ERRORE: il comando è: showpost <idpost>");
+                        System.out.println("< ERRORE: il comando è: showpost <idpost>");
                         System.out.println("< idpost deve essere un numero non negativo");
                         continue;
                     }
                     try{
                         long idpost = Long.parseLong(commandLine[1]);
                         if(idpost < 0){
-                            System.err.println("< idpost deve essere un numero non negativo");
+                            System.out.println("< idpost deve essere un numero non negativo");
                             continue;
                         }
                     }catch(RuntimeException e){
-                        System.err.println("< idpost deve essere un numero non negativo");
+                        System.out.println("< idpost deve essere un numero non negativo");
                         continue;
                     }
                     outWriter.writeUTF(line); //invio la richiesta al server con i relativi parametri
@@ -364,18 +376,18 @@ public class ClientClass implements Runnable {
             else if(request.compareTo("deletepost") == 0){
                 if (logged) {
                     if (commandLine.length != 2) {
-                        System.err.println("< ERRORE: il comando è: delete <idpost>");
+                        System.out.println("< ERRORE: il comando è: delete <idpost>");
                         System.out.println("idpost deve essere un numero non negativo");
                         continue;
                     }
                     try{
                         long idpost = Long.parseLong(commandLine[1]);
                         if(idpost < 0){
-                            System.err.println("idpost deve essere un numero non negativo");
+                            System.out.println("idpost deve essere un numero non negativo");
                             continue;
                         }
                     }catch(RuntimeException e){
-                        System.err.println("idpost deve essere un numero non negativo");
+                        System.out.println("idpost deve essere un numero non negativo");
                         continue;
                     }
                     outWriter.writeUTF(line); //invio la richiesta al server con i relativi parametri
@@ -389,18 +401,18 @@ public class ClientClass implements Runnable {
             else if(request.compareTo("rewinpost") == 0){
                 if (logged) {
                     if (commandLine.length != 2) {
-                        System.err.println("< ERRORE: il comando è: rewinpost <idpost>");
+                        System.out.println("< ERRORE: il comando è: rewinpost <idpost>");
                         System.out.println("idpost deve essere un numero non negativo");
                         continue;
                     }
                     try{
                         long idpost = Long.parseLong(commandLine[1]);
                         if(idpost < 0){
-                            System.err.println("idpost deve essere un numero non negativo");
+                            System.out.println("idpost deve essere un numero non negativo");
                             continue;
                         }
                     }catch(RuntimeException e){
-                        System.err.println("idpost deve essere un numero non negativo");
+                        System.out.println("idpost deve essere un numero non negativo");
                         continue;
                     }
                     outWriter.writeUTF(line); //invio la richiesta al server con i relativi parametri
@@ -414,7 +426,7 @@ public class ClientClass implements Runnable {
             else if(request.compareTo("ratepost") == 0){
                 if (logged) {
                     if (commandLine.length != 3) {
-                        System.err.println("< ERRORE: il comando è: ratepost <idpost> <voto>");
+                        System.out.println("< ERRORE: il comando è: ratepost <idpost> <voto>");
                         System.out.println("< idpost deve essere un numero non negativo");
                         System.out.println("< il voto deve essere +1 o -1");
                         continue;
@@ -422,17 +434,17 @@ public class ClientClass implements Runnable {
                     try{
                         long idpost = Long.parseLong(commandLine[1]);
                         if(idpost < 0){
-                            System.err.println("< idpost deve essere un numero non negativo");
+                            System.out.println("< idpost deve essere un numero non negativo");
                             continue;
                         }
                     }catch(RuntimeException e){
-                        System.err.println("< idpost deve essere un numero non negativo");
+                        System.out.println("< idpost deve essere un numero non negativo");
                         continue;
                     }
                     try{
                         Long.parseLong(commandLine[2]);
                     }catch(RuntimeException e){
-                        System.err.println("< il voto deve essere +1 o -1");
+                        System.out.println("< il voto deve essere +1 o -1");
                         continue;
                     }
                     outWriter.writeUTF(line); //invio la richiesta al server con i relativi parametri
@@ -446,18 +458,18 @@ public class ClientClass implements Runnable {
             else if(request.compareTo("addcomment") == 0){
                 if (logged) {
                     if (commandLine.length != 3) {
-                        System.err.println("< ERRORE: il comando è: addcomment <idpost> <commento>");
+                        System.out.println("< ERRORE: il comando è: addcomment <idpost> <commento>");
                         System.out.println("< idpost deve essere un numero non negativo");
                         continue;
                     }
                     try{
                         long idpost = Long.parseLong(commandLine[1]);
                         if(idpost < 0){
-                            System.err.println("< idpost deve essere un numero non negativo");
+                            System.out.println("< idpost deve essere un numero non negativo");
                             continue;
                         }
                     }catch(RuntimeException e){
-                        System.err.println("< idpost deve essere un numero non negativo");
+                        System.out.println("< idpost deve essere un numero non negativo");
                         continue;
                     }
                     outWriter.writeUTF(line); //invio la richiesta al server con i relativi parametri
