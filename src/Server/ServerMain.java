@@ -24,7 +24,7 @@ public class ServerMain {
     private static String MULTICAST_ADDRESS = "239.255.32.32";
     private static String REG_SERVICENAME = "serverRegistry";
     private static long TIMEOUT = 10000000;
-    private static long TIMELAPSE = 1000000000;
+    private static long TIMELAPSE = 1000;
     private static long TIMELAPSEBACKUP = 1000;
     private static double AUTHOR_RATE = 0.8;
 
@@ -190,14 +190,14 @@ public class ServerMain {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonReader reader = new JsonReader(new FileReader(socialUserStatus));
         Type typeOfMap = new TypeToken<ConcurrentHashMap<String, ServerUser>>() {}.getType();
-        ConcurrentHashMap<String, ServerUser> mapUser = gson.fromJson(reader, typeOfMap);
+        ConcurrentHashMap<String, ServerUser> mapUser = null;//gson.fromJson(reader, typeOfMap);
         if(mapUser == null)
             mapUser = new ConcurrentHashMap<>();
         social.setSocialUsers(mapUser);
 
         JsonReader readerPost = new JsonReader(new FileReader(postStatus));
         Type typeOfMapPost = new TypeToken<ConcurrentHashMap<Long, ServerPost>>() {}.getType();
-        ConcurrentHashMap<Long, ServerPost> mapPost = gson.fromJson(readerPost, typeOfMapPost);
+        ConcurrentHashMap<Long, ServerPost> mapPost = null;//gson.fromJson(readerPost, typeOfMapPost);
         if(mapPost == null)
             mapPost = new ConcurrentHashMap<>();
         social.setSocialPost(mapPost);

@@ -183,7 +183,7 @@ public class ClientClass implements Runnable {
             }
             else if(request.compareTo("login") == 0) {
                 if (!logged) {
-                    if (commandLine.length < 3) {
+                    if (commandLine.length != 3) {
                         System.err.println("< ERRORE: il comando è: login <username> <password>");
                         continue;
                     }
@@ -255,7 +255,7 @@ public class ClientClass implements Runnable {
             }
             else if(request.compareTo("follow") == 0){
                 if (logged) {
-                    if (commandLine.length < 2) {
+                    if (commandLine.length != 2) {
                         System.err.println("< ERRORE: il comando è: follow <username>");
                         continue;
                     }
@@ -269,7 +269,7 @@ public class ClientClass implements Runnable {
             }
             else if(request.compareTo("unfollow") == 0){
                 if (logged) {
-                    if (commandLine.length < 2) {
+                    if (commandLine.length != 2) {
                         System.err.println("< ERRORE: il comando è: unfollow <username>");
                         continue;
                     }
@@ -284,7 +284,7 @@ public class ClientClass implements Runnable {
             }
             else if(request.compareTo("createpost") == 0){
                 if (logged) {
-                    if (commandLine.length < 3) {
+                    if (commandLine.length != 3) {
                         System.err.println("< ERRORE: il comando è: cretepost <titolo> <contenuto>");
                         System.out.println("Lunghezza massima titolo 50 caratteri");
                         System.out.println("Lunghezza massima contenuto 500 caratteri");
@@ -329,7 +329,7 @@ public class ClientClass implements Runnable {
             }
             else if(request.compareTo("showpost") == 0){
                 if (logged) {
-                    if (commandLine.length < 2) {
+                    if (commandLine.length != 2) {
                         System.err.println("< ERRORE: il comando è: showpost <idpost>");
                         System.out.println("< idpost deve essere un numero non negativo");
                         continue;
@@ -354,7 +354,7 @@ public class ClientClass implements Runnable {
             }
             else if(request.compareTo("deletepost") == 0){
                 if (logged) {
-                    if (commandLine.length < 2) {
+                    if (commandLine.length != 2) {
                         System.err.println("< ERRORE: il comando è: delete <idpost>");
                         System.out.println("idpost deve essere un numero non negativo");
                         continue;
@@ -379,7 +379,7 @@ public class ClientClass implements Runnable {
             }
             else if(request.compareTo("rewinpost") == 0){
                 if (logged) {
-                    if (commandLine.length < 2) {
+                    if (commandLine.length != 2) {
                         System.err.println("< ERRORE: il comando è: rewinpost <idpost>");
                         System.out.println("idpost deve essere un numero non negativo");
                         continue;
@@ -404,7 +404,7 @@ public class ClientClass implements Runnable {
             }
             else if(request.compareTo("ratepost") == 0){
                 if (logged) {
-                    if (commandLine.length < 3) {
+                    if (commandLine.length != 3) {
                         System.err.println("< ERRORE: il comando è: ratepost <idpost> <voto>");
                         System.out.println("< idpost deve essere un numero non negativo");
                         System.out.println("< il voto deve essere +1 o -1");
@@ -436,7 +436,7 @@ public class ClientClass implements Runnable {
             }
             else if(request.compareTo("addcomment") == 0){
                 if (logged) {
-                    if (commandLine.length < 3) {
+                    if (commandLine.length != 3) {
                         System.err.println("< ERRORE: il comando è: addcomment <idpost> <commento>");
                         System.out.println("< idpost deve essere un numero non negativo");
                         continue;

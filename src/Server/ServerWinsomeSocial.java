@@ -264,7 +264,7 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
         if (socialPost.remove(idPost) != null) {
             ServerUser user = socialUsers.get(username);
             try {
-                user.unlock(2);
+                user.lock(2);
                 user.removePostBlog(idPost);
                 for (String key : user.getFollowers()) {
                     ServerUser auxUser = socialUsers.get(key);
@@ -322,6 +322,33 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
                 }finally{
                     user.unlock(0);
                     post.unlock(0);
+                }
+                return rated;
+            }
+            return "ERRORE: sei l'autore del post";
+        }
+        return "ERRORE: post non presente";
+    }
+
+    public String addComment(String username, Long idpost, String commento){
+        ServerPost post = socialPost.get(idpost);
+        String rated = "";
+        if(post != null) { //il post deve esistere
+            if (username.compareTo(post.getAutore()) != 0) { //non deve essere l'autore
+                ServerUser user = socialUsers.get(username);
+                try{
+                    user.lock(0); //lock sul feed
+                    post.lock(1); //lock sui commenti
+                    if(user.getFeed().containsKey(idpost)) { //il post deve essere nel feed
+                        post.addComment(commento, username);
+                        rated = "SUCCESSO: hai commentato il post";
+                    }
+                    else{
+                        rated = "ERRORE: il post non è presente nel tuo feed";
+                    }
+                }finally{
+                    user.unlock(0); //unlock sul feed
+                    post.unlock(1); //unlock sui commenti
                 }
                 return rated;
             }

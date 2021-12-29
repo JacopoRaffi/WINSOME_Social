@@ -54,13 +54,13 @@ public class ServerReward extends Thread {
 
     private void calcoloRicompense(){
         ConcurrentHashMap<Long, ServerPost> copyPost = social.getSocialPost();
-        for (Long id: copyPost.keySet()) {
+        Iterator<Long> iterator = social.getSocialPost().keySet().iterator(); //non lancia la concurrent exception
+        while(iterator.hasNext()) {
             double guadagnoTotale = 0;
-            ServerPost post = new ServerPost(copyPost.get(id));
+            ServerPost post = copyPost.get(iterator.next());
             String autore = post.getAutore();
             Set<String> curatori = new TreeSet<>(); //voglio i curatori per aumentare la loro ricompensa(Set perchè non voglio ripetere gli stessi curatori)
-
-            guadagnoTotale += guadagno(new ServerPost(copyPost.get(id)), curatori); //calcola il guadagno derivato da un post
+            guadagnoTotale += guadagno(post, curatori); //calcola il guadagno derivato da un post
 
             int dimCuratori = curatori.size() == 0 ? 1 : curatori.size(); //serve per evitare di dividere per 0
             double percCuratori = guadagnoTotale * (1 - percentualeAutore) / dimCuratori;
@@ -82,26 +82,34 @@ public class ServerReward extends Thread {
         double sommaAux = 0;
         double guadagnoPost = 0;
         int numIterazioni = post.addGetNumIterazioni();
-        List<FeedBack> filteredFeedback = post.getLikes().stream().filter(feedback -> feedback.getTime() < lastCalculation).collect(Collectors.toList());
-        int numPositivi = 0;
-        for (FeedBack feedback: filteredFeedback) {
-            if(feedback.isPositivo()){
-                numPositivi++;
-                curatori.add(feedback.getAutore()); //aggiungo il curatore che ha messo il voto positivo
+        try {
+            post.lock(0);
+            post.lock(1);
+            List<FeedBack> filteredFeedback = post.getLikes().stream().filter(feedback -> feedback.getTime() > post.getLastTimeReward()).collect(Collectors.toList());
+            System.out.println(filteredFeedback.size() +"    "+ post.getLikes().size());
+            int numPositivi = 0;
+            for (FeedBack feedback : filteredFeedback) {
+                if (feedback.isPositivo()) {
+                    numPositivi++;
+                    curatori.add(feedback.getAutore()); //aggiungo il curatore che ha messo il voto positivo
+                } else {
+                    numPositivi--;
+                }
             }
-            else{
-                numPositivi--;
+            somma1 = Math.log(Math.max(0, numPositivi) + 1);
+            Hashtable<String, LinkedList<Comment>> comments = post.getComments();
+            //le key sono gli autori
+            for (String key : filterNewPeopleCommenting(post)) {
+                int Cp = comments.get(key).size();
+                sommaAux += 2 / (1 + Math.pow(Math.E, -Cp + 1));
             }
+            somma2 = Math.log(somma2 + 1);
+            guadagnoPost = (somma1 + somma2) / numIterazioni;
+        }finally{
+            post.setLastTimeReward(System.nanoTime());
+            post.unlock(0);
+            post.unlock(1);
         }
-        somma1 = Math.log(Math.max(0, numPositivi) + 1);
-        Hashtable<String, LinkedList<Comment>> comments = post.getComments();
-        //le key sono gli autori
-        for (String key: filterNewPeopleCommenting(post)) {
-            int Cp = comments.get(key).size();
-            sommaAux += 2 / (1 + Math.pow(Math.E, -Cp + 1));
-        }
-        somma2 = Math.log(somma2 + 1);
-        guadagnoPost = (somma1 + somma2) / numIterazioni;
 
         return guadagnoPost;
     }
@@ -110,7 +118,7 @@ public class ServerReward extends Thread {
         Set<String> newPeople = new TreeSet<>(); //qui metto le persone che avranno commentato di recente
 
         for (String key: post.getComments().keySet()) {
-            List<Comment> filteredComment = post.getComments().get(key).stream().filter(comment -> comment.getTime() < lastCalculation).collect(Collectors.toList());
+            List<Comment> filteredComment = post.getComments().get(key).stream().filter(comment -> comment.getTime() > post.getLastTimeReward()).collect(Collectors.toList());
             if(!filteredComment.isEmpty()){
                 newPeople.add(key);
             }

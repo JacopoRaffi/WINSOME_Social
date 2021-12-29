@@ -17,7 +17,7 @@ public class ServerPost {
     private final Hashtable<String, LinkedList<Comment>> comments;
     private final LinkedList<FeedBack> likes;
     private final ReentrantLock[] locks;
-    private final long lastTimeReward;
+    private long lastTimeReward;
 
     public ServerPost(Long idpost, String titolo, String contenuto, String autore){
         numIterazioni = 0;
@@ -28,7 +28,7 @@ public class ServerPost {
         this.autore = autore;
         this.idpost = idpost;
         this.titolo = titolo;
-        lastTimeReward = Calendar.getInstance().getTimeInMillis();
+        lastTimeReward = System.nanoTime();
         comments = new Hashtable<>();
         likes = new LinkedList<>();
     }
@@ -76,9 +76,9 @@ public class ServerPost {
     public boolean ratePost(String autore, Integer voto){
         FeedBack feedback;
         if (voto > 0){
-            feedback = new FeedBack(autore, true, Calendar.getInstance().getTimeInMillis());
+            feedback = new FeedBack(autore, true, System.nanoTime());
         }else{
-            feedback = new FeedBack(autore, false, Calendar.getInstance().getTimeInMillis());
+            feedback = new FeedBack(autore, false, System.nanoTime());
         }
         if(!likes.contains(feedback))
             return likes.add(feedback);
@@ -95,6 +95,14 @@ public class ServerPost {
 
     public String getContenuto(){
         return contenuto;
+    }
+
+    public void setLastTimeReward(long newTime){
+        lastTimeReward = newTime;
+    }
+
+    public long getLastTimeReward(){
+        return lastTimeReward;
     }
 
     @Override

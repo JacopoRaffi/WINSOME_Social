@@ -102,6 +102,11 @@ public class ServerWorker implements Runnable{
             writer.writeUTF(response);
             writer.flush();
         }
+        else if(request.startsWith("addcomment")){
+            response = social.addComment(clientUserName, Long.parseLong(param[1]) , param[2]);
+            writer.writeUTF(response);
+            writer.flush();
+        }
         else if(request.startsWith("getwalletinbitcoin")){
             try{
                 Wallet wallet = social.getSocialUsers().get(clientUserName).getWallet();
