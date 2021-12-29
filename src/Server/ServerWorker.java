@@ -7,7 +7,9 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.*;
 
+//writeUTF, readUTF string len limit 65535 bytes
 public class ServerWorker implements Runnable{
     ServerWinsomeSocial social;
     Socket clientSocket;
@@ -54,8 +56,9 @@ public class ServerWorker implements Runnable{
             }
         }
         else if(request.startsWith("createpost")){
-            if(social.createPost(clientUserName, param[1], param[2])){
-                response = "SUCCESSO: Post creato";
+            long id;
+            if((id=social.createPost(clientUserName, param[1], param[2])) > 0){
+                response = "SUCCESSO: Post creato(id=" + id + ")";
                 writer.writeUTF(response);
                 writer.flush();
             }
@@ -119,9 +122,21 @@ public class ServerWorker implements Runnable{
         }
         else if(request.startsWith("getwallet")){
             Wallet wallet = social.getSocialUsers().get(clientUserName).getWallet();
-            response = "PORTAFOGLIO(WINCOIN): " + wallet.getTotale() + ", " + wallet.getTransazioni();
+            response = "PORTAFOGLIO(WINCOIN): " + wallet.getTotale();
             writer.writeUTF(response);
             writer.flush();
+            Integer dim = wallet.getTransazioni().size();
+            writer.writeUTF(dim.toString());
+            writer.flush();
+            List<String> transazioni = wallet.getTransazioni();
+            Iterator<String> it = transazioni.iterator();
+            int i = 1;
+            while(it.hasNext()){
+                response = it.next();
+                writer.writeUTF("Transazione " + i + " " + response);
+                writer.flush();
+                i++;
+            }
         }
         else if(request.startsWith("showfeed")){
             response = "FEED: " + social.showFeed(clientUserName);
@@ -134,16 +149,33 @@ public class ServerWorker implements Runnable{
             writer.flush();
         }
         else if(request.startsWith("listfollowing")){
-            response = social.listFollowed(clientUserName);
-            System.out.println(response);
-            writer.writeUTF(response);
+            LinkedHashSet<String> aux = social.listFollowed(clientUserName);
+            Integer dim = aux.size();
+            writer.writeUTF(dim.toString());
             writer.flush();
-            System.out.println("arrivato qui");
+            Iterator<String> it = aux.iterator();
+            while(it.hasNext()) {
+                response = it.next();
+                writer.writeUTF("user: " + response);
+                writer.flush();
+            }
         }
         else if(request.startsWith("listusers")){
-            response = social.listUsers(social.getSocialUsers().get(clientUserName).getTags(), clientUserName);
-            writer.writeUTF(response);
+            Set<String> aux = social.listUsers(social.getSocialUsers().get(clientUserName).getTags(), clientUserName);
+            Integer dim = aux.size();
+            Iterator<String> it = aux.iterator();
+            writer.writeUTF(dim.toString());
             writer.flush();
+            while(it.hasNext()){
+                String user = it.next();
+                String[] tags = social.getSocialUsers().get(user).getTags();
+                response = user + ", TAGS: ";
+                for(int i = 0; i < tags.length; i++){
+                    response += tags[i] + "-";
+                }
+                writer.writeUTF(response);
+                writer.flush();
+            }
         }
         else if(request.startsWith("follow")){
             if(!social.followUser(clientUserName, param[1])){

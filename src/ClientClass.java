@@ -229,8 +229,12 @@ public class ClientClass implements Runnable {
                     outWriter.writeUTF(line);
                     outWriter.flush();
                     serverResponse = inReader.readUTF();
+                    int dim = Integer.parseInt(serverResponse);
 
-                    System.out.println("< " + serverResponse);
+                    for(int i = 0; i < dim; i++){
+                        serverResponse = inReader.readUTF();
+                        System.out.println("< " + serverResponse);
+                    }
 
                 }else
                     System.out.println(NOT_LOGGED_MESSAGE);
@@ -248,7 +252,12 @@ public class ClientClass implements Runnable {
                     outWriter.writeUTF(line); //invio la richiesta al server con i relativi parametri
                     outWriter.flush();
                     serverResponse = inReader.readUTF(); //leggo la risposta del server
-                    System.out.println("< " + serverResponse);
+                    int dim = Integer.parseInt(serverResponse);
+
+                    for(int i = 0; i < dim; i++){
+                        serverResponse = inReader.readUTF();
+                        System.out.println("< " + serverResponse);
+                    }
                 }else
                     System.out.println(NOT_LOGGED_MESSAGE);
 
@@ -464,8 +473,13 @@ public class ClientClass implements Runnable {
                     outWriter.writeUTF(line);
                     outWriter.flush();
                     serverResponse = inReader.readUTF();
-
-                    System.out.println("< " + serverResponse);
+                    System.out.println(serverResponse);
+                    serverResponse = inReader.readUTF();
+                    int len = Integer.parseInt(serverResponse);
+                    for(int i = 0; i < len; i++){
+                        serverResponse = inReader.readUTF();
+                        System.out.println("< " + serverResponse);
+                    }
 
                 }else
                     System.out.println(NOT_LOGGED_MESSAGE);

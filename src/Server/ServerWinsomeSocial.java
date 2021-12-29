@@ -73,14 +73,11 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
         }
     }
 
-    public String listFollowed(String username){
-        String aux = "";
-        ServerUser user = socialUsers.get(username);
-        aux = user.getFollowed().toString();
-        return aux;
+    public LinkedHashSet<String> listFollowed(String username){
+        return socialUsers.get(username).getFollowed();
     }
 
-    public String listUsers(String[] tags, String username){
+    public Set<String> listUsers(String[] tags, String username){
         Set<String> commonTagsUsers = new TreeSet<>();
         for (ServerUser user : socialUsers.values()) {
             if(username.compareTo(user.getUsername()) != 0) {
@@ -92,7 +89,7 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
                 }
             }
         }
-        return commonTagsUsers.toString();
+        return commonTagsUsers;
     }
 
     public String showFeed(String username){
@@ -234,7 +231,7 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
         return Double.parseDouble(randomValue) * wincoins;
     }
 
-    public boolean createPost(String autore, String titolo, String contenuto){
+    public long createPost(String autore, String titolo, String contenuto){
         long id = postID.addAndGet(1);
         ServerUser user = socialUsers.get(autore);
         ServerPost newPost = new ServerPost(id, titolo, contenuto, autore);
@@ -257,9 +254,9 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
                 user.unlock(1);
                 user.unlock(2);
             }
-            return true;
+            return id;
         }else{
-            return false;
+            return -1;
         }
     }
 

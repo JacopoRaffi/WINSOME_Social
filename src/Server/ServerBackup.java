@@ -9,8 +9,8 @@ import com.google.gson.reflect.TypeToken;
 
 //questo thread salva lo stato del social periodicamente
 public class ServerBackup extends Thread {
-    private File postStatus;
-    private File usersStatus;
+    private final File postStatus;
+    private final File usersStatus;
     private ServerWinsomeSocial social;
     private final long timelapse;
 
@@ -36,12 +36,5 @@ public class ServerBackup extends Thread {
 
     //idea backup: fare la get di un utente alla volta e salvarlo nel file(costruire manualmente la tabella hash JSON)
     //sfruttare i blog degli utenti per fare il backup dei post
-    protected void backup() throws IOException {/*
-        FileWriter writer = new FileWriter(usersStatus);
-        FileWriter writerPost = new FileWriter(postStatus);
-        Gson builder = new GsonBuilder().setPrettyPrinting().create();
-        Type typeOfMap = new TypeToken<ConcurrentHashMap<String, ServerUser>>() {}.getType();
-        writer.write(builder.toJson(social.getSocialUsers(), typeOfMap));
-        writer.close();*/
-    }
+    protected void backup() throws IOException {}
 }
