@@ -550,7 +550,6 @@ public class ClientClass implements Runnable {
                         "addComment <idpost> <commento> commenta un post di un utente che segui\n"+
                         "getWallet controlla il tuo portafoglio(in WINCOIN)\n"+
                         "getWalletInBitcoin valuta quanti BITCOIN valgono i tuoi WINCOIN\n"+
-                        "quit Chiudi il programma! \n")
-                        ;
+                        "quit Chiudi il programma! \n");
     }
 }
