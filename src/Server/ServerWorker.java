@@ -41,7 +41,7 @@ public class ServerWorker implements Runnable{
 
     private void executeRequest(String request, DataOutputStream writer) throws IOException, NullPointerException{
         String response = "";
-        String[] param = request.split(" ");
+        String[] param = request.split(" (?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
         if(request.startsWith("login")){
             if(social.login(param[1], param[2])) { //username e password
                 response = "SUCCESSO: Login effettuato con successo";

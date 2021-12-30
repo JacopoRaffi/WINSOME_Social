@@ -85,7 +85,6 @@ public class ServerReward extends Thread {
             post.lock(0);
             post.lock(1);
             List<FeedBack> filteredFeedback = post.getLikes().stream().filter(feedback -> feedback.getTime() > post.getLastTimeReward()).collect(Collectors.toList());
-            System.out.println(filteredFeedback.size() +"    "+ post.getLikes().size());
             int numPositivi = 0;
             for (FeedBack feedback : filteredFeedback) {
                 if (feedback.isPositivo()) {

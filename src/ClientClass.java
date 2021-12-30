@@ -12,10 +12,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.security.NoSuchAlgorithmException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Scanner;
+import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -167,7 +164,7 @@ public class ClientClass implements Runnable {
                 System.out.println("ERRORE: la ~ è abolita in questo social :)");
                 continue;
             }
-            commandLine = line.split(" ");
+            commandLine = line.split(" (?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
             String request = commandLine[0].toLowerCase(Locale.ROOT);
 
             if(request.compareTo("register") == 0){
@@ -202,7 +199,7 @@ public class ClientClass implements Runnable {
                             followers.addAll(regFun.backUpFollowers(username, password));
                             regFun.registerForCallback(stub, username, password);
                         }catch(NoSuchAlgorithmException | NullPointerException e){
-                            System.out.println("ERRORE SERVER: c'è stato un problema, riprovare successivamente");
+                            System.out.println("< ERRORE SERVER: c'è stato un problema, riprovare successivamente");
                         }
                     }
                     System.out.println("< " + serverResponse);
@@ -234,6 +231,7 @@ public class ClientClass implements Runnable {
                     outWriter.flush();
                     serverResponse = inReader.readUTF();
                     int dim = Integer.parseInt(serverResponse);
+                    System.out.println("Ecco gli utenti che hanno dei tag in comune con te ;)");
 
                     for(int i = 0; i < dim; i++){
                         serverResponse = inReader.readUTF();
@@ -246,7 +244,10 @@ public class ClientClass implements Runnable {
             else if(request.compareTo("listfollowers") == 0){
                 try{
                     listLock.lock();
-                    System.out.println(followers);
+                    System.out.println("Lista dei followers(totale=" + followers.size() + ")");
+                    for (String user:followers) {
+                        System.out.println("User: " + user);
+                    }
                 }finally {
                     listLock.unlock();
                 }
@@ -257,6 +258,7 @@ public class ClientClass implements Runnable {
                     outWriter.flush();
                     serverResponse = inReader.readUTF(); //leggo la risposta del server
                     int dim = Integer.parseInt(serverResponse);
+                    System.out.println("Queste sono le persone che segui");
 
                     for(int i = 0; i < dim; i++){
                         serverResponse = inReader.readUTF();
@@ -299,15 +301,17 @@ public class ClientClass implements Runnable {
                 if (logged) {
                     if (commandLine.length != 3) {
                         System.out.println("< ERRORE: il comando è: cretepost <titolo> <contenuto>");
+                        System.out.println("Ricorda di mettere titolo e contenuto tra le \"\" ");
                         System.out.println("Lunghezza massima titolo 50 caratteri");
                         System.out.println("Lunghezza massima contenuto 500 caratteri");
                         continue;
                     }
+                    System.out.println(commandLine[1] + "   " + commandLine[2]);
                     if(commandLine[1].length() > 50){
-                        System.out.println("ERRORE: lunghezza massima titolo 50 caratteri");
+                        System.out.println("< ERRORE: lunghezza massima titolo 50 caratteri");
                     }
                     if(commandLine[2].length() > 500){
-                        System.out.println("ERRORE: lunghezza massima contenuto 500 caratteri");
+                        System.out.println("< ERRORE: lunghezza massima contenuto 500 caratteri");
                     }
                     
                     outWriter.writeUTF(line); //invio la richiesta al server con i relativi parametri
@@ -324,10 +328,12 @@ public class ClientClass implements Runnable {
                     outWriter.flush();
                     serverResponse = inReader.readUTF();
                     int dim = Integer.parseInt(serverResponse);
+                    System.out.println("------------BLOG------------");
 
                     for(int i = 0; i < dim; i++){
                         serverResponse = inReader.readUTF();
                         System.out.println("< " + serverResponse);
+                        System.out.println("-----------------------------");
                     }
 
                 }else
@@ -339,10 +345,12 @@ public class ClientClass implements Runnable {
                     outWriter.flush();
                     serverResponse = inReader.readUTF();
                     int dim = Integer.parseInt(serverResponse);
+                    System.out.println("------------FEED------------");
 
                     for(int i = 0; i < dim; i++){
                         serverResponse = inReader.readUTF();
                         System.out.println("< " + serverResponse);
+                        System.out.println("-----------------------------");
                     }
 
                 }else
@@ -352,7 +360,7 @@ public class ClientClass implements Runnable {
                 if (logged) {
                     if (commandLine.length != 2) {
                         System.out.println("< ERRORE: il comando è: showpost <idpost>");
-                        System.out.println("< idpost deve essere un numero non negativo");
+                        System.out.println("idpost deve essere un numero non negativo");
                         continue;
                     }
                     try{

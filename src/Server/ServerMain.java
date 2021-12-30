@@ -67,12 +67,12 @@ public class ServerMain {
             System.exit(-1);
         }
         ServerWinsomeSocial socialNetwork = new ServerWinsomeSocial(); //creo il social vero e proprio
-        try{
+        /*try{
             rebootSocial(socialNetwork, socialUserStatus, postStatus);
         }catch(FileNotFoundException e){
             System.err.println("ERRORE: errore durante il ripristino dell'ultimo backup");
             System.exit(-1);
-        }
+        }*/
 
         //creo e avvio il thread che si occuperà del backup
         ServerBackup autoSaving = new ServerBackup(socialNetwork, socialUserStatus, postStatus, TIMELAPSEBACKUP);
