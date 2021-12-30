@@ -532,25 +532,25 @@ public class ClientClass implements Runnable {
     private void help(){
         System.out.println("LISTA DEI COMANDI");
         System.out.println(
-                        "register <username> <password> <tags>\n"+
-                        "login <username> <password>\n"+
-                        "logout <username>\n"+
-                        "listUsers\n"+
-                        "listFollowers\n"+
-                        "listFollowing\n"+
-                        "followUser <username>\n"+
-                        "unfollowUser <username>\n"+
-                        "viewBlog\n"+
-                        "showFeed\n"+
-                        "createPost <titolo> <contenuto>\n"+
-                        "showPost <idpost>\n"+
-                        "deletePost <idpost>\n"+
-                        "rewinPost <idpost>\n"+
-                        "ratePost <idpost> <voto>\n"+
-                        "addComment <idpost> <commento>\n"+
-                        "getWallet\n"+
-                        "getWalletInBitcoin\n"+
-                        "quit\n")
+                        "register <username> <password> <tags> ti permette di registrarti a WINSOME\n"+
+                        "login <username> <password>fai il login per cominciare la tua attività su WINSOME\n"+
+                        "logout <username> permette di uscire dal social\n"+
+                        "listUsers restituisce la lista degli utenti che hanno almeno un tag in comune con te\n"+
+                        "listFollowers restituisce la lista dei tuoi followers\n"+
+                        "listFollowing restituisce la lista delle persone che segui\n"+
+                        "followUser <username> comincia a seguire un utente di WINSOME\n"+
+                        "unfollowUser <username> smetti di seguire un utente di WINSOME\n"+
+                        "viewBlog visualizzi il tuo blog con i post pubblicati da te\n"+
+                        "showFeed visualizza i post degli utenti che segui\n"+
+                        "createPost <titolo> <contenuto> pubblica un post su WINSOME(ricorda di mettere titolo e contenuto tra \"\")\n"+
+                        "showPost <idpost> mostra un post di un qualsiasi utente di WINSOME\n"+
+                        "deletePost <idpost> cancella un post pubblicato precedentemente da te\n"+
+                        "rewinPost <idpost> ricondividi un post sul tuo blog\n"+
+                        "ratePost <idpost> <voto> vota il post di un utente che segui WINSOME(puoi esprimere un solo voto!)\n"+
+                        "addComment <idpost> <commento> commenta un post di un utente che segui\n"+
+                        "getWallet controlla il tuo portafoglio(in WINCOIN)\n"+
+                        "getWalletInBitcoin valuta quanti BITCOIN valgono i tuoi WINCOIN\n"+
+                        "quit Chiudi il programma! \n")
                         ;
     }
 }
