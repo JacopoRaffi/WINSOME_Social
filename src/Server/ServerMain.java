@@ -7,7 +7,6 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.time.Instant;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -16,7 +15,7 @@ import java.util.concurrent.Executors;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
-import sun.misc.Signal;
+import com.sun.xml.internal.ws.util.StringUtils;
 
 public class ServerMain {
     //principali variabili(con relativi valori di default)
@@ -27,8 +26,8 @@ public class ServerMain {
     private static String MULTICAST_ADDRESS = "239.255.32.32";
     private static String REG_SERVICENAME = "serverRegistry";
     private static long TIMEOUT = 10000000;
-    private static long TIMELAPSE = 1000;
-    private static long TIMELAPSEBACKUP = 1000;
+    private static long TIMELAPSE = 5; //default 5 secondi
+    private static long TIMELAPSEBACKUP = 5; //5 minuti di default
     private static double AUTHOR_RATE = 0.8;
 
     public static void main(String[] Args){
@@ -50,8 +49,8 @@ public class ServerMain {
         System.out.println("REG_PORT = " + REG_PORT);
         System.out.println("TIMEOUT_SOCKET = " + TIMEOUT);
         System.out.println("AUTHOR PERCENTAGE REWARD = " + AUTHOR_RATE*100 + "%");
-        System.out.println("TIMELAPSE BETWEEN REWARDS = " + TIMELAPSE);
-        System.out.println("TIMELAPSE BETWEEN BACKUPS = " + TIMELAPSEBACKUP);
+        System.out.println("TIMELAPSE BETWEEN REWARDS(SECONDS) = " + TIMELAPSE);
+        System.out.println("TIMELAPSE BETWEEN BACKUPS(MINUTES) = " + TIMELAPSEBACKUP);
 
         //in questi due file mi salvo il backup dei post del social e degli utenti registrati(periodicamente)
         File socialUserStatus = new File(".\\StatusServer\\usersStatus.json");
@@ -148,7 +147,7 @@ public class ServerMain {
         BufferedReader configReader = new BufferedReader(new FileReader(config));
         String line = configReader.readLine();
         while (line != null) {
-            if(!line.contains("#") || !line.isEmpty()) {
+            if(!line.contains("#")) {
                 String[] tokens = line.split("=");
                 if (tokens[0].compareTo("SERVER_ADDRESS") == 0) {
                     SERVER_ADDRESS = tokens[1];
@@ -223,6 +222,9 @@ public class ServerMain {
                 autoSaving.interrupt();
                 autoSaving.backupUser();
                 autoSaving.backupPost();
+                try{
+                    reward.join();
+                }catch(InterruptedException e){}
                 pool.shutdownNow();
                 System.out.println("SERVER TERMINATO");
             } catch (IOException e) {

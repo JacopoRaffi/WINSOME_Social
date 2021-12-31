@@ -35,7 +35,7 @@ public class ServerReward extends Thread {
     public void run(){
         while(!Thread.currentThread().isInterrupted()){
             try{
-                Thread.sleep(timeout);
+                Thread.sleep(timeout * 1000); //da secondi porto a millisecondi
                 calcoloRicompense();
                 lastCalculation = Calendar.getInstance().getTimeInMillis(); //aggiorno la data dell'ultimo calcolo
                 byte[] buffer = "RICOMPENSA AGGIORNATA".getBytes(StandardCharsets.UTF_8);
