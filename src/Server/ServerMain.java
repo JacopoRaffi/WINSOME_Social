@@ -8,6 +8,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.time.Instant;
+import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -15,6 +16,7 @@ import java.util.concurrent.Executors;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
+import sun.misc.Signal;
 
 public class ServerMain {
     //principali variabili(con relativi valori di default)
@@ -113,7 +115,6 @@ public class ServerMain {
             System.exit(-1);
         }
         closeServer(welcomeSocket, socketUDP, threadPool, threadUDP, autoSaving);
-
         while (true) {
             try {
                 welcomeSocket.setSoTimeout((int) TIMEOUT);
@@ -207,22 +208,24 @@ public class ServerMain {
     }
 
     private static void closeServer(ServerSocket socketTCP, DatagramSocket socketUDP, ExecutorService pool, ServerReward reward, ServerBackup autoSaving){
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            public void run() {
-                System.out.println("CHIUSURA DEL SERVER...");
-                try{
-                    reward.interrupt();
-                    autoSaving.backup();
-                    autoSaving.interrupt();
-                    pool.shutdownNow();
-                    socketTCP.close();
-                    socketUDP.close();
-                    System.out.println("SERVER TERMINATO");
-                }catch(IOException e){
-                    System.err.println("ERRORE: problemi con la chiusura dei socket" + e.getMessage());
-                    System.exit(-1);
-                }
-            }
-        });
+        Scanner scan = new Scanner(System.in);
+        String line = "";
+        while("quit".compareTo(line) != 0){
+            System.out.println("PER TERMINARE IL SERVER DIGITARE quit");
+            line = scan.nextLine();
+        }
+        System.out.println("CHIUSURA DEL SERVER...");
+        try {
+            reward.interrupt();
+            autoSaving.backup();
+            autoSaving.interrupt();
+            pool.shutdownNow();
+            socketTCP.close();
+            socketUDP.close();
+            System.out.println("SERVER TERMINATO");
+        } catch (IOException e) {
+            System.err.println("ERRORE: problemi con la chiusura dei socket" + e.getMessage());
+            System.exit(-1);
+        }
     }
 }
