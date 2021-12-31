@@ -32,7 +32,7 @@ public class ServerBackup extends Thread {
     public void run(){
         while(!Thread.currentThread().isInterrupted()){
             try{
-                Thread.sleep(timelapse * 60 * 1000); //*60 * 1000 serve a trasformare da minuti a millisecondi
+                Thread.sleep(timelapse); //*60 * 1000 serve a trasformare da minuti a millisecondi
                 backupUser();
                 backupPost();
             }catch(InterruptedException e){
@@ -47,7 +47,7 @@ public class ServerBackup extends Thread {
     protected synchronized void backupUser() throws IOException {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonWriter writer = new JsonWriter(new OutputStreamWriter(new FileOutputStream(usersStatus)));
-
+        writer.setIndent("    ");
         Iterator<String> it = social.getSocialUsers().keySet().iterator();
         writer.beginArray();
         while(it.hasNext()){
@@ -61,7 +61,7 @@ public class ServerBackup extends Thread {
     protected synchronized void backupPost() throws IOException {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonWriter writer = new JsonWriter(new OutputStreamWriter(new FileOutputStream(postStatus)));
-
+        writer.setIndent("    ");
         Iterator<Long> it = social.getSocialPost().keySet().iterator();
         writer.beginArray();
         while(it.hasNext()){
@@ -108,7 +108,7 @@ public class ServerBackup extends Thread {
             user.lock(1);
             writer.name("followers").value(gson.toJson(user.getFollowers(), typeOfFollowers_ed));
         }finally{
-            user.lock(1);
+            user.unlock(1);
         }
         writer.name("followed").value(gson.toJson(user.getFollowed(), typeOfFollowers_ed));
         Type typeOfMap = new TypeToken<ConcurrentHashMap<Long, ServerPost>>() {}.getType();
