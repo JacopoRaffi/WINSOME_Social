@@ -15,14 +15,15 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import Utilities.Comment;
 import Utilities.FeedBack;
 import Utilities.Wallet;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
-import com.sun.xml.internal.ws.util.StringUtils;
 
-import javax.xml.stream.events.Comment;
+import javax.rmi.CORBA.Util;
+import javax.swing.text.Utilities;
 
 public class ServerMain {
     //principali variabili(con relativi valori di default)
@@ -75,10 +76,11 @@ public class ServerMain {
             System.exit(-1);
         }
         ServerWinsomeSocial socialNetwork = new ServerWinsomeSocial(); //creo il social vero e proprio
-        try{
-            rebootSocial(socialNetwork, socialUserStatus, postStatus);
+       try{
+           rebootSocial(socialNetwork, socialUserStatus, postStatus);
         }catch(IOException e){
             System.err.println("ERRORE: errore durante il ripristino dell'ultimo backup");
+            e.printStackTrace();
             System.exit(-1);
         }
 
@@ -196,11 +198,13 @@ public class ServerMain {
 
     private static void rebootSocial(ServerWinsomeSocial social, File socialUserStatus, File postStatus) throws IOException{
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        JsonReader userReader = new JsonReader(new InputStreamReader(new FileInputStream(postStatus)));
-        JsonReader postReader = new JsonReader(new InputStreamReader(new FileInputStream(socialUserStatus)));
+        JsonReader userReader = new JsonReader(new InputStreamReader(new FileInputStream(socialUserStatus)));
+        JsonReader postReader = new JsonReader(new InputStreamReader(new FileInputStream(postStatus)));
 
-        rebootUsers(userReader, gson, social);
-        rebootPosts(postReader, gson, social);
+        if(socialUserStatus.length() > 0)
+            rebootUsers(userReader, gson, social);
+        if(postStatus.length() > 0)
+            rebootPosts(postReader, gson, social);
 
     }
 
@@ -254,6 +258,7 @@ public class ServerMain {
             }
         }
         reader.endArray();
+        reader.close();
         social.setSocialPost(socialPosts);
     }
 
@@ -273,6 +278,7 @@ public class ServerMain {
             reader.beginObject();
             while(reader.hasNext()){
                 String next = reader.nextName();
+                System.out.println(next);
                 if(next.equals("seed")){
                     seed = reader.nextString();
                 }
@@ -281,6 +287,7 @@ public class ServerMain {
                 }
                 else if(next.equals("username")){
                     username = reader.nextString();
+                    System.out.println(username);
                 }
                 else if(next.equals("hashedPassword")){
                     hashedPassword = reader.nextString();
@@ -307,9 +314,11 @@ public class ServerMain {
             if(username != null) {
                 ServerUser user = new ServerUser(username, tags, seed, hashedPassword, followers, followed, feed, blog, wallet);
                 socialUsers.putIfAbsent(username, user);
+                System.out.println(username);
             }
         }
         reader.endArray();
+        reader.close();
         social.setSocialUsers(socialUsers);
     }
 
