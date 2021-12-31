@@ -1,6 +1,7 @@
 package Server;
 
 import Exceptions.IllegalRegisterException;
+import Utilities.FeedBack;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,6 +14,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryInterface {
     private ConcurrentHashMap<Long, ServerPost> socialPost;
@@ -307,6 +309,12 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
                     } finally {
                         auxUser.unlock(0);
                     }
+                    try{
+                        auxUser.lock(2);
+                        auxUser.removePostBlog(idPost); //rimuovo in caso il post sia stato ricondiviso(rewin) dall'utente
+                    }finally{
+                        auxUser.unlock(2);
+                    }
                 }
             }finally{
                 user.unlock(2);
@@ -395,8 +403,10 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
             if ((post = socialPost.get(idpost)) == null) {
                 return null;
             } else {
+                long likes = post.getLikes().stream().filter(FeedBack::isPositivo).count();
+                long dislikes = post.getLikes().size() - likes;
                 return "(idpost=" + post.getIdpost() + ")\n" + "AUTORE: " + post.getAutore() + "\n" + "TITOLO: " + post.getTitolo() +
-                        "\n" + post.getContenuto();
+                        "\n" + post.getContenuto() + "\n" + "Likes=" + likes + ", dislikes=" + dislikes + "\n";
             }
     }
 }
