@@ -25,7 +25,8 @@ public class ServerBackup extends Thread {
         while(!Thread.currentThread().isInterrupted()){
             try{
                 Thread.sleep(timelapse);
-                backup();
+                backupUser();
+                backupPost();
             }catch(InterruptedException e){
                 break;
             }catch(IOException e){
@@ -35,6 +36,7 @@ public class ServerBackup extends Thread {
     }
 
     //idea backup: fare la get di un utente alla volta e salvarlo nel file(costruire manualmente la tabella hash JSON)
-    //sfruttare i blog degli utenti per fare il backup dei post
-    protected void backup() throws IOException {}
+    protected synchronized void backupUser() throws IOException {}
+
+    protected synchronized void backupPost() throws IOException {}
 }

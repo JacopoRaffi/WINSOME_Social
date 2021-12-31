@@ -217,12 +217,13 @@ public class ServerMain {
             }
             System.out.println("CHIUSURA DEL SERVER...");
             try {
-                reward.interrupt();
-                autoSaving.interrupt();
-                autoSaving.backup();
-                pool.shutdownNow();
                 socketTCP.close();
                 socketUDP.close();
+                reward.interrupt();
+                autoSaving.interrupt();
+                autoSaving.backupUser();
+                autoSaving.backupPost();
+                pool.shutdownNow();
                 System.out.println("SERVER TERMINATO");
             } catch (IOException e) {
                 System.err.println("ERRORE: problemi con la chiusura dei socket" + e.getMessage());
