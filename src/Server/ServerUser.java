@@ -50,6 +50,14 @@ public class ServerUser {
         locks[index].unlock();
     }
 
+    public String getHashedPassword() {
+        return hashedPassword;
+    }
+
+    public String getSeed() {
+        return seed;
+    }
+
     public boolean addPostBlog(ServerPost post){
         return (blog.putIfAbsent(post.getIdpost(), post) == null);
     }
@@ -77,7 +85,7 @@ public class ServerUser {
             return false;
     }
 
-    public boolean addFollowed(String followedd){
+    public synchronized boolean addFollowed(String followedd){
         if(followedd.compareTo(username) != 0) {
             return followed.add(followedd);
         }else
@@ -88,11 +96,11 @@ public class ServerUser {
         return followers.add(follower);
     }
 
-    public boolean removeFollowed(String followedd){
+    public synchronized boolean removeFollowed(String followedd){
         return followed.remove(followedd);
     }
 
-    public LinkedHashSet<String> getFollowed(){
+    public synchronized LinkedHashSet<String> getFollowed(){
         return followed;
     }
 
