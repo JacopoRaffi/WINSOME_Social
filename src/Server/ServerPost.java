@@ -33,6 +33,20 @@ public class ServerPost {
         likes = new LinkedList<>();
     }
 
+   public ServerPost(Long idpost, Long reward, String titolo, String contenuto, String autore, Hashtable<String, LinkedList<Comment>> comm, LinkedList<FeedBack> likes, int numIt){
+        numIterazioni = numIt;
+        locks = new ReentrantLock[2];
+        locks[0] = new ReentrantLock();
+        locks[1] = new ReentrantLock();
+        this.contenuto = contenuto;
+        this.autore = autore;
+        this.idpost = idpost;
+        this.titolo = titolo;
+        lastTimeReward = reward;
+        comments = comm;
+        this.likes = likes;
+    }
+
     public void lock(int index){
         //0->likes, 1->comments
         locks[index].lock();
@@ -51,8 +65,12 @@ public class ServerPost {
         return comments;
     }
 
-    protected int addGetNumIterazioni(){
+    public int addGetNumIterazioni(){
         numIterazioni++;
+        return numIterazioni;
+    }
+
+    public int getNumIterazioni() {
         return numIterazioni;
     }
 
