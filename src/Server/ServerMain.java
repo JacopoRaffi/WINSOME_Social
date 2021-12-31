@@ -208,24 +208,26 @@ public class ServerMain {
     }
 
     private static void closeServer(ServerSocket socketTCP, DatagramSocket socketUDP, ExecutorService pool, ServerReward reward, ServerBackup autoSaving){
-        Scanner scan = new Scanner(System.in);
-        String line = "";
-        while("quit".compareTo(line) != 0){
-            System.out.println("PER TERMINARE IL SERVER DIGITARE quit");
-            line = scan.nextLine();
-        }
-        System.out.println("CHIUSURA DEL SERVER...");
-        try {
-            reward.interrupt();
-            autoSaving.backup();
-            autoSaving.interrupt();
-            pool.shutdownNow();
-            socketTCP.close();
-            socketUDP.close();
-            System.out.println("SERVER TERMINATO");
-        } catch (IOException e) {
-            System.err.println("ERRORE: problemi con la chiusura dei socket" + e.getMessage());
-            System.exit(-1);
-        }
+        new Thread(() -> {
+            Scanner scan = new Scanner(System.in);
+            String line = "";
+            while ("quit".compareTo(line) != 0) {
+                System.out.println("PER TERMINARE IL SERVER DIGITARE quit");
+                line = scan.nextLine();
+            }
+            System.out.println("CHIUSURA DEL SERVER...");
+            try {
+                reward.interrupt();
+                autoSaving.interrupt();
+                autoSaving.backup();
+                pool.shutdownNow();
+                socketTCP.close();
+                socketUDP.close();
+                System.out.println("SERVER TERMINATO");
+            } catch (IOException e) {
+                System.err.println("ERRORE: problemi con la chiusura dei socket" + e.getMessage());
+                System.exit(-1);
+            }
+        }).start();
     }
 }
