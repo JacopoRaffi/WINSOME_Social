@@ -7,15 +7,22 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Hashtable;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import Utilities.FeedBack;
+import Utilities.Wallet;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.sun.xml.internal.ws.util.StringUtils;
+
+import javax.xml.stream.events.Comment;
 
 public class ServerMain {
     //principali variabili(con relativi valori di default)
@@ -68,12 +75,12 @@ public class ServerMain {
             System.exit(-1);
         }
         ServerWinsomeSocial socialNetwork = new ServerWinsomeSocial(); //creo il social vero e proprio
-        /*try{
+        try{
             rebootSocial(socialNetwork, socialUserStatus, postStatus);
-        }catch(FileNotFoundException e){
+        }catch(IOException e){
             System.err.println("ERRORE: errore durante il ripristino dell'ultimo backup");
             System.exit(-1);
-        }*/
+        }
 
         //creo e avvio il thread che si occuperà del backup
         ServerBackup autoSaving = new ServerBackup(socialNetwork, socialUserStatus, postStatus, TIMELAPSEBACKUP);
@@ -187,23 +194,123 @@ public class ServerMain {
         }
     }
 
-    private static void rebootSocial(ServerWinsomeSocial social, File socialUserStatus, File postStatus) throws FileNotFoundException{
+    private static void rebootSocial(ServerWinsomeSocial social, File socialUserStatus, File postStatus) throws IOException{
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        JsonReader reader = new JsonReader(new FileReader(socialUserStatus));
-        Type typeOfMap = new TypeToken<ConcurrentHashMap<String, ServerUser>>() {}.getType();
-        ConcurrentHashMap<String, ServerUser> mapUser = null;
-        gson.fromJson(reader, typeOfMap);
-        if(mapUser == null)
-            mapUser = new ConcurrentHashMap<>();
-        social.setSocialUsers(mapUser);
+        JsonReader userReader = new JsonReader(new InputStreamReader(new FileInputStream(postStatus)));
+        JsonReader postReader = new JsonReader(new InputStreamReader(new FileInputStream(socialUserStatus)));
 
-        JsonReader readerPost = new JsonReader(new FileReader(postStatus));
-        Type typeOfMapPost = new TypeToken<ConcurrentHashMap<Long, ServerPost>>() {}.getType();
-        ConcurrentHashMap<Long, ServerPost> mapPost = null;
-        gson.fromJson(readerPost, typeOfMapPost);
-        if(mapPost == null)
-            mapPost = new ConcurrentHashMap<>();
-        social.setSocialPost(mapPost);
+        rebootUsers(userReader, gson, social);
+        rebootPosts(postReader, gson, social);
+
+    }
+
+    private static void rebootPosts(JsonReader reader, Gson gson, ServerWinsomeSocial social) throws IOException{
+        ConcurrentHashMap<Long, ServerPost> socialPosts = new ConcurrentHashMap<>();
+        Type typeOfComments = new TypeToken<Hashtable<String, LinkedList<Comment>>>() {}.getType();
+        Type typeOfLikes = new TypeToken<LinkedList<FeedBack>>() {}.getType();
+
+        //parametri di un ServerPost
+        Long idpost = null; String autore = null; String titolo = null; String contenuto = null;
+        int numIterazioni = 0; long rewardTime = 0;
+        Hashtable<String, LinkedList<Comment>> comments = null; LinkedList<FeedBack> likes = null;
+        //fine parametri
+
+        reader.beginArray();
+        while(reader.hasNext()){
+            reader.beginObject();
+            while(reader.hasNext()){
+                String next = reader.nextName();
+                if(next.equals("idpost")){
+                    idpost = reader.nextLong();
+                }
+                else if(next.equals("autore")){
+                    autore = reader.nextString();
+                }
+                else if(next.equals("titolo")){
+                    titolo = reader.nextString();
+                }
+                else if(next.equals("contenuto")){
+                    contenuto = reader.nextString();
+                }
+                else if(next.equals("numIterazioni")){
+                    numIterazioni = reader.nextInt();
+                }
+                else if(next.equals("comments")){
+                    comments = gson.fromJson(reader.nextString(), typeOfComments);
+                }
+                else if(next.equals("likes")){
+                    likes = gson.fromJson(reader.nextString(), typeOfLikes);
+                }
+                else if(next.equals("lastTimeReward")){
+                    rewardTime = reader.nextLong();
+                }
+                else
+                    reader.skipValue();
+            }
+            reader.endObject();
+            if(autore != null) {
+                ServerPost post = new ServerPost(idpost, rewardTime, titolo, contenuto, autore, comments, likes, numIterazioni);
+                socialPosts.putIfAbsent(idpost, post);
+            }
+        }
+        reader.endArray();
+        social.setSocialPost(socialPosts);
+    }
+
+    private static void rebootUsers(JsonReader reader, Gson gson, ServerWinsomeSocial social) throws IOException{
+        ConcurrentHashMap<String, ServerUser> socialUsers = new ConcurrentHashMap<>();
+        Type typeOfFollowers_ed = new TypeToken<LinkedHashSet<String>>() {}.getType();
+        Type typeOfMap = new TypeToken<ConcurrentHashMap<Long, ServerPost>>() {}.getType();
+        //parametri di un ServerUser
+        String seed = null; String[] tags = null; String username = null; String hashedPassword = null;
+        LinkedHashSet<String> followers = null; LinkedHashSet<String> followed = null;
+        ConcurrentHashMap<Long, ServerPost> feed = null; ConcurrentHashMap<Long, ServerPost> blog = null;
+        Wallet wallet = null;
+        //fine parametri
+
+        reader.beginArray();
+        while(reader.hasNext()){
+            reader.beginObject();
+            while(reader.hasNext()){
+                String next = reader.nextName();
+                if(next.equals("seed")){
+                    seed = reader.nextString();
+                }
+                else if(next.equals("tags")){
+                    tags = gson.fromJson(reader.nextString(), String[].class);
+                }
+                else if(next.equals("username")){
+                    username = reader.nextString();
+                }
+                else if(next.equals("hashedPassword")){
+                    hashedPassword = reader.nextString();
+                }
+                else if(next.equals("followers")){
+                    followers = gson.fromJson(reader.nextString(), typeOfFollowers_ed);
+                }
+                else if(next.equals("followed")){
+                    followed = gson.fromJson(reader.nextString(), typeOfFollowers_ed);
+                }
+                else if(next.equals("feed")){
+                    feed = gson.fromJson(reader.nextString(), typeOfMap);
+                }
+                else if(next.equals("blog")){
+                    blog = gson.fromJson(reader.nextString(), typeOfMap);
+                }
+                else if(next.equals("wallet")){
+                    wallet = gson.fromJson(reader.nextString(), Wallet.class);
+                }
+                else
+                    reader.skipValue();
+            }
+            reader.endObject();
+            if(username != null) {
+                ServerUser user = new ServerUser(username, tags, seed, hashedPassword, followers, followed, feed, blog, wallet);
+                socialUsers.putIfAbsent(username, user);
+            }
+        }
+        reader.endArray();
+        social.setSocialUsers(socialUsers);
     }
 
     private static void closeServer(ServerSocket socketTCP, DatagramSocket socketUDP, ExecutorService pool, ServerReward reward, ServerBackup autoSaving){

@@ -40,6 +40,25 @@ public class ServerUser {
         wallet = new Wallet();
     }
 
+    public ServerUser(String username, String[] tags, String seed, String hashedPassword, LinkedHashSet<String> followers,
+                      LinkedHashSet<String> followed, ConcurrentHashMap<Long, ServerPost> feed, ConcurrentHashMap<Long, ServerPost> blog,
+                      Wallet wallet) {
+
+        locks = new ReentrantLock[3];
+        locks[0] = new ReentrantLock();
+        locks[1] = new ReentrantLock();
+        locks[2] = new ReentrantLock();
+        this.seed = seed;
+        this.username = username;
+        this.tags = tags;
+        this.hashedPassword = hashedPassword;
+        this.followers = followers;
+        this.followed = followed;
+        this.feed = feed;
+        this.blog = blog;
+        this.wallet = wallet;
+    }
+
     public void lock(int index){
         //0->feed, 1->followers, 2->blog
         locks[index].lock();

@@ -79,7 +79,7 @@ public class ServerBackup extends Thread {
         writer.name("titolo").value(post.getTitolo());
         writer.name("contenuto").value(post.getContenuto());
         writer.name("numIterazioni").value(post.getNumIterazioni());
-        Type typeOfComments = new TypeToken<Hashtable<String, Comment>>() {}.getType();
+        Type typeOfComments = new TypeToken<Hashtable<String, LinkedList<Comment>>>() {}.getType();
         try {
             post.lock(1);
             writer.name("comments").value(gson.toJson(post.getComments(), typeOfComments));
