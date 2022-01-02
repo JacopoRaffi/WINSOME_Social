@@ -265,15 +265,15 @@ public class ServerMain {
         Type typeOfFollowers_ed = new TypeToken<LinkedHashSet<String>>() {}.getType();
         Type typeOfMap = new TypeToken<LinkedList<Long>>() {}.getType();
         //parametri di un ServerUser
-        String seed = null; String[] tags = null; String username = null; String hashedPassword = null;
-        LinkedHashSet<String> followers = null; LinkedHashSet<String> followed = null;
-        ConcurrentHashMap<Long, ServerPost> feed = new ConcurrentHashMap<>();
-        ConcurrentHashMap<Long, ServerPost> blog = new ConcurrentHashMap<>();
-        Wallet wallet = null;
         //fine parametri
         reader.beginArray();
         while(reader.hasNext()){
             reader.beginObject();
+            String seed = null; String[] tags = null; String username = null; String hashedPassword = null;
+            LinkedHashSet<String> followers = null; LinkedHashSet<String> followed = null;
+            ConcurrentHashMap<Long, ServerPost> feed = new ConcurrentHashMap<>();
+            ConcurrentHashMap<Long, ServerPost> blog = new ConcurrentHashMap<>();
+            Wallet wallet = null;
             while(reader.hasNext()){
                 String next = reader.nextName();
                 if(next.equals("seed")){
@@ -302,6 +302,7 @@ public class ServerMain {
                 }
                 else if(next.equals("blog")){
                     LinkedList<Long> aux = gson.fromJson(reader.nextString(), typeOfMap);
+                    System.out.println(aux);
                     for (Long id:aux) {
                         blog.putIfAbsent(id, social.getSocialPost().get(id));
                     }

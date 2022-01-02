@@ -192,18 +192,21 @@ public class ServerWorker implements Runnable{
             }
         }
         else if(request.startsWith("follow")){
-            if(!social.followUser(clientUserName, param[1])){
-                response = "ERRORE: utente già seguito";
-            }
-            else{
-                response = "SUCCESSO: ora segui" + param[1];
+            if(social.getSocialUsers().get(param[1]) == null)
+                response = "Utente inesistente";
+            else {
+                if (!social.followUser(clientUserName, param[1])) {
+                    response = "ERRORE: utente già seguito";
+                } else {
+                    response = "SUCCESSO: ora segui " + param[1];
+                }
             }
             writer.writeUTF(response);
             writer.flush();
         }
         else if(request.startsWith("unfollow")){
             if(!social.unFollowUser(clientUserName, param[1])){
-                response = "ERRORE: non segui questo utente :(";
+                response = "ERRORE: non segui questo utente ";
             }
             else{
                 response = "SUCCESSO: non segui più" + param[1];
