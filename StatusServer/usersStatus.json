@@ -1,0 +1,79 @@
+[
+    {
+        "seed": "r?\u001a?$???+x1-?1S??}?+b?????6?\u0012h\u001c",
+        "tags": "[\n  \"mh\",\n  \"mh\"\n]",
+        "username": "or",
+        "hashedPassword": "ca0138b6a5538c58f65c90fac0ddd584ab292cbaa0993742dc24114a033c8d54",
+        "followers": "[]",
+        "followed": "[]",
+        "feed": "[]",
+        "blog": "[]",
+        "wallet": "{\n  \"totale\": 0.0,\n  \"transazioni\": []\n}"
+    },
+    {
+        "seed": "\u000e0???\n????S?uj?9?\u0015K$t??3?o???M?",
+        "tags": "[\n  \"mgmgm\"\n]",
+        "username": "lore",
+        "hashedPassword": "687a33f634f81da62196306319f03fa0e02682e4f97c5cbbd170ea9e3815708c",
+        "followers": "[\n  \"jacopo\"\n]",
+        "followed": "[\n  \"jacopo\"\n]",
+        "feed": "[\n  1\n]",
+        "blog": "[\n  2\n]",
+        "wallet": "{\n  \"totale\": 0.0,\n  \"transazioni\": [\n    \"0.0, Sun Jan 02 16:21:35 CET 2022\",\n    \"0.0, Sun Jan 02 16:21:40 CET 2022\",\n    \"0.0, Sun Jan 02 16:21:45 CET 2022\",\n    \"0.0, Sun Jan 02 16:21:50 CET 2022\",\n    \"0.0, Sun Jan 02 16:21:55 CET 2022\",\n    \"0.0, Sun Jan 02 16:22:00 CET 2022\",\n    \"0.0, Sun Jan 02 16:22:05 CET 2022\",\n    \"0.0, Sun Jan 02 16:22:10 CET 2022\",\n    \"0.0, Sun Jan 02 16:22:15 CET 2022\",\n    \"0.0, Sun Jan 02 16:22:20 CET 2022\",\n    \"0.0, Sun Jan 02 16:22:25 CET 2022\",\n    \"0.0, Sun Jan 02 16:22:30 CET 2022\",\n    \"0.0, Sun Jan 02 16:22:35 CET 2022\",\n    \"0.0, Sun Jan 02 16:22:40 CET 2022\",\n    \"0.0, Sun Jan 02 16:22:45 CET 2022\",\n    \"0.0, Sun Jan 02 16:22:50 CET 2022\",\n    \"0.0, Sun Jan 02 16:22:55 CET 2022\",\n    \"0.0, Sun Jan 02 16:23:00 CET 2022\",\n    \"0.0, Sun Jan 02 16:23:05 CET 2022\",\n    \"0.0, Sun Jan 02 16:23:10 CET 2022\",\n    \"0.0, Sun Jan 02 16:23:15 CET 2022\",\n    \"0.0, Sun Jan 02 16:23:20 CET 2022\",\n    \"0.0, Sun Jan 02 16:23:25 CET 2022\",\n    \"0.0, Sun Jan 02 16:23:30 CET 2022\",\n    \"0.0, Sun Jan 02 16:23:35 CET 2022\",\n    \"0.0, Sun Jan 02 16:23:40 CET 2022\",\n    \"0.0, Sun Jan 02 16:24:25 CET 2022\",\n    \"0.0, Sun Jan 02 16:24:30 CET 2022\",\n    \"0.0, Sun Jan 02 16:24:35 CET 2022\",\n    \"0.0, Sun Jan 02 16:24:40 CET 2022\",\n    \"0.0, Sun Jan 02 16:24:45 CET 2022\",\n    \"0.0, Sun Jan 02 16:24:50 CET 2022\",\n    \"0.0, Sun Jan 02 16:24:55 CET 2022\",\n    \"0.0, Sun Jan 02 16:25:00 CET 2022\",\n    \"0.0, Sun Jan 02 16:25:05 CET 2022\",\n    \"0.0, Sun Jan 02 16:25:10 CET 2022\",\n    \"0.0, Sun Jan 02 16:25:15 CET 2022\",\n    \"0.0, Sun Jan 02 16:25:20 CET 2022\",\n    \"0.0, Sun Jan 02 16:25:25 CET 2022\",\n    \"0.0, Sun Jan 02 16:25:30 CET 2022\",\n    \"0.0, Sun Jan 02 16:25:35 CET 2022\",\n    \"0.0, Sun Jan 02 16:25:40 CET 2022\",\n    \"0.0, Sun Jan 02 16:25:45 CET 2022\",\n    \"0.0, Sun Jan 02 16:25:50 CET 2022\",\n    \"0.0, Sun Jan 02 16:25:55 CET 2022\",\n    \"0.0, Sun Jan 02 16:26:00 CET 2022\",\n    \"0.0, Sun Jan 02 16:26:05 CET 2022\",\n    \"0.0, Sun Jan 02 16:26:10 CET 2022\",\n    \"0.0, Sun Jan 02 16:26:15 CET 2022\",\n    \"0.0, Sun Jan 02 16:35:03 CET 2022\",\n    \"0.0, Sun Jan 02 16:35:08 CET 2022\",\n    \"0.0, Sun Jan 02 16:35:13 CET 2022\",\n    \"0.0, Sun Jan 02 16:35:18 CET 2022\",\n    \"0.0, Sun Jan 02 16:35:23 CET 2022\",\n    \"0.0, Sun Jan 02 16:35:28 CET 2022\"\n  ]\n}"
+    },
+    {
+        "seed": "??[b?'?2?{>?q\u0010@???)???Ia?\u0004F\u0013S??",
+        "tags": "[\n  \"mh\"\n]",
+        "username": "jacopo",
+        "hashedPassword": "c34fadcc02f756c68c6476e13e89fbcc72ccec4d83e0ac6577ca3ce61a57015a",
+        "followers": "[\n  \"michele\",\n  \"lore\"\n]",
+        "followed": "[\n  \"lore\"\n]",
+        "feed": "[\n  2\n]",
+        "blog": "[\n  1\n]",
+        "wallet": "{\n  \"totale\": 0.5545177444479562,\n  \"transazioni\": [\n    \"0.5545177444479562, Sun Jan 02 16:21:00 CET 2022\",\n    \"0.0, Sun Jan 02 16:21:05 CET 2022\",\n    \"0.0, Sun Jan 02 16:21:10 CET 2022\",\n    \"0.0, Sun Jan 02 16:21:15 CET 2022\",\n    \"0.0, Sun Jan 02 16:21:20 CET 2022\",\n    \"0.0, Sun Jan 02 16:21:25 CET 2022\",\n    \"0.0, Sun Jan 02 16:21:30 CET 2022\",\n    \"0.0, Sun Jan 02 16:21:35 CET 2022\",\n    \"0.0, Sun Jan 02 16:21:40 CET 2022\",\n    \"0.0, Sun Jan 02 16:21:45 CET 2022\",\n    \"0.0, Sun Jan 02 16:21:50 CET 2022\",\n    \"0.0, Sun Jan 02 16:21:55 CET 2022\",\n    \"0.0, Sun Jan 02 16:22:00 CET 2022\",\n    \"0.0, Sun Jan 02 16:22:05 CET 2022\",\n    \"0.0, Sun Jan 02 16:22:10 CET 2022\",\n    \"0.0, Sun Jan 02 16:22:15 CET 2022\",\n    \"0.0, Sun Jan 02 16:22:20 CET 2022\",\n    \"0.0, Sun Jan 02 16:22:25 CET 2022\",\n    \"0.0, Sun Jan 02 16:22:30 CET 2022\",\n    \"0.0, Sun Jan 02 16:22:35 CET 2022\",\n    \"0.0, Sun Jan 02 16:22:40 CET 2022\",\n    \"0.0, Sun Jan 02 16:22:45 CET 2022\",\n    \"0.0, Sun Jan 02 16:22:50 CET 2022\",\n    \"0.0, Sun Jan 02 16:22:55 CET 2022\",\n    \"0.0, Sun Jan 02 16:23:00 CET 2022\",\n    \"0.0, Sun Jan 02 16:23:05 CET 2022\",\n    \"0.0, Sun Jan 02 16:23:10 CET 2022\",\n    \"0.0, Sun Jan 02 16:23:15 CET 2022\",\n    \"0.0, Sun Jan 02 16:23:20 CET 2022\",\n    \"0.0, Sun Jan 02 16:23:25 CET 2022\",\n    \"0.0, Sun Jan 02 16:23:30 CET 2022\",\n    \"0.0, Sun Jan 02 16:23:35 CET 2022\",\n    \"0.0, Sun Jan 02 16:23:40 CET 2022\",\n    \"0.0, Sun Jan 02 16:24:25 CET 2022\",\n    \"0.0, Sun Jan 02 16:24:30 CET 2022\",\n    \"0.0, Sun Jan 02 16:24:35 CET 2022\",\n    \"0.0, Sun Jan 02 16:24:40 CET 2022\",\n    \"0.0, Sun Jan 02 16:24:45 CET 2022\",\n    \"0.0, Sun Jan 02 16:24:50 CET 2022\",\n    \"0.0, Sun Jan 02 16:24:55 CET 2022\",\n    \"0.0, Sun Jan 02 16:25:00 CET 2022\",\n    \"0.0, Sun Jan 02 16:25:05 CET 2022\",\n    \"0.0, Sun Jan 02 16:25:10 CET 2022\",\n    \"0.0, Sun Jan 02 16:25:15 CET 2022\",\n    \"0.0, Sun Jan 02 16:25:20 CET 2022\",\n    \"0.0, Sun Jan 02 16:25:25 CET 2022\",\n    \"0.0, Sun Jan 02 16:25:30 CET 2022\",\n    \"0.0, Sun Jan 02 16:25:35 CET 2022\",\n    \"0.0, Sun Jan 02 16:25:40 CET 2022\",\n    \"0.0, Sun Jan 02 16:25:45 CET 2022\",\n    \"0.0, Sun Jan 02 16:25:50 CET 2022\",\n    \"0.0, Sun Jan 02 16:25:55 CET 2022\",\n    \"0.0, Sun Jan 02 16:26:00 CET 2022\",\n    \"0.0, Sun Jan 02 16:26:05 CET 2022\",\n    \"0.0, Sun Jan 02 16:26:10 CET 2022\",\n    \"0.0, Sun Jan 02 16:26:15 CET 2022\",\n    \"0.0, Sun Jan 02 16:35:03 CET 2022\",\n    \"0.0, Sun Jan 02 16:35:08 CET 2022\",\n    \"0.0, Sun Jan 02 16:35:13 CET 2022\",\n    \"0.0, Sun Jan 02 16:35:18 CET 2022\",\n    \"0.0, Sun Jan 02 16:35:23 CET 2022\",\n    \"0.0, Sun Jan 02 16:35:28 CET 2022\"\n  ]\n}"
+    },
+    {
+        "seed": "Hiï¿½ï¿½ï¿½~V0ï¿½(\u001bUï¿½ï¿½ï¿½1<ï¿½ï¿½zï¿½bï¿½ï¿½=/EÜ‹ï¿½m\u0019",
+        "tags": "[\n  \"mhmh\"\n]",
+        "username": "ciccio",
+        "hashedPassword": "d33d2299461e353cc9ac3966daca09bab482a000bdee1b311e412fa7ea78d7fc",
+        "followers": "[]",
+        "followed": "[]",
+        "feed": "[]",
+        "blog": "[]",
+        "wallet": "{\n  \"totale\": 0.0,\n  \"transazioni\": []\n}"
+    },
+    {
+        "seed": "?\u001b?W?Y??\u0016???P8\u0004\u0012?Š\u0018\"?G?\u0017?\u0018??",
+        "tags": "[\n  \"ccc\"\n]",
+        "username": "michele",
+        "hashedPassword": "289ce50ce26735c55c8a14d65885274960b97990559a6ccd0bed07d2f4fb1270",
+        "followers": "[]",
+        "followed": "[\n  \"jacopo\"\n]",
+        "feed": "[\n  1\n]",
+        "blog": "[]",
+        "wallet": "{\n  \"totale\": 0.13862943611198902,\n  \"transazioni\": [\n    \"0.13862943611198902, Sun Jan 02 16:21:00 CET 2022\"\n  ]\n}"
+    },
+    {
+        "seed": "\u001d??\u0002|\u0004#B???`?\u0004?-f?X ?t\b?G[?\u0010",
+        "tags": "[\n  \"mh\",\n  \"mn\"\n]",
+        "username": "orr",
+        "hashedPassword": "2dd5f8025a487acffe52be68cab5d7bf3a36845831ccb5abfd60d265f676b7d1",
+        "followers": "[]",
+        "followed": "[]",
+        "feed": "[]",
+        "blog": "[]",
+        "wallet": "{\n  \"totale\": 0.0,\n  \"transazioni\": []\n}"
+    },
+    {
+        "seed": "??=/7%\u0013?\b4tI??<?\u001d=u\u0014?\u0010I\u001a?#?;?",
+        "tags": "[\n  \"mhmh\"\n]",
+        "username": "michelee",
+        "hashedPassword": "42d4a56f9218827c2bd23ffbbdd72375472c5b79ad77963519f543bcb7ab4af2",
+        "followers": "[]",
+        "followed": "[]",
+        "feed": "[]",
+        "blog": "[]",
+        "wallet": "{\n  \"totale\": 0.0,\n  \"transazioni\": []\n}"
+    }
+]

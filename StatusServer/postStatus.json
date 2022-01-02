@@ -1,0 +1,22 @@
+[
+    {
+        "idpost": 1,
+        "autore": "jacopo",
+        "titolo": "\"ciccio\"",
+        "contenuto": "\"pasticcio\"",
+        "numIterazioni": 62,
+        "comments": "{\n  \"michele\": [\n    {\n      \"contenuto\": \"\\\"cicicicic\\\"\",\n      \"autore\": \"michele\",\n      \"positivo\": true,\n      \"timeStamp\": 1641135886751\n    }\n  ]\n}",
+        "likes": "[\n  {\n    \"autore\": \"michele\",\n    \"positivo\": true,\n    \"timeStamp\": 1122462620631800\n  }\n]",
+        "lastTimeReward": 1124310071091200
+    },
+    {
+        "idpost": 2,
+        "autore": "lore",
+        "titolo": "1",
+        "contenuto": "1",
+        "numIterazioni": 55,
+        "comments": "{}",
+        "likes": "[]",
+        "lastTimeReward": 1124310071349900
+    }
+]

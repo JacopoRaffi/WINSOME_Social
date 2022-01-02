@@ -1,7 +1,3 @@
-import Exceptions.IllegalRegisterException;
-import Server.ClientNotifyInterface;
-import Server.ServerRegistryInterface;
-
 import java.io.*;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
@@ -18,7 +14,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class ClientClass implements Runnable {
     //principali variabili
-    private int TCP_PORT = 9011;
+    private int TCP_PORT = 6666;
     private int UDP_PORT = 33333;
     private int MULTICAST_PORT = 44444;
     private int REG_PORT = 7777;
@@ -109,7 +105,7 @@ public class ClientClass implements Runnable {
     }
 
     private void restoreValues() {
-        TCP_PORT = 9011;
+        TCP_PORT = 6666;
         UDP_PORT = 33333;
         MULTICAST_PORT = 44444;
         REG_PORT = 7777;
