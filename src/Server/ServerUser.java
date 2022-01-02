@@ -5,6 +5,7 @@ import Utilities.*;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.locks.ReentrantLock;
@@ -102,6 +103,14 @@ public class ServerUser {
             return followers.add(follower);
         }else
             return false;
+    }
+
+    public LinkedList<Long> getKeyPostFeed(){
+        return new LinkedList<>(feed.keySet());
+    }
+
+    public LinkedList<Long> getKeyPostBlog(){
+        return new LinkedList<>(blog.keySet());
     }
 
     public synchronized boolean addFollowed(String followedd){

@@ -133,7 +133,6 @@ public class ServerMain {
 
                 threadPool.execute(new ServerWorker(clientSocket, socialNetwork)); //genero un thread worker legato a quel client
             } catch (IOException ex) {
-                ex.printStackTrace();
                 System.err.println("ERRORE: errore con il socket");
                 System.exit(-1);
             }
@@ -201,18 +200,17 @@ public class ServerMain {
         JsonReader userReader = new JsonReader(new InputStreamReader(new FileInputStream(socialUserStatus)));
         JsonReader postReader = new JsonReader(new InputStreamReader(new FileInputStream(postStatus)));
 
-        if(socialUserStatus.length() > 0)
-            rebootUsers(userReader, gson, social);
         if(postStatus.length() > 0)
             rebootPosts(postReader, gson, social);
-
+        if(socialUserStatus.length() > 0)
+            rebootUsers(userReader, gson, social);
     }
 
     private static void rebootPosts(JsonReader reader, Gson gson, ServerWinsomeSocial social) throws IOException{
         ConcurrentHashMap<Long, ServerPost> socialPosts = new ConcurrentHashMap<>();
         Type typeOfComments = new TypeToken<Hashtable<String, LinkedList<Comment>>>() {}.getType();
         Type typeOfLikes = new TypeToken<LinkedList<FeedBack>>() {}.getType();
-
+        ServerPost post = null;
         //parametri di un ServerPost
         Long idpost = null; String autore = null; String titolo = null; String contenuto = null;
         int numIterazioni = 0; long rewardTime = 0;
@@ -253,7 +251,7 @@ public class ServerMain {
             }
             reader.endObject();
             if(autore != null) {
-                ServerPost post = new ServerPost(idpost, rewardTime, titolo, contenuto, autore, comments, likes, numIterazioni);
+                post = new ServerPost(idpost, rewardTime, titolo, contenuto, autore, comments, likes, numIterazioni);
                 socialPosts.putIfAbsent(idpost, post);
             }
         }
@@ -265,20 +263,19 @@ public class ServerMain {
     private static void rebootUsers(JsonReader reader, Gson gson, ServerWinsomeSocial social) throws IOException{
         ConcurrentHashMap<String, ServerUser> socialUsers = new ConcurrentHashMap<>();
         Type typeOfFollowers_ed = new TypeToken<LinkedHashSet<String>>() {}.getType();
-        Type typeOfMap = new TypeToken<ConcurrentHashMap<Long, ServerPost>>() {}.getType();
+        Type typeOfMap = new TypeToken<LinkedList<Long>>() {}.getType();
         //parametri di un ServerUser
         String seed = null; String[] tags = null; String username = null; String hashedPassword = null;
         LinkedHashSet<String> followers = null; LinkedHashSet<String> followed = null;
-        ConcurrentHashMap<Long, ServerPost> feed = null; ConcurrentHashMap<Long, ServerPost> blog = null;
+        ConcurrentHashMap<Long, ServerPost> feed = new ConcurrentHashMap<>();
+        ConcurrentHashMap<Long, ServerPost> blog = new ConcurrentHashMap<>();
         Wallet wallet = null;
         //fine parametri
-
         reader.beginArray();
         while(reader.hasNext()){
             reader.beginObject();
             while(reader.hasNext()){
                 String next = reader.nextName();
-                System.out.println(next);
                 if(next.equals("seed")){
                     seed = reader.nextString();
                 }
@@ -287,7 +284,6 @@ public class ServerMain {
                 }
                 else if(next.equals("username")){
                     username = reader.nextString();
-                    System.out.println(username);
                 }
                 else if(next.equals("hashedPassword")){
                     hashedPassword = reader.nextString();
@@ -299,10 +295,16 @@ public class ServerMain {
                     followed = gson.fromJson(reader.nextString(), typeOfFollowers_ed);
                 }
                 else if(next.equals("feed")){
-                    feed = gson.fromJson(reader.nextString(), typeOfMap);
+                    LinkedList<Long> aux = gson.fromJson(reader.nextString(), typeOfMap);
+                    for (Long id:aux) {
+                        feed.putIfAbsent(id, social.getSocialPost().get(id));
+                    }
                 }
                 else if(next.equals("blog")){
-                    blog = gson.fromJson(reader.nextString(), typeOfMap);
+                    LinkedList<Long> aux = gson.fromJson(reader.nextString(), typeOfMap);
+                    for (Long id:aux) {
+                        blog.putIfAbsent(id, social.getSocialPost().get(id));
+                    }
                 }
                 else if(next.equals("wallet")){
                     wallet = gson.fromJson(reader.nextString(), Wallet.class);
@@ -314,7 +316,6 @@ public class ServerMain {
             if(username != null) {
                 ServerUser user = new ServerUser(username, tags, seed, hashedPassword, followers, followed, feed, blog, wallet);
                 socialUsers.putIfAbsent(username, user);
-                System.out.println(username);
             }
         }
         reader.endArray();
@@ -332,8 +333,6 @@ public class ServerMain {
             }
             System.out.println("CHIUSURA DEL SERVER...");
             try {
-                socketTCP.close();
-                socketUDP.close();
                 reward.interrupt();
                 autoSaving.interrupt();
                 autoSaving.backupUser();
@@ -342,6 +341,8 @@ public class ServerMain {
                     reward.join();
                 }catch(InterruptedException e){}
                 pool.shutdownNow();
+                socketTCP.close();
+                socketUDP.close();
                 System.out.println("SERVER TERMINATO");
             } catch (IOException e) {
                 System.err.println("ERRORE: problemi con la chiusura dei socket" + e.getMessage());

@@ -59,14 +59,12 @@ public class ServerWorker implements Runnable{
             long id;
             if((id=social.createPost(clientUserName, param[1], param[2])) > 0){
                 response = "SUCCESSO: Post creato(id=" + id + ")";
-                writer.writeUTF(response);
-                writer.flush();
             }
             else{
                 response = "ERRORE: errore durante la creazione del post";
-                writer.writeUTF(response);
-                writer.flush();
             }
+            writer.writeUTF(response);
+            writer.flush();
         }
         else if(request.startsWith("deletepost")){
             if(social.deletePost(Long.parseLong(param[1]), clientUserName)){

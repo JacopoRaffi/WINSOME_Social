@@ -48,19 +48,19 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
 
     }
 
-    public List<String> backUpFollowers(String username, String password) throws RemoteException{
+    public LinkedHashSet<String> backUpFollowers(String username, String password) throws RemoteException{
         ServerUser user = socialUsers.get(username);
-        List<String> auxList;
+        LinkedHashSet<String> auxList;
         try{
             if(!user.comparePassword(password)){
-                return new LinkedList<>();
+                return new LinkedHashSet<>();
             }
         }catch(NoSuchAlgorithmException e){
             return null;
         }
         try {
             user.lock(1);
-            auxList = new LinkedList<>(user.getFollowers());
+            auxList = new LinkedHashSet<>(user.getFollowers());
         }finally{
             user.unlock(1);
         }
@@ -206,6 +206,8 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
     public boolean followUser(String username, String followed){
         ServerUser user = socialUsers.get(username);
         ServerUser userFollowed = socialUsers.get(followed);
+        if(userFollowed == null)
+            return false;
         if(followed.compareTo(username) == 0)
             return false;
         boolean seguito = false;
@@ -276,7 +278,7 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
                 user.lock(2);
                 user.addPostBlog(newPost);
                 System.out.println("NUOVO POST CREATO: " + titolo);
-                for (String key : socialUsers.get(autore).getFollowers()) {
+                for (String key : user.getFollowers()) {
                     ServerUser auxUser = socialUsers.get(key);
                     try {
                         auxUser.lock(0);

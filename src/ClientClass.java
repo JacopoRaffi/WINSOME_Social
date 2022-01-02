@@ -28,7 +28,7 @@ public class ClientClass implements Runnable {
     private long TIMEOUT = 100000;
     private boolean logged = false;
     private final String fileConfigName;
-    private final List<String> followers;
+    private final LinkedHashSet<String> followers;
     private final Lock listLock;
     private String username;
     private String password;
@@ -37,7 +37,7 @@ public class ClientClass implements Runnable {
 
     public ClientClass(String fileConfigName){
         listLock = new ReentrantLock();
-        this.followers = new LinkedList<>();
+        this.followers = new LinkedHashSet<>();
         this.fileConfigName = fileConfigName;
     }
 
@@ -197,6 +197,7 @@ public class ClientClass implements Runnable {
                         password = commandLine[2];
                         try {
                             followers.addAll(regFun.backUpFollowers(username, password));
+                            followers.remove(username);
                             regFun.registerForCallback(stub, username, password);
                         }catch(NoSuchAlgorithmException | NullPointerException e){
                             System.out.println("< ERRORE SERVER: c'è stato un problema, riprovare successivamente");

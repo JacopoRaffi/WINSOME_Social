@@ -111,16 +111,16 @@ public class ServerBackup extends Thread {
             user.unlock(1);
         }
         writer.name("followed").value(gson.toJson(user.getFollowed(), typeOfFollowers_ed));
-        Type typeOfMap = new TypeToken<ConcurrentHashMap<Long, ServerPost>>() {}.getType();
+        Type typeOfMap = new TypeToken<LinkedList<Long>>() {}.getType();
         try {
             user.lock(0);
-            writer.name("feed").value(gson.toJson(user.getFeed(), typeOfMap));
+            writer.name("feed").value(gson.toJson(user.getKeyPostFeed(), typeOfMap));
         }finally{
             user.unlock(0);
         }
         try {
             user.lock(2);
-            writer.name("blog").value(gson.toJson(user.getBlog(), typeOfMap));
+            writer.name("blog").value(gson.toJson(user.getKeyPostBlog(), typeOfMap));
         }finally{
             user.unlock(2);
         }
