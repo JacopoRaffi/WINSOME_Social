@@ -340,6 +340,21 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
         }finally{
             user.unlock(0);
         }
+        try{
+            user.lock(1);
+            LinkedHashSet<String> followers = user.getFollowers();
+            for (String follower : followers) {
+                ServerUser auxUser = socialUsers.get(follower);
+                try{
+                    auxUser.lock(0);
+                    auxUser.addPostFeed(socialPost.get(idpost));
+                }finally{
+                    auxUser.unlock(0);
+                }
+            }
+        }finally{
+            user.unlock(1);
+        }
         return (rewin && seguito);
     }
 
