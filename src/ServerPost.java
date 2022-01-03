@@ -59,6 +59,19 @@ public class ServerPost {
         return comments;
     }
 
+    public String getListComments(){
+        String ret = "";
+        for (String aut : comments.keySet()) {
+            LinkedList<ServerComment> list = comments.get(aut);
+            ret += aut + ": \n";
+            for (ServerComment serverComment : list) {
+                ret += serverComment.toString();    
+            }
+            
+        }
+        return ret;
+    }
+
     public int addGetNumIterazioni(){
         numIterazioni++;
         return numIterazioni;

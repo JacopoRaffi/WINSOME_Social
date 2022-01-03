@@ -410,13 +410,23 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
 
     public String showPost(Long idpost){
         ServerPost post;
+        String ret = "";
             if ((post = socialPost.get(idpost)) == null) {
                 return null;
             } else {
-                long likes = post.getLikes().stream().filter(ServerFeedBack::isPositivo).count();
-                long dislikes = post.getLikes().size() - likes;
-                return "(idpost=" + post.getIdpost() + ")\n" + "AUTORE: " + post.getAutore() + "\n" + "TITOLO: " + post.getTitolo() +
-                        "\n" + post.getContenuto() + "\n" + "Likes=" + likes + ", dislikes=" + dislikes + "\n";
-            }
+                try{
+                    post.lock(0);
+                    post.lock(1);
+                    long likes = post.getLikes().stream().filter(ServerFeedBack::isPositivo).count();
+                    long dislikes = post.getLikes().size() - likes;
+                    ret = "(idpost=" + post.getIdpost() + ")\n" + "AUTORE: " + post.getAutore() + "\n" + "TITOLO: " + post.getTitolo() +
+                        "\n" + post.getContenuto() + "\n" + "Likes=" + likes + ", dislikes=" + dislikes + "\n" +
+                        "COMMENTI: \n" + post.getListComments();
+                }finally{
+                    post.unlock(0);
+                    post.unlock(1);
+                    return ret; 
+                } 
+            }  
     }
 }

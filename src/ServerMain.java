@@ -1,6 +1,7 @@
 import java.io.*;
 import java.lang.reflect.Type;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -22,11 +23,11 @@ public class ServerMain {
     private static int TCP_PORT = 9011;
     private static int UDP_PORT = 33333;
     private static int REG_PORT = 7777;
-    private static String SERVER_ADDRESS = "192.168.1.2";
+    private static String SERVER_ADDRESS = "127.0.0.1";
     private static String MULTICAST_ADDRESS = "239.255.32.32";
     private static String REG_SERVICENAME = "serverRegistry";
     private static long TIMEOUT = 10000000;
-    private static long TIMELAPSE = 5; //default 5 secondi
+    private static long TIMELAPSE = 10; //default 5 secondi
     private static long TIMELAPSEBACKUP = 5; //5 minuti di default
     private static double AUTHOR_RATE = 0.8;
 
@@ -53,7 +54,7 @@ public class ServerMain {
         System.out.println("TIMELAPSE BETWEEN BACKUPS(MINUTES) = " + TIMELAPSEBACKUP);
 
         //in questi due file mi salvo il backup dei post del social e degli utenti registrati(periodicamente)
-        File socialUserStatus = new File("..\\StatusServer\\usersStatus.json");
+        File socialUserStatus = new File("..\\StatusServer\\sersStatus.json");
         File postStatus = new File("..\\StatusServer\\postStatus.json");
         try{
             postStatus.createNewFile();
@@ -105,9 +106,10 @@ public class ServerMain {
         //il server main si occupa delle connessioni TCP
         ServerSocket welcomeSocket = null;
         try{
-            welcomeSocket = new ServerSocket(TCP_PORT);
+            welcomeSocket = new ServerSocket(TCP_PORT, 50, InetAddress.getByName(SERVER_ADDRESS));
             System.out.printf("Server pronto su porta %d\n", TCP_PORT);
         }catch(IOException e){
+            e.printStackTrace();
             System.err.println("ERRORE: problemi con la creazione del welcome socket...chiusura server");
             System.exit(-1);
         }
@@ -132,11 +134,11 @@ public class ServerMain {
         TCP_PORT = 6666;
         UDP_PORT = 33333;
         REG_PORT = 7777;
-        SERVER_ADDRESS = "192.168.1.2";
+        SERVER_ADDRESS = "127.0.0.1";
         MULTICAST_ADDRESS = "239.255.32.32";
         REG_SERVICENAME = "localhost";
         TIMEOUT = 0;
-        TIMELAPSE = 5;
+        TIMELAPSE = 10;
         AUTHOR_RATE = 0.8;
         TIMELAPSEBACKUP = 5;
     }
@@ -183,6 +185,7 @@ public class ServerMain {
             }
             line = configReader.readLine();
         }
+        configReader.close();
     }
 
     private static void rebootSocial(ServerWinsomeSocial social, File socialUserStatus, File postStatus) throws IOException{

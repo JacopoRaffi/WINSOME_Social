@@ -13,12 +13,10 @@ public class ServerReward extends Thread {
     private final InetAddress address;
     private final int port;
     private final long timeout;
-    private long lastCalculation;
     private double percentualeAutore;
 
 
     public ServerReward(ServerWinsomeSocial social, long timeout, DatagramSocket socketUDP, InetAddress address, int port, double percentualeAutore){
-        lastCalculation = Calendar.getInstance().getTimeInMillis();
         this.socketUDP = socketUDP;
         this.address = address;
         this.port = port;
@@ -32,7 +30,6 @@ public class ServerReward extends Thread {
             try{
                 Thread.sleep(timeout * 1000); //da secondi porto a millisecondi
                 calcoloRicompense();
-                lastCalculation = Calendar.getInstance().getTimeInMillis(); //aggiorno la data dell'ultimo calcolo
                 byte[] buffer = "RICOMPENSA AGGIORNATA".getBytes(StandardCharsets.UTF_8);
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length, address, port);
                 try{

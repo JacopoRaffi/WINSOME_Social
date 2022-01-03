@@ -2,6 +2,7 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -15,11 +16,8 @@ import java.util.concurrent.locks.ReentrantLock;
 public class ClientClass implements Runnable {
     //principali variabili
     private int TCP_PORT = 6666;
-    private int UDP_PORT = 33333;
-    private int MULTICAST_PORT = 44444;
     private int REG_PORT = 7777;
-    private String SERVER_ADDRESS = "192.168.1.2";
-    private String MULTICAST_ADDRESS = "239.255.32.32";
+    private String SERVER_ADDRESS = "127.0.0.1";
     private String REG_SERVICENAME = "serverRegistry";
     private long TIMEOUT = 100000;
     private boolean logged = false;
@@ -56,7 +54,7 @@ public class ClientClass implements Runnable {
         System.out.println("TIMEOUT_SOCKET = " + TIMEOUT);
         try{
             //configurazione TCP
-            Socket socket = new Socket("localhost", TCP_PORT);
+            Socket socket = new Socket(InetAddress.getByName(SERVER_ADDRESS), TCP_PORT);
             //lettura parametri per il Multicast Socket
             DataInputStream inReader = new DataInputStream(socket.getInputStream());
             String multiCastParam = "";
@@ -106,11 +104,8 @@ public class ClientClass implements Runnable {
 
     private void restoreValues() {
         TCP_PORT = 6666;
-        UDP_PORT = 33333;
-        MULTICAST_PORT = 44444;
         REG_PORT = 7777;
-        SERVER_ADDRESS = "192.168.1.2";
-        MULTICAST_ADDRESS = "239.255.32.32";
+        SERVER_ADDRESS = "127.0.0.1";
         REG_SERVICENAME = "localhost";
         TIMEOUT = 100000;
     }
@@ -123,18 +118,12 @@ public class ClientClass implements Runnable {
                 String[] tokens = line.split("=");
                 if (tokens[0].compareTo("SERVER_ADDRESS") == 0) {
                     SERVER_ADDRESS = tokens[1];
-                } else if (tokens[0].compareTo("MULTICAST_ADDRESS") == 0) {
-                    MULTICAST_ADDRESS = tokens[1];
                 } else if (tokens[0].compareTo("REG_SERVICENAME") == 0) {
                     REG_SERVICENAME = tokens[1];
                 } else if (tokens[0].compareTo("TCP_PORT") == 0) {
                     TCP_PORT = Integer.parseInt(tokens[1]);
-                } else if (tokens[0].compareTo("UDP_PORT") == 0) {
-                    UDP_PORT = Integer.parseInt(tokens[1]);
-                } else if (tokens[0].compareTo("REG_PORT") == 0) {
+                }  else if (tokens[0].compareTo("REG_PORT") == 0) {
                     REG_PORT = Integer.parseInt(tokens[1]);
-                } else if (tokens[0].compareTo("MULTICAST_PORT") == 0) {
-                    MULTICAST_PORT = Integer.parseInt(tokens[1]);
                 } else if (tokens[0].compareTo("TIMEOUT") == 0) {
                     TIMEOUT = Long.parseLong(tokens[1]);
                 }

@@ -14,6 +14,6 @@ public class ServerComment extends ServerFeedBack {
 
     @Override
     public String toString(){
-        return "COMMENTO: " + contenuto;
+        return "Commento: " + contenuto + "\n";
     }
 }
