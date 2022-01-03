@@ -18,6 +18,7 @@ public class ClientThinMain {
         System.setSecurityManager(new RMISecurityManager());
         try {
             URL url = new File(Args[0]).toURI().toURL();
+            System.out.println(url);
             Class<?> clientClasss = RMIClassLoader.loadClass(url, "ClientClass");
             Runnable client = (Runnable) clientClasss.getDeclaredConstructor(String.class).newInstance(filesName);
             client.run();
