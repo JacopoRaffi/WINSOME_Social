@@ -291,12 +291,12 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
     }
 
     public boolean deletePost(Long idPost, String username){//per evitare il rischio che qualcuno commenti il post mentre viene cancellato
-        if (socialPost.remove(idPost) != null) {
+        if (socialPost.contains(idPost)) {
             ServerUser user = socialUsers.get(username);
             try {
                 user.lock(2);
                 user.removePostBlog(idPost);
-                for (String key : user.getFollowers()) {
+                for (String key : socialUsers.keySet()) {
                     ServerUser auxUser = socialUsers.get(key);
                     try {
                         auxUser.lock(0);
@@ -314,6 +314,7 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
             }finally{
                 user.unlock(2);
             }
+            socialPost.remove(idpost);
             return true;
         } else {
             return false;

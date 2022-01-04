@@ -13,6 +13,7 @@ import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
@@ -321,12 +322,15 @@ public class ServerMain {
         new Thread(() -> {
             Scanner scan = new Scanner(System.in);
             String line = "";
-            while ("quit".compareTo(line) != 0) {
+            while ("quit".compareTo(line) != 0 || "quitNow".compareTo(line) != 0) {
                 System.out.println("PER TERMINARE IL SERVER DIGITARE quit");
                 line = scan.nextLine();
             }
             System.out.println("CHIUSURA DEL SERVER...");
             try {
+                System.out.print("CHIUSURA SOCKET...");
+                socketTCP.close();
+                socketUDP.close();
                 reward.interrupt();
                 autoSaving.interrupt();
                 autoSaving.backupUser();
@@ -334,10 +338,14 @@ public class ServerMain {
                 try{
                     reward.join(1000);
                 }catch(InterruptedException e){}
-                pool.shutdownNow();
-                System.out.print("CHIUSURA SOCKET...");
-                socketTCP.close();
-                socketUDP.close();
+                if(line.compareTo("quitNow") == 0)
+                    pool.shutdownNow();
+                else{
+                    pool.shutdown();
+                    pool.awaitTermination(10, TimeUnit.MINUTES);    
+                }
+                    autoSaving.backupUser();
+                autoSaving.backupPost();
                 System.out.println("SERVER TERMINATO");
             } catch (IOException e) {
                 System.err.println("ERRORE: problemi con la chiusura dei socket" + e.getMessage());
