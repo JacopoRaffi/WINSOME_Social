@@ -18,7 +18,7 @@ public class ClientClass implements Runnable {
     private int TCP_PORT = 6666;
     private int REG_PORT = 7777;
     private String SERVER_ADDRESS = "127.0.0.1";
-    private String REG_SERVICENAME = "serverRegistry";
+    private String REG_SERVICENAME = "localhost";
     private long TIMEOUT = 100000;
     private boolean logged = false;
     private final String fileConfigName;
@@ -77,6 +77,7 @@ public class ClientClass implements Runnable {
             ClientNotifyInterface stub = (ClientNotifyInterface) UnicastRemoteObject.exportObject(callbackObj, 0);
             socialActivity(socket, stub); //inizio dell'utilizzo del social da parte del client
         }catch(IOException | NotBoundException e){
+            e.printStackTrace();
             System.out.println("ERRORE: connessione col server interrotta");
             System.exit(-1);
         }

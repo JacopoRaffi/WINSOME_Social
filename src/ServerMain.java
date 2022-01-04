@@ -71,13 +71,14 @@ public class ServerMain {
         ServerWinsomeSocial socialNetwork = new ServerWinsomeSocial(); //creo il social vero e proprio
        try{
            rebootSocial(socialNetwork, socialUserStatus, postStatus);
-        }catch(IOException e){
+        }catch(IOException | NullPointerException e){
             System.err.println("ERRORE: errore durante il ripristino dell'ultimo backup");
             System.exit(-1);
         }
 
         //creo e avvio il thread che si occuperà del backup
         ServerBackup autoSaving = new ServerBackup(socialNetwork, socialUserStatus, postStatus, TIMELAPSEBACKUP);
+        autoSaving.setDaemon(true);
         autoSaving.start();
 
         try{
@@ -101,6 +102,7 @@ public class ServerMain {
             System.exit(-1);
         }
         ServerReward threadUDP = new ServerReward(socialNetwork, TIMELAPSE, socketUDP, multiCastAddress, UDP_PORT, AUTHOR_RATE);
+        threadUDP.setDaemon(true);
         threadUDP.start();
         ExecutorService threadPool = Executors.newCachedThreadPool(); //pool di worker(uno per client)
         //il server main si occupa delle connessioni TCP
@@ -116,15 +118,15 @@ public class ServerMain {
         closeServer(welcomeSocket, socketUDP, threadPool, threadUDP, autoSaving);
         while (true) {
             try {
-                welcomeSocket.setSoTimeout((int) TIMEOUT);
                 Socket clientSocket = welcomeSocket.accept();
+                clientSocket.setSoTimeout((int)TIMEOUT);
                 DataOutputStream outWriter = new DataOutputStream(new BufferedOutputStream(clientSocket.getOutputStream()));
                 outWriter.writeUTF(UDP_PORT + " " + MULTICAST_ADDRESS);
                 outWriter.flush();
 
                 threadPool.execute(new ServerWorker(clientSocket, socialNetwork)); //genero un thread worker legato a quel client
             } catch (IOException ex) {
-                System.err.println("ERRORE: chiusura welcomeSocket");
+                System.err.println("TERMINAZIONE: chiusura welcomeSocket");
                 System.exit(-1);
             }
         }
@@ -188,7 +190,7 @@ public class ServerMain {
         configReader.close();
     }
 
-    private static void rebootSocial(ServerWinsomeSocial social, File socialUserStatus, File postStatus) throws IOException{
+    private static void rebootSocial(ServerWinsomeSocial social, File socialUserStatus, File postStatus) throws IOException, NullPointerException{
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonReader userReader = new JsonReader(new InputStreamReader(new FileInputStream(socialUserStatus)));
         JsonReader postReader = new JsonReader(new InputStreamReader(new FileInputStream(postStatus)));
@@ -199,7 +201,7 @@ public class ServerMain {
             rebootUsers(userReader, gson, social);
     }
 
-    private static void rebootPosts(JsonReader reader, Gson gson, ServerWinsomeSocial social) throws IOException{
+    private static void rebootPosts(JsonReader reader, Gson gson, ServerWinsomeSocial social) throws IOException, NullPointerException{
         ConcurrentHashMap<Long, ServerPost> socialPosts = new ConcurrentHashMap<>();
         Type typeOfComments = new TypeToken<Hashtable<String, LinkedList<ServerComment>>>() {}.getType();
         Type typeOfLikes = new TypeToken<LinkedList<ServerFeedBack>>() {}.getType();
@@ -252,7 +254,7 @@ public class ServerMain {
         social.setSocialPost(socialPosts);
     }
 
-    private static void rebootUsers(JsonReader reader, Gson gson, ServerWinsomeSocial social) throws IOException{
+    private static void rebootUsers(JsonReader reader, Gson gson, ServerWinsomeSocial social) throws IOException, NullPointerException{
         ConcurrentHashMap<String, ServerUser> socialUsers = new ConcurrentHashMap<>();
         Type typeOfFollowers_ed = new TypeToken<LinkedHashSet<String>>() {}.getType();
         Type typeOfMap = new TypeToken<LinkedList<Long>>() {}.getType();
