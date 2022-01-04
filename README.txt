@@ -1,0 +1,26 @@
+Guida su come compilare:
+1- Andare dentro la cartella src
+2- eseguire il comando javac -cp .;..\lib\gson2.8.9.jar *.java -d ..\Out
+IMPORTANTE: non cambiare destinazione cartella perchè potrebbero esserci problemi riguardanti
+il path relativo dei file diconfigurazione, di backup e di policy.
+
+---------------------------------------------------------------------------------
+Guida su come eseguire il Client(classe main ClientThinMain):
+1- prima eseguire il server
+2- andare dentro la cartella Out
+3- eseguire il comando java ClientThinMain ..\src\ClientClass.java
+
+---------------------------------------------------------------------------------
+Guida su come eseguire il Server(classe main ServerMain):
+1- andare dentro la cartella out
+2- eseguire il comando java -cp .;..\lib\gson2.8.9.jar ServerMain
+
+---------------------------------------------------------------------------------
+Guida su come creare il server.jar
+1- andare dentro la cartella Out
+2- eseguire il comando jar cmf ManifestServer.mf server.jar Server*.class IllegalRegisterException.class ClientNotifyInterface.class
+
+---------------------------------------------------------------------------------
+Guida su come creare il client.jar
+1- andare dentro la cartella Out
+2- eseguire il comando jar cmf ManifestClient.mf client.jar Client*.class IllegalRegisterException.class ServerRegistryInterface.class
