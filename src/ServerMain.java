@@ -54,7 +54,7 @@ public class ServerMain {
         System.out.println("TIMELAPSE BETWEEN BACKUPS(MINUTES) = " + TIMELAPSEBACKUP);
 
         //in questi due file mi salvo il backup dei post del social e degli utenti registrati(periodicamente)
-        File socialUserStatus = new File("..\\StatusServer\\sersStatus.json");
+        File socialUserStatus = new File("..\\StatusServer\\usersStatus.json");
         File postStatus = new File("..\\StatusServer\\postStatus.json");
         try{
             postStatus.createNewFile();
@@ -332,9 +332,10 @@ public class ServerMain {
                 autoSaving.backupUser();
                 autoSaving.backupPost();
                 try{
-                    reward.join();
+                    reward.join(1000);
                 }catch(InterruptedException e){}
                 pool.shutdownNow();
+                System.out.print("CHIUSURA SOCKET...");
                 socketTCP.close();
                 socketUDP.close();
                 System.out.println("SERVER TERMINATO");

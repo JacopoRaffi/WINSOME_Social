@@ -7,10 +7,15 @@ import java.nio.charset.StandardCharsets;
 //questo thread sta in ascolto(tramite multicast) della notifica di avvenuta modifica del suo "wallet"
 public class ClientUDPThread implements Runnable{
     private MulticastSocket msocket;
+    private static boolean logged = false;
 
 
     public ClientUDPThread(MulticastSocket msocket){
         this.msocket = msocket;
+    }
+
+    public static void login(){
+        logged = true;
     }
 
     public void run(){
@@ -21,7 +26,8 @@ public class ClientUDPThread implements Runnable{
                 msocket.receive(packet);
                 String message = new String(buffer, StandardCharsets.UTF_8);
                 message = message.replace("\u0000", "");
-                System.out.println("< NOTIFICA: " + message + " >");
+                if(logged)
+                    System.out.println("< NOTIFICA: " + message + " >");
             }catch(IOException ex){
                 System.err.println("< ERRORE: PROBLEMA COL MULTICAST");
                 continue;

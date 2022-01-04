@@ -66,7 +66,8 @@ public class ClientClass implements Runnable {
             InetAddress address = InetAddress.getByName(parametriMS[1]);
             msocket.setReuseAddress(true);
             msocket.joinGroup(address);
-            Thread waitingThread = new Thread(new ClientUDPThread(msocket));
+            ClientUDPThread udp = new ClientUDPThread(msocket);
+            Thread waitingThread = new Thread(udp);
             waitingThread.setDaemon(true);
             waitingThread.start();
 
@@ -75,7 +76,7 @@ public class ClientClass implements Runnable {
             regFun = (ServerRegistryInterface) registry.lookup(REG_SERVICENAME);
             ClientNotifyInterface callbackObj = new ClientNotifyClass(followers);
             ClientNotifyInterface stub = (ClientNotifyInterface) UnicastRemoteObject.exportObject(callbackObj, 0);
-            socialActivity(socket, stub); //inizio dell'utilizzo del social da parte del client
+            socialActivity(socket, stub, udp); //inizio dell'utilizzo del social da parte del client
         }catch(IOException | NotBoundException e){
             e.printStackTrace();
             System.out.println("ERRORE: connessione col server interrotta");
@@ -135,7 +136,7 @@ public class ClientClass implements Runnable {
     }
 
     //funzione che legge i comandi da tastiera
-    private void socialActivity(Socket socket, ClientNotifyInterface stub) throws IOException{
+    private void socialActivity(Socket socket, ClientNotifyInterface stub, ClientUDPThread waitingThread) throws IOException{
         String NOT_LOGGED_MESSAGE = "< ERRORE: non hai fatto il login in WINSOME";
         String[] commandLine;
         String serverResponse;
@@ -179,6 +180,7 @@ public class ClientClass implements Runnable {
                     serverResponse = inReader.readUTF(); //leggo la risposta del server
                     if (serverResponse.startsWith("SUCCESSO")) {
                         logged = true;
+                        waitingThread.login();
                         username = commandLine[1];
                         password = commandLine[2];
                         try {
