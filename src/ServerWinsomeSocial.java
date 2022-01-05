@@ -314,7 +314,7 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
             }finally{
                 user.unlock(2);
             }
-            socialPost.remove(idpost);
+            socialPost.remove(idPost);
             return true;
         } else {
             return false;

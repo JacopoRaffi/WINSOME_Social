@@ -26,7 +26,7 @@ public class ServerWorker implements Runnable{
                 executeRequest(request, outWriter);
             }
         }catch(IOException e){
-            System.err.println("WORKER: chiusura connessione client");
+            System.err.println("WORKER: chiusura connessione client...");
             try{
                 clientSocket.close();
             }catch(IOException ex){

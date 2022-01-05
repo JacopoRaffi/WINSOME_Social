@@ -26,11 +26,11 @@ public class ServerMain {
     private static int REG_PORT = 7777;
     private static String SERVER_ADDRESS = "127.0.0.1";
     private static String MULTICAST_ADDRESS = "239.255.32.32";
-    private static String REG_SERVICENAME = "serverRegistry";
+    private static String REG_SERVICENAME = "localhost";
     private static long TIMEOUT = 10000000;
-    private static long TIMELAPSE = 10; //default 5 secondi
+    private static long TIMELAPSE = 10; //default 10 secondi
     private static long TIMELAPSEBACKUP = 5; //5 minuti di default
-    private static double AUTHOR_RATE = 0.8;
+    private static double AUTHOR_RATE = 0.8; //80% ricompensa autore default
 
     public static void main(String[] Args){
         File serverConfigFile;
@@ -322,13 +322,13 @@ public class ServerMain {
         new Thread(() -> {
             Scanner scan = new Scanner(System.in);
             String line = "";
-            while ("quit".compareTo(line) != 0 || "quitNow".compareTo(line) != 0) {
-                System.out.println("PER TERMINARE IL SERVER DIGITARE quit");
+            while ("quit".compareTo(line) != 0 && "quitNow".compareTo(line) != 0) {
+                System.out.println("PER TERMINARE IL SERVER DIGITARE quit o quitNow");
                 line = scan.nextLine();
             }
             System.out.println("CHIUSURA DEL SERVER...");
             try {
-                System.out.print("CHIUSURA SOCKET...");
+                System.out.print("CHIUSURA DEI SOCKET...");
                 socketTCP.close();
                 socketUDP.close();
                 reward.interrupt();
@@ -341,10 +341,12 @@ public class ServerMain {
                 if(line.compareTo("quitNow") == 0)
                     pool.shutdownNow();
                 else{
-                    pool.shutdown();
-                    pool.awaitTermination(10, TimeUnit.MINUTES);    
+                    try{
+                        pool.shutdown();
+                        pool.awaitTermination(10, TimeUnit.SECONDS);
+                    }catch(InterruptedException e){}    
                 }
-                    autoSaving.backupUser();
+                autoSaving.backupUser();
                 autoSaving.backupPost();
                 System.out.println("SERVER TERMINATO");
             } catch (IOException e) {
