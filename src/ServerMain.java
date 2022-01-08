@@ -334,9 +334,6 @@ public class ServerMain {
                 socketTCP.close();
                 socketUDP.close();
                 reward.interrupt();
-                autoSaving.backupPost();
-                autoSaving.backupUser();
-                autoSaving.interrupt();
                 try{
                     reward.join(1000);
                 }catch(InterruptedException e){}
@@ -348,6 +345,10 @@ public class ServerMain {
                         pool.awaitTermination(10, TimeUnit.SECONDS);
                     }catch(InterruptedException e){}    
                 }
+                System.out.println("BACKUP FINALI...");
+                autoSaving.backupPost();
+                autoSaving.backupUser();
+                autoSaving.interrupt();
                 System.out.println("SERVER TERMINATO");
                 System.exit(0);
             } catch (IOException e) {
