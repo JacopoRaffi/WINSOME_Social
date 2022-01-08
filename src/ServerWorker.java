@@ -27,6 +27,7 @@ public class ServerWorker implements Runnable{
             }
         }catch(IOException e){
             System.err.println("WORKER: chiusura connessione client...");
+            social.getSocialUsers().get(clientUserName).logout();
             try{
                 clientSocket.close();
             }catch(IOException ex){
@@ -220,6 +221,9 @@ public class ServerWorker implements Runnable{
             }
             writer.writeUTF(response);
             writer.flush();
+        }
+        else if(request.startsWith("logout")){
+            social.getSocialUsers().get(clientUserName).logout();
         }
 
     }

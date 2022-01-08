@@ -6,6 +6,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -266,8 +267,8 @@ public class ServerMain {
             reader.beginObject();
             String seed = null; String[] tags = null; String username = null; String hashedPassword = null;
             LinkedHashSet<String> followers = null; LinkedHashSet<String> followed = null;
-            ConcurrentHashMap<Long, ServerPost> feed = new ConcurrentHashMap<>();
-            ConcurrentHashMap<Long, ServerPost> blog = new ConcurrentHashMap<>();
+            HashMap<Long, ServerPost> feed = new HashMap<>();
+            HashMap<Long, ServerPost> blog = new HashMap<>();
             ServerWallet wallet = null;
             while(reader.hasNext()){
                 String next = reader.nextName();

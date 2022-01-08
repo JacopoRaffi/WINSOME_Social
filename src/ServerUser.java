@@ -1,5 +1,6 @@
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,8 +15,8 @@ public class ServerUser {
     final private String hashedPassword;
     private final LinkedHashSet<String> followers; //la key è il nome dell'utente(username unico nel social)
     private final LinkedHashSet<String> followed;
-    private final ConcurrentHashMap<Long, ServerPost> feed; //la key è l'idPost
-    private final ConcurrentHashMap<Long, ServerPost> blog;
+    private final HashMap<Long, ServerPost> feed; //la key è l'idPost
+    private final HashMap<Long, ServerPost> blog;
     private final ServerWallet wallet;
     private final ReentrantLock[] locks;
 
@@ -33,13 +34,13 @@ public class ServerUser {
         hashedPassword = ServerHashFunction.bytesToHex(ServerHashFunction.sha256(password+seed));
         followers = new LinkedHashSet<>();
         followed = new LinkedHashSet<>();
-        feed = new ConcurrentHashMap<>();
-        blog = new ConcurrentHashMap<>();
+        feed = new HashMap<>();
+        blog = new HashMap<>();
         wallet = new ServerWallet();
     }
 
     public ServerUser(String username, String[] tags, String seed, String hashedPassword, LinkedHashSet<String> followers,
-                      LinkedHashSet<String> followed, ConcurrentHashMap<Long, ServerPost> feed, ConcurrentHashMap<Long, ServerPost> blog,
+                      LinkedHashSet<String> followed, HashMap<Long, ServerPost> feed, HashMap<Long, ServerPost> blog,
                       ServerWallet wallet) {
 
         locks = new ReentrantLock[3];
@@ -101,6 +102,10 @@ public class ServerUser {
         return logged;
     }
 
+    public void logout(){
+        logged = false;
+    }
+
     public boolean addFollower(String follower){
         if(follower.compareTo(username) != 0) {
             return followers.add(follower);
@@ -139,11 +144,11 @@ public class ServerUser {
         return followers;
     }
 
-    public ConcurrentHashMap<Long, ServerPost> getFeed(){
+    public HashMap<Long, ServerPost> getFeed(){
         return feed;
     }
 
-    public ConcurrentHashMap<Long, ServerPost> getBlog(){
+    public HashMap<Long, ServerPost> getBlog(){
         return blog;
     }
 

@@ -198,6 +198,8 @@ public class ClientClass implements Runnable {
             }
             else if(request.compareTo("logout") == 0){
                 if(logged) {
+                    outWriter.writeUTF("logout");
+                    outWriter.flush();
                     System.out.println("< Chiusura da WINSOME");
                     try {
                         regFun.unregisterForCallback(stub, username, password);

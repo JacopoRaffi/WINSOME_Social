@@ -93,7 +93,7 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
         String aux = "";
         try{
             user.lock(0);
-            ConcurrentHashMap<Long, ServerPost> mapAux = user.getFeed();
+            HashMap<Long, ServerPost> mapAux = user.getFeed();
             Iterator<Long> it = mapAux.keySet().iterator();
             while(it.hasNext()){
                 Long idp = it.next();
@@ -234,10 +234,10 @@ public class ServerWinsomeSocial extends RemoteObject implements ServerRegistryI
             userFollowed.removeFollower(username);
             for (ServerPost post : userFollowed.getBlog().values()) {
                 try {
-                    user.lock(2);
+                    user.lock(0);
                     user.removePostFeed(post.getIdpost());
                 }finally{
-                    user.unlock(2);
+                    user.unlock(0);
                 }
             }
             doCallbackUnfollow(followed); //notifico l'utente interessato
