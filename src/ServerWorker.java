@@ -39,15 +39,26 @@ public class ServerWorker implements Runnable{
         String response = "";
         String[] param = request.split(" (?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
         if(request.startsWith("login")){
-            if(social.login(param[1], param[2])) { //username e password
-                response = "SUCCESSO: Login effettuato con successo";
-                clientUserName = param[1];
-                writer.writeUTF(response);
-                writer.flush();
-            }
-            else{
-                response = "ERRORE: username o password errati";
-                writer.writeUTF(response);
+            ServerUser user = social.getSocialUsers().get(param[1]);
+            if((user != null)){
+                if(!user.isLogged()){
+                    if(social.login(param[1], param[2])) { //username e password
+                        response = "SUCCESSO: Login effettuato con successo";
+                        clientUserName = param[1];
+                        writer.writeUTF(response);
+                        writer.flush();
+                    }
+                    else{
+                        response = "ERRORE: username o password errati";
+                        writer.writeUTF(response);
+                        writer.flush();
+                    }
+                }else{
+                    writer.writeUTF("ERRORE: hai già fatto il login");
+                    writer.flush();
+                }
+            }else{
+                writer.writeUTF("ERRORE: non esiste alcun utente con questo username");
                 writer.flush();
             }
         }

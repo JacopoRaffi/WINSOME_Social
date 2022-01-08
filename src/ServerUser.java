@@ -8,6 +8,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class ServerUser {
     final private String seed;
+    private boolean logged = false;
     final private String[] tags;
     final private String username;
     final private String hashedPassword;
@@ -91,7 +92,13 @@ public class ServerUser {
     }
 
     public synchronized boolean login(String username, String password) throws NoSuchAlgorithmException{
-        return hashedPassword.compareTo(ServerHashFunction.bytesToHex(ServerHashFunction.sha256(password + seed))) == 0 && (username.compareTo(this.username) == 0);
+        if(hashedPassword.compareTo(ServerHashFunction.bytesToHex(ServerHashFunction.sha256(password + seed))) == 0 && (username.compareTo(this.username) == 0))
+            logged = true;
+        return logged;
+    }
+
+    public synchronized boolean isLogged(){
+        return logged;
     }
 
     public boolean addFollower(String follower){
