@@ -1,6 +1,6 @@
 import java.io.*;
 import java.lang.reflect.Type;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -28,7 +28,7 @@ public class ServerBackup extends Thread {
     public void run(){
         while(!Thread.currentThread().isInterrupted()){
             try{
-                Thread.sleep(timelapse * 60 * 1000); //*60 * 1000 serve a trasformare da minuti a millisecondi
+                Thread.sleep(timelapse * 1000); //*60 * 1000 serve a trasformare da minuti a millisecondi
                 backupUser();
                 backupPost();
             }catch(InterruptedException e){
@@ -75,7 +75,7 @@ public class ServerBackup extends Thread {
         writer.name("titolo").value(post.getTitolo());
         writer.name("contenuto").value(post.getContenuto());
         writer.name("numIterazioni").value(post.getNumIterazioni());
-        Type typeOfComments = new TypeToken<Hashtable<String, LinkedList<Comment>>>() {}.getType();
+        Type typeOfComments = new TypeToken<HashMap<String, LinkedList<Comment>>>() {}.getType();
         try {
             post.lock(1);
             writer.name("comments").value(gson.toJson(post.getComments(), typeOfComments));

@@ -27,11 +27,13 @@ public class ServerWorker implements Runnable{
             }
         }catch(IOException e){
             System.err.println("WORKER: chiusura connessione client...");
-            social.getSocialUsers().get(clientUserName).logout();
             try{
+                social.getSocialUsers().get(clientUserName).logout();
                 clientSocket.close();
             }catch(IOException ex){
                 System.err.println("ERRORE WORKER: problemi con la chiusura del clientSocket");
+            }catch(NullPointerException exex){
+                System.err.println("ERRORE: l'utente non aveva fatto login, impossibile fare logout");
             }
         }
     }

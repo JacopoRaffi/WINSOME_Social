@@ -87,7 +87,7 @@ public class ServerReward extends Thread {
                 }
             }
             somma1 = Math.log(Math.max(0, numPositivi) + 1);
-            Hashtable<String, LinkedList<ServerComment>> comments = post.getComments();
+            HashMap<String, LinkedList<ServerComment>> comments = post.getComments();
             //le key sono gli autori
             for (String key : filterNewPeopleCommenting(post)) {
                 int Cp = comments.get(key).size();

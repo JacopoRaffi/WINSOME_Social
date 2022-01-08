@@ -128,8 +128,7 @@ public class ServerMain {
 
                 threadPool.execute(new ServerWorker(clientSocket, socialNetwork)); //genero un thread worker legato a quel client
             } catch (IOException ex) {
-                System.err.println("TERMINAZIONE: chiusura welcomeSocket");
-                System.exit(-1);
+                continue;
             }
         }
     }
@@ -205,7 +204,7 @@ public class ServerMain {
 
     private static void rebootPosts(JsonReader reader, Gson gson, ServerWinsomeSocial social) throws IOException, NullPointerException{
         ConcurrentHashMap<Long, ServerPost> socialPosts = new ConcurrentHashMap<>();
-        Type typeOfComments = new TypeToken<Hashtable<String, LinkedList<ServerComment>>>() {}.getType();
+        Type typeOfComments = new TypeToken<HashMap<String, LinkedList<ServerComment>>>() {}.getType();
         Type typeOfLikes = new TypeToken<LinkedList<ServerFeedBack>>() {}.getType();
 
         reader.beginArray();
@@ -214,7 +213,7 @@ public class ServerMain {
             //parametri di un ServerPost
         Long idpost = null; String autore = null; String titolo = null; String contenuto = null;
         int numIterazioni = 0; long rewardTime = 0;
-        Hashtable<String, LinkedList<ServerComment>> comments = null; LinkedList<ServerFeedBack> likes = null;
+        HashMap<String, LinkedList<ServerComment>> comments = null; LinkedList<ServerFeedBack> likes = null;
         //fine parametri
             while(reader.hasNext()){
                 String next = reader.nextName();
@@ -253,6 +252,7 @@ public class ServerMain {
         }
         reader.endArray();
         reader.close();
+        System.out.println(socialPosts);
         social.setSocialPost(socialPosts);
     }
 
@@ -316,6 +316,7 @@ public class ServerMain {
         }
         reader.endArray();
         reader.close();
+        System.out.println(socialUsers);
         social.setSocialUsers(socialUsers);
     }
 
@@ -333,9 +334,9 @@ public class ServerMain {
                 socketTCP.close();
                 socketUDP.close();
                 reward.interrupt();
-                autoSaving.interrupt();
-                autoSaving.backupUser();
                 autoSaving.backupPost();
+                autoSaving.backupUser();
+                autoSaving.interrupt();
                 try{
                     reward.join(1000);
                 }catch(InterruptedException e){}
@@ -347,9 +348,8 @@ public class ServerMain {
                         pool.awaitTermination(10, TimeUnit.SECONDS);
                     }catch(InterruptedException e){}    
                 }
-                autoSaving.backupUser();
-                autoSaving.backupPost();
                 System.out.println("SERVER TERMINATO");
+                System.exit(0);
             } catch (IOException e) {
                 System.err.println("ERRORE: problemi con la chiusura dei socket" + e.getMessage());
                 System.exit(-1);

@@ -1,4 +1,4 @@
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -8,7 +8,7 @@ public class ServerPost {
     private final String titolo;
     private final String contenuto;
     private int numIterazioni;
-    private final Hashtable<String, LinkedList<ServerComment>> comments;
+    private final HashMap<String, LinkedList<ServerComment>> comments;
     private final LinkedList<ServerFeedBack> likes;
     private final ReentrantLock[] locks;
     private long lastTimeReward;
@@ -23,11 +23,11 @@ public class ServerPost {
         this.idpost = idpost;
         this.titolo = titolo;
         lastTimeReward = System.nanoTime();
-        comments = new Hashtable<>();
+        comments = new HashMap<>();
         likes = new LinkedList<>();
     }
 
-   public ServerPost(Long idpost, Long reward, String titolo, String contenuto, String autore, Hashtable<String, LinkedList<ServerComment>> comm, LinkedList<ServerFeedBack> likes, int numIt){
+   public ServerPost(Long idpost, Long reward, String titolo, String contenuto, String autore, HashMap<String, LinkedList<ServerComment>> comm, LinkedList<ServerFeedBack> likes, int numIt){
         numIterazioni = numIt;
         locks = new ReentrantLock[2];
         locks[0] = new ReentrantLock();
@@ -55,7 +55,7 @@ public class ServerPost {
         return idpost;
     }
 
-    public Hashtable<String, LinkedList<ServerComment>> getComments() {
+    public HashMap<String, LinkedList<ServerComment>> getComments() {
         return comments;
     }
 
