@@ -8,12 +8,12 @@ il path relativo dei file di configurazione, di backup e di policy.
 Guida su come eseguire il Client(classe main ClientThinMain):
 1- prima eseguire il server(altrimenti non si connette e il programma termina immediatamente)
 2- andare dentro la cartella Out
-3- eseguire il comando java ClientThinMain ..\src\ClientClass.java <il file di configurazione è opzionale>
+3- eseguire il comando java ClientThinMain ..\src\ClientClass.java - path del file di configurazione(opzionale) -
 
 ---------------------------------------------------------------------------------
 Guida su come eseguire il Server(classe main ServerMain):
 1- andare dentro la cartella out
-2- eseguire il comando java -cp .;..\lib\gson-2.8.9.jar ServerMain <il file di configurazione è opzionale>
+2- eseguire il comando java -cp .;..\lib\gson-2.8.9.jar ServerMain - path del file di configurazione(opzionale) -
 
 ---------------------------------------------------------------------------------
 Guida su come creare il server.jar
