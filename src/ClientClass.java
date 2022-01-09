@@ -42,7 +42,7 @@ public class ClientClass implements Runnable {
             clientConfigFile = new File(fileConfigName);
             configClient(clientConfigFile);
             System.out.println("--------CONFIGURAZIONE TERMINATA CON SUCCESSO--------");
-        } catch (NullPointerException | IOException | IllegalArgumentException e) {
+        } catch (Exception e) {
             restoreValues(); //durante la configurazione ci potrebbero essere degli errori a metà lavoro e quindi ripristino i valori di default
             System.out.println("--------CLIENT AVVIATO CON VALORI DI DEFAULT--------");
         }
@@ -113,7 +113,7 @@ public class ClientClass implements Runnable {
         TIMEOUT = 100000;
     }
 
-    private void configClient(File config) throws IOException, NumberFormatException {
+    private void configClient(File config) throws IOException, NumberFormatException, ArrayIndexOutOfBoundsException {
         BufferedReader configReader = new BufferedReader(new FileReader(config));
         String line = configReader.readLine();
         while (line != null) {

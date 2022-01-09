@@ -39,7 +39,7 @@ public class ServerMain {
             serverConfigFile = new File(Args[0]);
             configServer(serverConfigFile);
             System.out.println("--------CONFIGURAZIONE TERMINATA CON SUCCESSO--------");
-        } catch (NullPointerException | IOException | IllegalArgumentException | IndexOutOfBoundsException e) {
+        } catch (Exception e) {
             restoreValues(); //durante la configurazione ci potrebbero essere degli errori a metà lavoro e quindi ripristino i valori di default
             System.out.println("--------SERVER AVVIATO CON VALORI DI DEFAULT--------");
         }
