@@ -9,7 +9,7 @@ public class ClientNotifyClass extends RemoteObject implements ClientNotifyInter
     private final Lock listLock;
 
     public ClientNotifyClass(LinkedHashSet<String> followers) throws RemoteException {
-        super( );
+        super();
         listLock = new ReentrantLock();
         this.followers = followers;
     }

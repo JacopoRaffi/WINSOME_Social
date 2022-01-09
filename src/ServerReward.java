@@ -76,6 +76,7 @@ public class ServerReward extends Thread {
         try {
             post.lock(0);
             post.lock(1);
+            //filtro i likes/dislikes recenti
             List<ServerFeedBack> filteredFeedback = post.getLikes().stream().filter(feedback -> feedback.getTime() > post.getLastTimeReward()).collect(Collectors.toList());
             int numPositivi = 0;
             for (ServerFeedBack feedback : filteredFeedback) {
@@ -107,6 +108,7 @@ public class ServerReward extends Thread {
     private Set<String> filterNewPeopleCommenting(ServerPost post){
         Set<String> newPeople = new TreeSet<>(); //qui metto le persone che avranno commentato di recente
         for (String key: post.getComments().keySet()) {
+            //filtro i commenti recenti
             List<ServerComment> filteredComment = post.getComments().get(key).stream().filter(serverComment -> serverComment.getTime() > post.getLastTimeReward()).collect(Collectors.toList());
             if(!filteredComment.isEmpty()){
                 newPeople.add(key);

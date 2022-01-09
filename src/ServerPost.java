@@ -1,4 +1,5 @@
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -105,7 +106,16 @@ public class ServerPost {
         }else{
             feedback = new ServerFeedBack(autore, false, System.nanoTime());
         }
-        if(!likes.contains(feedback))
+        boolean votato = false;
+        Iterator<ServerFeedBack> it = likes.iterator();
+        while(it.hasNext()){
+            if(autore.compareTo(it.next().getAutore()) == 0){
+                votato = true;
+                break;
+            }
+
+        }
+        if(!votato)
             return likes.add(feedback);
         return false;
     }

@@ -43,7 +43,7 @@ public class ClientClass implements Runnable {
             configClient(clientConfigFile);
             System.out.println("--------CONFIGURAZIONE TERMINATA CON SUCCESSO--------");
         } catch (Exception e) {
-            restoreValues(); //durante la configurazione ci potrebbero essere degli errori a metà lavoro e quindi ripristino i valori di default
+            restoreValues(); //durante la configurazione ci potrebbero essere degli errori a meta' lavoro e quindi ripristino i valori di default
             System.out.println("--------CLIENT AVVIATO CON VALORI DI DEFAULT--------");
         }
         System.out.println("VALORI DEL CLIENT:");
@@ -79,7 +79,6 @@ public class ClientClass implements Runnable {
             ClientNotifyInterface stub = (ClientNotifyInterface) UnicastRemoteObject.exportObject(callbackObj, 0);
             socialActivity(socket, stub, udp); //inizio dell'utilizzo del social da parte del client
         }catch(IOException | NotBoundException e){
-            e.printStackTrace();
             System.out.println("ERRORE: connessione col server interrotta");
             System.exit(-1);
         }
@@ -91,12 +90,12 @@ public class ClientClass implements Runnable {
             if(regFun.userRegister(username, password, tags)) {
                 System.out.println("REGISTRAZIONE EFFETTUATA CON SUCCESSO");
                 System.out.println("-------- BENVENUTO SU WINSOME --------");
-                System.out.println("Ricordati di fare il login per iniziare la tua attività sul social\n");
+                System.out.println("Ricordati di fare il login per iniziare la tua attivita' sul social\n");
                 System.out.println("Digitare il comando help per la lista dei possibili comandi");
                 this.username = username;
             }
             else
-                System.out.println("ERRORE: username già registrato nel social");
+                System.out.println("ERRORE: username gia' registrato nel social");
         }catch(RemoteException | NotBoundException e){
             System.out.println("ERRORE: registrazione fallita");
             System.exit(-1);
@@ -149,7 +148,7 @@ public class ClientClass implements Runnable {
             System.out.printf("> ");
             String line = scanner.nextLine();
             if(line.contains("~")){
-                System.out.println("ERRORE: la ~ è abolita in questo social :)");
+                System.out.println("ERRORE: la ~ e' abolita in questo social :)");
                 continue;
             }
             commandLine = line.split(" (?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
@@ -157,7 +156,7 @@ public class ClientClass implements Runnable {
 
             if(request.compareTo("register") == 0){
                 if(commandLine.length < 4 || commandLine.length > 8){
-                    System.out.println("< ERRORE: il comando è: register <username> <password> <tags>");
+                    System.out.println("< ERRORE: il comando e': register <username> <password> <tags>");
                     System.out.println("Numero di tags tra 1 e 5");
                     continue;
                 }
@@ -172,7 +171,7 @@ public class ClientClass implements Runnable {
             else if(request.compareTo("login") == 0) {
                 if (!logged) {
                     if (commandLine.length != 3) {
-                        System.out.println("< ERRORE: il comando è: login <username> <password>");
+                        System.out.println("< ERRORE: il comando e': login <username> <password>");
                         continue;
                     }
                     outWriter.writeUTF(line); //invio la richiesta al server con i relativi parametri
@@ -188,13 +187,13 @@ public class ClientClass implements Runnable {
                             followers.remove(username);
                             regFun.registerForCallback(stub, username, password);
                         }catch(NoSuchAlgorithmException | NullPointerException e){
-                            System.out.println("< ERRORE SERVER: c'è stato un problema, riprovare successivamente");
+                            System.out.println("< ERRORE SERVER: c'e' stato un problema, riprovare successivamente");
                         }
                     }
                     System.out.println("< " + serverResponse);
                 }
                 else
-                    System.out.println("< Hai già fatto il login");
+                    System.out.println("< Hai gia' fatto il login");
             }
             else if(request.compareTo("logout") == 0){
                 if(logged) {
@@ -206,7 +205,7 @@ public class ClientClass implements Runnable {
                         regFun.unregisterForCallback(stub, username, password);
                         logged = false;
                     }catch(NoSuchAlgorithmException e){
-                        System.out.println("< ERRORE SERVER: c'è stato un problema, riprovare successivamente");
+                        System.out.println("< ERRORE SERVER: c'e' stato un problema, riprovare successivamente");
                         continue;
                     }
                 }
@@ -263,7 +262,7 @@ public class ClientClass implements Runnable {
             else if(request.compareTo("follow") == 0){
                 if (logged) {
                     if (commandLine.length != 2) {
-                        System.out.println("< ERRORE: il comando è: follow <username>");
+                        System.out.println("< ERRORE: il comando e': follow <username>");
                         continue;
                     }
                     outWriter.writeUTF(line); //invio la richiesta al server con i relativi parametri
@@ -277,7 +276,7 @@ public class ClientClass implements Runnable {
             else if(request.compareTo("unfollow") == 0){
                 if (logged) {
                     if (commandLine.length != 2) {
-                        System.out.println("< ERRORE: il comando è: unfollow <username>");
+                        System.out.println("< ERRORE: il comando e': unfollow <username>");
                         continue;
                     }
                     
@@ -292,7 +291,7 @@ public class ClientClass implements Runnable {
             else if(request.compareTo("createpost") == 0){
                 if (logged) {
                     if (commandLine.length != 3) {
-                        System.out.println("< ERRORE: il comando è: cretepost <titolo> <contenuto>");
+                        System.out.println("< ERRORE: il comando e': cretepost <titolo> <contenuto>");
                         System.out.println("Ricorda di mettere titolo e contenuto tra le \"\" ");
                         System.out.println("Lunghezza massima titolo 50 caratteri");
                         System.out.println("Lunghezza massima contenuto 500 caratteri");
@@ -351,7 +350,7 @@ public class ClientClass implements Runnable {
             else if(request.compareTo("showpost") == 0){
                 if (logged) {
                     if (commandLine.length != 2) {
-                        System.out.println("< ERRORE: il comando è: showpost <idpost>");
+                        System.out.println("< ERRORE: il comando e': showpost <idpost>");
                         System.out.println("idpost deve essere un numero non negativo");
                         continue;
                     }
@@ -376,7 +375,7 @@ public class ClientClass implements Runnable {
             else if(request.compareTo("deletepost") == 0){
                 if (logged) {
                     if (commandLine.length != 2) {
-                        System.out.println("< ERRORE: il comando è: delete <idpost>");
+                        System.out.println("< ERRORE: il comando e': delete <idpost>");
                         System.out.println("idpost deve essere un numero non negativo");
                         continue;
                     }
@@ -401,7 +400,7 @@ public class ClientClass implements Runnable {
             else if(request.compareTo("rewinpost") == 0){
                 if (logged) {
                     if (commandLine.length != 2) {
-                        System.out.println("< ERRORE: il comando è: rewinpost <idpost>");
+                        System.out.println("< ERRORE: il comando e': rewinpost <idpost>");
                         System.out.println("idpost deve essere un numero non negativo");
                         continue;
                     }
@@ -426,7 +425,7 @@ public class ClientClass implements Runnable {
             else if(request.compareTo("ratepost") == 0){
                 if (logged) {
                     if (commandLine.length != 3) {
-                        System.out.println("< ERRORE: il comando è: ratepost <idpost> <voto>");
+                        System.out.println("< ERRORE: il comando e': ratepost <idpost> <voto>");
                         System.out.println("< idpost deve essere un numero non negativo");
                         System.out.println("< il voto deve essere +1 o -1");
                         continue;
@@ -458,7 +457,7 @@ public class ClientClass implements Runnable {
             else if(request.compareTo("addcomment") == 0){
                 if (logged) {
                     if (commandLine.length != 3) {
-                        System.out.println("< ERRORE: il comando è: addcomment <idpost> <commento>");
+                        System.out.println("< ERRORE: il comando e': addcomment <idpost> <commento>");
                         System.out.println("< idpost deve essere un numero non negativo");
                         continue;
                     }
@@ -525,7 +524,7 @@ public class ClientClass implements Runnable {
         System.out.println("LISTA DEI COMANDI");
         System.out.println(
                         "register <username> <password> <tags> ti permette di registrarti a WINSOME\n"+
-                        "login <username> <password>fai il login per cominciare la tua attività su WINSOME\n"+
+                        "login <username> <password>fai il login per cominciare la tua attivita' su WINSOME\n"+
                         "logout <username> permette di uscire dal social\n"+
                         "listUsers restituisce la lista degli utenti che hanno almeno un tag in comune con te\n"+
                         "listFollowers restituisce la lista dei tuoi followers\n"+

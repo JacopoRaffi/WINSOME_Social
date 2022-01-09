@@ -57,7 +57,7 @@ public class ServerWorker implements Runnable{
                         writer.flush();
                     }
                 }else{
-                    writer.writeUTF("ERRORE: hai già fatto il login");
+                    writer.writeUTF("ERRORE: hai gia' fatto il login");
                     writer.flush();
                 }
             }else{
@@ -123,7 +123,7 @@ public class ServerWorker implements Runnable{
                 ServerWallet wallet = social.getSocialUsers().get(clientUserName).getWallet();
                 response = "PORTAFOGLIO(BITCOIN): " + social.toBitcoin(wallet.getTotale());
             }catch(IOException e){
-                response = "ERRORE: problema durante il calcolo del portafoglio, riprovare più tardi";
+                response = "ERRORE: problema durante il calcolo del portafoglio, riprovare piu' tardi";
             }
             writer.writeUTF(response);
             writer.flush();
@@ -206,7 +206,7 @@ public class ServerWorker implements Runnable{
                 response = "Utente inesistente";
             else {
                 if (!social.followUser(clientUserName, param[1])) {
-                    response = "ERRORE: utente già seguito";
+                    response = "ERRORE: utente gia' seguito";
                 } else {
                     response = "SUCCESSO: ora segui " + param[1];
                 }
@@ -219,7 +219,7 @@ public class ServerWorker implements Runnable{
                 response = "ERRORE: non segui questo utente ";
             }
             else{
-                response = "SUCCESSO: non segui più" + param[1];
+                response = "SUCCESSO: non segui piu'" + param[1];
             }
             writer.writeUTF(response);
             writer.flush();
