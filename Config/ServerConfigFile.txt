@@ -1,0 +1,18 @@
+#tempo tra i reward
+TIMELAPSE=20
+#tempo tra i backup
+TIMELAPSEBACKUP=10
+#indirizzo server
+SERVER_ADDRESS=127.0.0.1
+#porta TCP
+TCP_PORT=7777
+#porta per RMI
+REG_PORT=6666
+#timeout per il clientSocket
+TIMEOUT=1000000
+#nome del servizio RMI
+REG_SERVICENAME=registryFun
+#porta DUP
+UDP_PORT=7776
+#indirizzo per multicast
+MULTICAST_ADDRESS=239.255.32.32
