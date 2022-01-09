@@ -91,7 +91,7 @@ public class ClientClass implements Runnable {
             if(regFun.userRegister(username, password, tags)) {
                 System.out.println("REGISTRAZIONE EFFETTUATA CON SUCCESSO");
                 System.out.println("-------- BENVENUTO SU WINSOME --------");
-                System.out.println("Ricordati di fare il login per iniziare la tua attività sul social");
+                System.out.println("Ricordati di fare il login per iniziare la tua attività sul social\n");
                 System.out.println("Digitare il comando help per la lista dei possibili comandi");
                 this.username = username;
             }
@@ -138,8 +138,8 @@ public class ClientClass implements Runnable {
 
     //funzione che legge i comandi da tastiera
     private void socialActivity(Socket socket, ClientNotifyInterface stub, ClientUDPThread waitingThread) throws IOException{
-        String NOT_LOGGED_MESSAGE = "< ERRORE: non hai fatto il login in WINSOME";
-        String[] commandLine;
+        String NOT_LOGGED_MESSAGE = "< ERRORE: non hai fatto il login in WINSOME"; //usato per evitare di riscriverlo ogbi volta
+        String[] commandLine; //usata per suddividere i contenuti letti da stringa
         String serverResponse;
         Scanner scanner = new Scanner(System.in);
         DataOutputStream outWriter = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
@@ -167,7 +167,6 @@ public class ClientClass implements Runnable {
                     tags += commandLine[i] + " ";
                     i++;
                 }
-                System.out.println(tags);
                 register(commandLine[1], commandLine[2], tags);
             }
             else if(request.compareTo("login") == 0) {
@@ -237,7 +236,7 @@ public class ClientClass implements Runnable {
             else if(request.compareTo("listfollowers") == 0){
                 try{
                     listLock.lock();
-                    System.out.println("Lista dei followers(totale=" + followers.size() + ")");
+                    System.out.println("< Lista dei followers(totale=" + followers.size() + ")");
                     for (String user:followers) {
                         System.out.println("User: " + user);
                     }
@@ -251,7 +250,7 @@ public class ClientClass implements Runnable {
                     outWriter.flush();
                     serverResponse = inReader.readUTF(); //leggo la risposta del server
                     int dim = Integer.parseInt(serverResponse);
-                    System.out.println("Queste sono le persone che segui");
+                    System.out.println("< Queste sono le persone che segui");
 
                     for(int i = 0; i < dim; i++){
                         serverResponse = inReader.readUTF();

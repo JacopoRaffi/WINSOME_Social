@@ -252,7 +252,6 @@ public class ServerMain {
         }
         reader.endArray();
         reader.close();
-        System.out.println(socialPosts);
         social.setSocialPost(socialPosts);
     }
 
@@ -316,7 +315,6 @@ public class ServerMain {
         }
         reader.endArray();
         reader.close();
-        System.out.println(socialUsers);
         social.setSocialUsers(socialUsers);
     }
 
@@ -338,10 +336,10 @@ public class ServerMain {
                     reward.join(1000);
                 }catch(InterruptedException e){}
                 if(line.compareTo("quitNow") == 0)
-                    pool.shutdownNow();
+                    pool.shutdownNow(); //termino subito il server
                 else{
                     try{
-                        pool.shutdown();
+                        pool.shutdown(); //lascio 10 secondi di tempo per concludere le ultime operazioni al client
                         pool.awaitTermination(10, TimeUnit.SECONDS);
                     }catch(InterruptedException e){}    
                 }
