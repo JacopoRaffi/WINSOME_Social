@@ -28,7 +28,7 @@ public class ServerBackup extends Thread {
     public void run(){
         while(!Thread.currentThread().isInterrupted()){
             try{
-                Thread.sleep(timelapse * 60 * 1000); //*60 * 1000 serve a trasformare da minuti a millisecondi
+                Thread.sleep(timelapse * 1000); //*60 * 1000 serve a trasformare da minuti a millisecondi
                 backupUser();
                 backupPost();
             }catch(InterruptedException e){

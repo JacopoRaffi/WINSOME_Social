@@ -153,7 +153,7 @@ public class ClientClass implements Runnable {
                 continue;
             }
             commandLine = line.split(" (?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
-            String request = commandLine[0].toLowerCase(Locale.ROOT);
+            String request = commandLine[0];
 
             if(request.compareTo("register") == 0){
                 if(commandLine.length < 4 || commandLine.length > 8){
@@ -201,6 +201,7 @@ public class ClientClass implements Runnable {
                 if(logged) {
                     outWriter.writeUTF("logout");
                     outWriter.flush();
+                    waitingThread.logout();
                     System.out.println("< Chiusura da WINSOME");
                     try {
                         regFun.unregisterForCallback(stub, username, password);

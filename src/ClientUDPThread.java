@@ -18,6 +18,10 @@ public class ClientUDPThread implements Runnable{
         logged = true;
     }
 
+    public static void logout(){
+        logged = false;
+    }
+
     public void run(){
         byte[] buffer = new byte[1024];
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
