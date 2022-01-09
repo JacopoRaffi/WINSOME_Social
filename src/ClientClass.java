@@ -55,6 +55,7 @@ public class ClientClass implements Runnable {
         try{
             //configurazione TCP
             Socket socket = new Socket(InetAddress.getByName(SERVER_ADDRESS), TCP_PORT);
+            socket.setSoTimeout((int)TIMEOUT);
             //lettura parametri per il Multicast Socket
             DataInputStream inReader = new DataInputStream(socket.getInputStream());
             String multiCastParam = "";
