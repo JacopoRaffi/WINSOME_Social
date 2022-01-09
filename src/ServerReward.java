@@ -93,7 +93,7 @@ public class ServerReward extends Thread {
                 int Cp = comments.get(key).size();
                 sommaAux += 2 / (1 + Math.pow(Math.E, -Cp + 1));
             }
-            somma2 = Math.log(somma2 + 1);
+            somma2 = Math.log(sommaAux + 1);
             guadagnoPost = (somma1 + somma2) / numIterazioni;
         }finally{
             post.setLastTimeReward(System.nanoTime());
@@ -106,7 +106,6 @@ public class ServerReward extends Thread {
 
     private Set<String> filterNewPeopleCommenting(ServerPost post){
         Set<String> newPeople = new TreeSet<>(); //qui metto le persone che avranno commentato di recente
-
         for (String key: post.getComments().keySet()) {
             List<ServerComment> filteredComment = post.getComments().get(key).stream().filter(serverComment -> serverComment.getTime() > post.getLastTimeReward()).collect(Collectors.toList());
             if(!filteredComment.isEmpty()){

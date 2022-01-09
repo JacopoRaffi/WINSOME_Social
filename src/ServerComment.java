@@ -4,7 +4,7 @@ public class ServerComment extends ServerFeedBack {
     String contenuto;
 
     public ServerComment(String autore, String contenuto){
-        super(autore, true, Calendar.getInstance().getTimeInMillis());
+        super(autore, true, System.nanoTime());
         this.contenuto = contenuto;
     }
 
@@ -14,6 +14,6 @@ public class ServerComment extends ServerFeedBack {
 
     @Override
     public String toString(){
-        return "Commento: " + contenuto + "\n";
+        return "Commento: " + contenuto + "\n" + getTime();
     }
 }

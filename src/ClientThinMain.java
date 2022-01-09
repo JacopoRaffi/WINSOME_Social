@@ -6,18 +6,14 @@ import java.rmi.RMISecurityManager;
 public class ClientThinMain {
 
     public static void main(String[]Args){
-        if (Args.length == 0) {
-            System.err.println("Usage: java LoadClient <remote URL>");
-            System.exit(-1);
-        }
         System.setProperty("java.security.policy", "myGrantAllPolicy.policy");
         String filesName = "./Config/ClientConfig.txt";
-        if(Args.length >= 2){
-            filesName = Args[1];
+        if(Args.length >= 1){
+            filesName = Args[0];
         }
-        System.setSecurityManager(new RMISecurityManager());
+        System.setSecurityManager(new SecurityManager());
         try {
-            URL url = new File(Args[0]).toURI().toURL();
+            URL url = new File("..\\src\\ClientClass.java").toURI().toURL();
             System.out.println(url);
             Class<?> clientClasss = RMIClassLoader.loadClass(url, "ClientClass");
             Runnable client = (Runnable) clientClasss.getDeclaredConstructor(String.class).newInstance(filesName);
