@@ -227,6 +227,10 @@ public class ServerWorker implements Runnable{
         else if(request.startsWith("logout")){
             social.getSocialUsers().get(clientUserName).logout();
         }
+        else {
+            writer.writeUTF("COMANDO NON RICONOSCIUTO");
+            writer.flush();
+        }
 
     }
 
